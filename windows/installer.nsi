@@ -8,8 +8,8 @@
 ; Variables
 ; --------------------------------
 
-!define dest "release/ashley.exe"
-!define src "/home/brent/srcnode/ebpReact/release/win32-ia32/Ashley-win32-ia32"
+!define dest "setup/ashley.exe"
+!define src "../release/win32-ia32/Ashley-win32-ia32"
 
 !define name "ashley"
 !define productName "Ashley"
