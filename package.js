@@ -76,6 +76,8 @@ function startPack() {
     .then(() => del('release'))
     .then(paths => {
       if (shouldBuildAll) {
+            pack('win32', 'ia32', log('win32', 'ia32'));
+/*
         // build for all platforms
         const archs = ['ia32', 'x64'];
         const platforms = ['linux', 'win32', 'darwin'];
@@ -85,6 +87,7 @@ function startPack() {
             pack(plat, arch, log(plat, arch));
           });
         });
+        */
       } else {
         // build for current platform only
         pack(os.platform(), os.arch(), log(os.platform(), os.arch()));

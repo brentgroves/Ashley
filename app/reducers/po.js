@@ -9,48 +9,59 @@ export default function retrievePO(state = 0, action) {
     case RETRIEVE_PO:
     {
     		console.log('start getPO');
-var config = {
-    userName: 'sa',
-    password: 'buschecnc1',
-    server: '10.1.2.17',
-    options: {encrypt: false, database: 'cribmaster'}  
-//    database: 'cribmaster'
-};
-var connection = new Connection(config);
-connection.on('connect', function(err) {
-     //Add error handling here   
-     getSqlData();
-    }
-);
-var rows = [];
-function getSqlData() {
-    console.log('Getting data from SQL');
-    var request = new Request("SELECT PONumber,VendorPO FROM PO where vendorPO = 118500",
-        function(err, rowCount) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log('success' + rowCount);
-        }
-    });
-    request.on('row', function(columns) {
-        var row = {};
-        columns.forEach(function(column) {
-            row[column.metadata.colName] = column.value;
-	        console.log(column.value);
-        });
-        rows.push(row);
-    });
-    connection.execSql(request);
-}
-//    	getPO();
-      return state;
+    	getPO();
+    	return state;
     }
     default:
       return state;
   }
 }
 
+function getPO() {
+	var config = {
+	    userName: 'sa',
+	    password: 'buschecnc1',
+	    server: '10.1.2.17',
+	    options: {encrypt: false, database: 'cribmaster'}  
+	//    database: 'cribmaster'
+	};
+	var connection = new Connection(config);
+	connection.on('connect', function(err) {
+	     //Add error handling here   
+	     getSqlData();
+	    }
+	);
+	var rows = [];
+	function getSqlData() {
+	    console.log('Getting data from SQL');
+	    var request = new Request("SELECT PONumber,VendorPO FROM PO where vendorPO = 118500",
+	        function(err, rowCount) {
+	        if (err) {
+	            console.log(err);
+	        } else {
+	            console.log('success: ' + rowCount);
+	        }
+	    });
+	    request.on('row', function(columns) {
+	        var row = {};
+	        columns.forEach(function(column) {
+	            row[column.metadata.colName] = column.value;
+	         //   state = column.value;
+		        console.log(column.value);
+	        });
+	        rows.push(row);
+
+	    });
+
+	    request.on('doneProc', function(rowCount, more) {  
+	    	console.log(rows[0].PONumber + ' rows returned'); 
+	    	
+
+	    });  
+
+	    connection.execSql(request);
+	}
+}
 /*
 function getPO() {
 
