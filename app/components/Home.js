@@ -12,6 +12,9 @@ export default class Home extends Component {
           <Link to="/counter">to Counter</Link> 
           <br/>
           <Link to="/testsql">to Testsql</Link>
+          <br/>
+          <Link to="/po">to PO</Link>
+
         </div>
       </div>
     );

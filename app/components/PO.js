@@ -8,7 +8,7 @@ class PO extends Component {
   };
 
   render() {
-    const { po } = this.props;
+    const { retrievePO, po } = this.props;
     return (
       <div>
         <div className={styles.backButton}>

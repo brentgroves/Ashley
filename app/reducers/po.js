@@ -1,7 +1,104 @@
 import {RETRIEVE_PO} from '../actions/po';
-import sql from 'mssql';
-require('mssql/lib/tedious'); 
+//import sql from 'mssql';
+var Connection = require('tedious').Connection;
+var Request = require('tedious').Request;
 
+export default function retrievePO(state = 0, action) {
+ // 	getPO();
+  switch (action.type) {
+    case RETRIEVE_PO:
+    {
+    		console.log('start getPO');
+var config = {
+    userName: 'sa',
+    password: 'buschecnc1',
+    server: '10.1.2.17',
+    options: {encrypt: false, database: 'cribmaster'}  
+//    database: 'cribmaster'
+};
+var connection = new Connection(config);
+connection.on('connect', function(err) {
+     //Add error handling here   
+     getSqlData();
+    }
+);
+var rows = [];
+function getSqlData() {
+    console.log('Getting data from SQL');
+    var request = new Request("SELECT PONumber,VendorPO FROM PO where vendorPO = 118500",
+        function(err, rowCount) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log('success' + rowCount);
+        }
+    });
+    request.on('row', function(columns) {
+        var row = {};
+        columns.forEach(function(column) {
+            row[column.metadata.colName] = column.value;
+	        console.log(column.value);
+        });
+        rows.push(row);
+    });
+    connection.execSql(request);
+}
+//    	getPO();
+      return state;
+    }
+    default:
+      return state;
+  }
+}
+
+/*
+function getPO() {
+
+	console.log('start getPO');
+    var Connection = require('tedious').Connection;  
+    var config = {  
+        userName: 'sa',  
+        password: 'buschecnc1',  
+        server: '10.1.2.17',  
+        // If you are on Microsoft Azure, you need this:  
+        options: {encrypt: true, database: 'cribmaster'}  
+    };  
+    var connection = new Connection(config);  
+    connection.on('connect', function(err) {  
+        // If no error, then good to proceed.  
+        console.log("Connected");  
+        executeStatement();  
+    });  
+
+    var Request = require('tedious').Request;  
+    var TYPES = require('tedious').TYPES;  
+  
+    function executeStatement() {  
+        request = new Request(
+        	"SELECT PONumber,VendorPO FROM [dbo].[PO] where vendorPO = 118500", function(err) { 
+//        	"SELECT c.CustomerID, c.CompanyName,COUNT(soh.SalesOrderID) AS OrderCount FROM SalesLT.Customer AS c LEFT OUTER JOIN SalesLT.SalesOrderHeader AS soh ON c.CustomerID = soh.CustomerID GROUP BY c.CustomerID, c.CompanyName ORDER BY OrderCount DESC;", function(err) {  
+        if (err) {  
+            console.log(err);}  
+        });  
+        var result = "";  
+        request.on('row', function(columns) {  
+            columns.forEach(function(column) {  
+              if (column.value === null) {  
+                console.log('NULL');  
+              } else {  
+                result+= column.value + " ";  
+              }  
+            });  
+            console.log(result);  
+            result ="";  
+        });  
+  
+        request.on('done', function(rowCount, more) {  
+        console.log(rowCount + ' rows returned');  
+        });  
+        connection.execSql(request);  
+    }
+}  
 
 var crib = {
     user: 'sa',
@@ -10,6 +107,8 @@ var crib = {
     database: 'cribmaster'
 }
 
+*/
+/*
 function getPO() {
   var cribConnection = new sql.Connection(crib,function(err){
     // error checks
@@ -76,13 +175,5 @@ var poCatChk = function (cribConnection) {
 }
 
 
+*/
 
-
-export default function retrievePO(state = 0, action) {
-  switch (action.type) {
-    case RETRIEVE_PO:
-      return getPO();
-    default:
-      return state;
-  }
-}
