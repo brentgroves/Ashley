@@ -21,9 +21,11 @@ function getPO() {
 	var config = {
 	    userName: 'sa',
 	    password: 'buschecnc1',
-	    server: '10.1.2.17',
-	    options: {encrypt: false, database: 'cribmaster'}  
-	//    database: 'cribmaster'
+	    server: '192.168.1.106',
+//      server: '10.1.2.17',
+	    options: {encrypt: false, database: 'cribmaster',instanceName: 'SQLEXPRESS'}  
+//      options: {encrypt: false, database: 'cribmaster'}  
+
 	};
 	var connection = new Connection(config);
 	connection.on('connect', function(err) {
@@ -34,7 +36,8 @@ function getPO() {
 	var rows = [];
 	function getSqlData() {
 	    console.log('Getting data from SQL');
-	    var request = new Request("SELECT PONumber,VendorPO FROM PO where vendorPO = 118500",
+	    var request = new Request("SELECT PONumber,VendorPO FROM PO where PONumber = 24960",
+//      var request = new Request("SELECT PONumber,VendorPO FROM PO where vendorPO = 118500",
 	        function(err, rowCount) {
 	        if (err) {
 	            console.log(err);
