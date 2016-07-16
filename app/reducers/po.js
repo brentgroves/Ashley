@@ -3,13 +3,13 @@ import {RETRIEVE_PO} from '../actions/po';
 var Connection = require('tedious').Connection;
 var Request = require('tedious').Request;
 
-export default function retrievePO(state = 0, action) {
+export default function retrievePO(state = [{}], action) {
  // 	getPO();
   switch (action.type) {
     case RETRIEVE_PO:
     {
     		console.log('start getPO');
-    	getPO();
+    	getPO(state);
     	return state;
     }
     default:
@@ -17,7 +17,7 @@ export default function retrievePO(state = 0, action) {
   }
 }
 
-function getPO() {
+function getPO(state) {
 	var config = {
 	    userName: 'sa',
 	    password: 'buschecnc1',
@@ -36,15 +36,28 @@ function getPO() {
 	var rows = [];
 	function getSqlData() {
 	    console.log('Getting data from SQL');
-	    var request = new Request("SELECT PONumber,VendorPO FROM PO where PONumber = 24960",
+	    var request = new Request(
+        `
+          SELECT po.PONumber,po.Vendor,po.Address1
+          FROM [btVENDOR] vn
+          right outer join
+          (
+            SELECT PONumber,vendor,address1
+            FROM [btPO]
+            WHERE [btPO].POSTATUSNO = 3 and [btPO].SITEID <> '90'
+          )po
+          on vn.VendorNumber=po.Vendor
+          where vn.VendorNumber = 2
+        `,
+//        "SELECT PONumber,VendorPO FROM PO where PONumber = 24960",
 //      var request = new Request("SELECT PONumber,VendorPO FROM PO where vendorPO = 118500",
 	        function(err, rowCount) {
-	        if (err) {
-	            console.log(err);
-	        } else {
-	            console.log('success: ' + rowCount);
-	        }
-	    });
+  	        if (err) {
+  	            console.log(err);
+  	        } else {
+  	            console.log('success: ' + rowCount);
+  	        }
+  	       });
 	    request.on('row', function(columns) {
 	        var row = {};
 	        columns.forEach(function(column) {
@@ -56,8 +69,9 @@ function getPO() {
 
 	    });
 
-	    request.on('doneProc', function(rowCount, more) {  
-	    	console.log(rows[0].PONumber + ' rows returned'); 
+	    request.on('doneProc', function(more) {  
+        po = rows;
+	    	console.log(this.rowCount + ' rows returned'); 
 	    	
 
 	    });  
