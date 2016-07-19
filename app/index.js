@@ -7,7 +7,12 @@ import routes from './routes';
 import configureStore from './store/configureStore';
 import './app.global.css';
 
-const store = configureStore({counter:1, vendor:2, po:[{PONumber:1,VendorPO:2}]});
+const initialState = {
+	counter:1, 
+	vendor:2, 
+	po:[{PONumber:1,Vendor:2,Address1:'1633 S US HWY 33'}]
+}
+const store = configureStore(initialState);
 const history = syncHistoryWithStore(hashHistory, store);
 
 render(

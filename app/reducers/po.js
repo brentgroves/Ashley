@@ -1,23 +1,32 @@
-import {RETRIEVE_PO} from '../actions/po';
+import {RETRIEVE_PO,SET_POLIST} from '../actions/po';
 //import sql from 'mssql';
 var Connection = require('tedious').Connection;
 var Request = require('tedious').Request;
 
-export default function retrievePO(state = [{}], action) {
+var poList;
+export default function PODispatch( state = [{}], action) {
  // 	getPO();
   switch (action.type) {
     case RETRIEVE_PO:
     {
-    		console.log('start getPO');
-    	getPO(state);
+    	console.log('start getPO');
+      poList = state;
+    	getPO();
     	return state;
+    }
+    case SET_POLIST:
+    {
+        console.log('update poList');
+        Object.assign({}, state, action.poList);      
+      return state;
     }
     default:
       return state;
   }
 }
 
-function getPO(state) {
+
+function getPO() {
 	var config = {
 	    userName: 'sa',
 	    password: 'buschecnc1',
@@ -70,7 +79,7 @@ function getPO(state) {
 	    });
 
 	    request.on('doneProc', function(more) {  
-        po = rows;
+        poList = rows;
 	    	console.log(this.rowCount + ' rows returned'); 
 	    	
 

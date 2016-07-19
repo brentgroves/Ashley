@@ -1,9 +1,16 @@
 export const RETRIEVE_PO = 'RETRIEVE_PO';
-
+export const SET_POLIST = 'SET_POLIST';
 
 export function retrievePO() {
   return {
     type: RETRIEVE_PO
+  };
+}
+
+export function setPOList(poList) {
+  return {
+    type: SET_POLIST,
+    po:poList
   };
 }
 

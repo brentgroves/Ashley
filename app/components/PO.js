@@ -9,8 +9,8 @@ class PO extends Component {
 
 //       <div className={`po ${styles.po}`}>
   render() {
+    const { retrievePO,po } = this.props;
 
-   const { retrievePO,po } = this.props;
 
     var headerComponents = this.generateHeaders(),
         rowComponents = this.generateRows(po);
@@ -41,8 +41,9 @@ class PO extends Component {
 
   generateHeaders() {
     var cols = [
-        { key: 'po', label: 'PO' },
-        { key: 'vn', label: 'Vendor' }
+        { key: 'PONumber', label: 'PO' },
+        { key: 'Vendor', label: 'Vendor' },
+        { key: 'Address1', label: 'Address'}
     ];
 
     // generate our header (th) cell components
@@ -53,8 +54,9 @@ class PO extends Component {
 
   generateRows(po) {
     var cols = [
-        { key: 'PONumber', label: 'First Name' },
-        { key: 'VendorPO', label: 'Last Name' }
+        { key: 'PONumber', label: 'PO' },
+        { key: 'Vendor', label: 'Vendor' },
+        { key: 'Address1', label: 'Address'}
     ];
 
     var data = [
