@@ -2,9 +2,10 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import styles from './NoVenPoList.css';
 
+var Griddle = require('griddle-react');
 //equire('react-datagrid/index.css');
 //var DataGrid = require('react-datagrid');
-const {Table, Column, Cell} = require('fixed-data-table');
+//const {Table, Column, Cell} = require('fixed-data-table');
 
 
 class NoVenPoList extends Component {
@@ -14,7 +15,55 @@ class NoVenPoList extends Component {
   };
 */
 
-
+    render() {
+      const { noVenPoList } = this.props;
+var fakeData =  [
+  {
+    "id": 0,
+    "name": "Mayer Leonard",
+    "city": "Kapowsin",
+    "state": "Hawaii",
+    "country": "United Kingdom",
+    "company": "Ovolo",
+    "favoriteNumber": 7
+  },
+  {
+    "id": 2,
+    "name": "Mayer Leonard 2",
+    "city": "Kapowsin",
+    "state": "Hawaii",
+    "country": "United Kingdom",
+    "company": "Ovolo",
+    "favoriteNumber": 7
+  },
+  {
+    "id": 3,
+    "name": "Mayer Leonard 3",
+    "city": "Kapowsin",
+    "state": "Hawaii",
+    "country": "United Kingdom",
+    "company": "Ovolo",
+    "favoriteNumber": 7
+  }
+];
+ 
+      return (
+          <div>
+            <div className={styles.backButton}>
+              <Link to="/">
+                <i className="fa fa-arrow-left fa-3x" />
+              </Link>
+            </div>
+            <div className={`noVenPoList ${styles.noVenPoList}`}>
+              <Griddle results={fakeData} tableClassName="table" showFilter={true}
+               showSettings={true} columns={["name", "city", "state", "country"]}/>
+            </div>
+          </div>        
+      );
+    }
+ };
+    
+/*
   render() {
     const { getNoVenPoList,noVenPoList } = this.props;
 
@@ -97,5 +146,5 @@ class NoVenPoList extends Component {
     });
   };
 }
-
+*/
 export default NoVenPoList;

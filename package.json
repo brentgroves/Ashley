@@ -105,6 +105,7 @@
     "electron-debug": "^1.0.1",
     "fixed-data-table": "^0.6.2",
     "font-awesome": "^4.6.3",
+    "griddle-react": "^0.6.1",
     "postcss": "^5.0.21",
     "react": "^15.1.0",
     "react-datagrid": "^2.1.1",
