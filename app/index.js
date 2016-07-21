@@ -6,11 +6,10 @@ import { syncHistoryWithStore } from 'react-router-redux';
 import routes from './routes';
 import configureStore from './store/configureStore';
 import './app.global.css';
-
 const initialState = {
 	counter:1, 
 	vendor:2, 
-	po:[{PONumber:1,Vendor:2,Address1:'1633 S US HWY 33'}]
+	noVenPoList:[{PONumber:1,Vendor:2,Address1:'1633 S US HWY 33'}]
 }
 const store = configureStore(initialState);
 const history = syncHistoryWithStore(hashHistory, store);
