@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import styles from './NoVenPoList.css';
+import SimulatedExternalComponent from './SimulatedExternalComponent';
 
 var Griddle = require('griddle-react');
 //equire('react-datagrid/index.css');
@@ -17,35 +18,6 @@ class NoVenPoList extends Component {
 
     render() {
       const { noVenPoList } = this.props;
-var fakeData =  [
-  {
-    "id": 0,
-    "name": "Mayer Leonard",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 2,
-    "name": "Mayer Leonard 2",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 3,
-    "name": "Mayer Leonard 3",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  }
-];
  
       return (
           <div>
@@ -55,8 +27,7 @@ var fakeData =  [
               </Link>
             </div>
             <div className={`noVenPoList ${styles.noVenPoList}`}>
-              <Griddle results={fakeData} tableClassName="table" showFilter={true}
-               showSettings={true} columns={["name", "city", "state", "country"]}/>
+              <SimulatedExternalComponent />
             </div>
           </div>        
       );
