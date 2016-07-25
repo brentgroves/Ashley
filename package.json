@@ -103,12 +103,10 @@
   "dependencies": {
     "css-modules-require-hook": "^4.0.0",
     "electron-debug": "^1.0.1",
-    "fixed-data-table": "^0.6.2",
     "font-awesome": "^4.6.3",
     "griddle-react": "^0.6.1",
     "postcss": "^5.0.21",
     "react": "^15.1.0",
-    "react-datagrid": "^2.1.1",
     "react-dom": "^15.1.0",
     "react-redux": "^4.4.5",
     "react-router": "^2.4.1",

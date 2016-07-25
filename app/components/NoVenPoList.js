@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import styles from './NoVenPoList.css';
-import SimulatedExternalComponent from './SimulatedExternalComponent';
+import NoVenGriddle from './NoVenGriddle';
 
 var Griddle = require('griddle-react');
 //equire('react-datagrid/index.css');
@@ -14,6 +14,7 @@ class NoVenPoList extends Component {
   static propTypes = {
     noVenPoList: PropTypes.array.isRequired
   };
+  <SimulatedExternalComponent />
 */
 
     render() {
@@ -27,7 +28,7 @@ class NoVenPoList extends Component {
               </Link>
             </div>
             <div className={`noVenPoList ${styles.noVenPoList}`}>
-              <SimulatedExternalComponent />
+              <NoVenGriddle />
             </div>
           </div>        
       );
