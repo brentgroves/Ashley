@@ -135,7 +135,7 @@ var NoVenGriddle = React.createClass({
       var that = this;
       page = page||1
 
-      swapiModule.getStarships(page, function(data) {
+      msSqlModule.getStarships(page, function(data) {
        that.setState({
           results: data.results,
           currentPage: page-1,
