@@ -1,10 +1,11 @@
 
 var sql = require('mssql');
+const {dialog} = require('electron').remote;
 
 var m2m = {
   user: 'sa',
   password: 'buschecnc1',
-  server: '192.168.1.106\\SQLEXPRESS', // You can use 'localhost\\instance' to connect to named instance
+  server: '192.168.1.113', // You can use 'localhost\\instance' to connect to named instance
 //   server: 'busche-sql-1', // You can use 'localhost\\instance' to connect to named instance
   database: 'm2mdata01',
   port: 1433,
@@ -20,26 +21,29 @@ var m2m = {
 var crib = {
   user: 'sa',
   password: 'buschecnc1',
-  server: '192.168.1.106\\SQLEXPRESS',
+  server: '192.168.1.113',
   //   server: 'busche-sql', // You can use 'localhost\\instance' to connect to named instance
   database: 'cribmaster',
   port: 1433,
   //    debug: true,
-  /*
+
   requestTimeout: 60000,
   options: {
       encrypt: false // Use this if you're on Windows Azure
       ,instanceName: 'SQLEXPRESS'
   }
-  */
 
 }
 
-export var poUpdate = function () {
-  document.getElementById('msgToUsr').innerHTML = '';
+var prod=false;
+var errors=false;
+
+export function poUpdate() {
+  var that = this;
+//  document.getElementById('msgToUsr').innerHTML = '';
   var cribConnection = new sql.Connection(crib,function(err){
     // error checks
-    poCatChk(cribConnection);
+  poCatChk.call(that,cribConnection);
   });
   cribConnection.on('error', function(err) {
     console.log(`Connection1 err:  ${err}` );
@@ -49,6 +53,7 @@ export var poUpdate = function () {
 
 //**CHECK IF ALL PO CATEGORIES HAVE BEEN SELECTED
 var poCatChk = function (cribConnection) {
+  var that = this;
   let qryCrib;
   if (prod===true) {
     qryCrib = `
@@ -88,12 +93,20 @@ var poCatChk = function (cribConnection) {
       });
 //      document.getElementById('errContents').innerHTML = cribRsErr;
       console.log("Failed PO category check.");
-      document.getElementById('msgToUsr').innerHTML += `<div class="failed">Failed Cribmaster PO category check.</div>`;
-      dialog.showMessageBox({ message:
-        `Failed PO category check:\nNo Cribmaster PO category is selected on the following PO(s):\n${cribRsErr}\n\nFix issue then click PO Update.`,
-        buttons: ["OK"] });
+//      document.getElementById('msgToUsr').innerHTML += `<div class="failed">Failed Cribmaster PO category check.</div>`;
+//      dialog.showMessageBox({ message:
+//        `Failed PO category check:\nNo Cribmaster PO category is selected on the following PO(s):\n${cribRsErr}\n\nFix issue then click PO Update.`,
+//        buttons: ["OK"] });
+      let page = 1
+      that.setState({
+          results: data.cribRsErr,
+          currentPage: page-1,
+          maxPages: 1
+//          maxPages: Math.round(data.count/10)
+        })
+
     }else {
-      document.getElementById('msgToUsr').innerHTML = `<div class="passed">Passed Cribmaster PO category check.</div>`;
+//      document.getElementById('msgToUsr').innerHTML = `<div class="passed">Passed Cribmaster PO category check.</div>`;
       poVendorChk(cribConnection);
     }
   });

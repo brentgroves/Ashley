@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Griddle from 'griddle-react';
-
+import {poUpdate} from '../api/NoVenPoSql';
 var fakeData =  [
   {
     "id": 0,
@@ -135,6 +135,9 @@ var NoVenGriddle = React.createClass({
       var that = this;
       page = page||1
 
+      poUpdate.call(that);
+//      myPoUpdate();
+/*
       msSqlModule.getStarships(page, function(data) {
        that.setState({
           results: data.results,
@@ -142,6 +145,7 @@ var NoVenGriddle = React.createClass({
           maxPages: Math.round(data.count/10)
         })
       });
+      */
     },    
     setPage: function(index){
       //This should interact with the data source to get the page at the given index
