@@ -99,7 +99,7 @@ var poCatChk = function (cribConnection) {
 //        buttons: ["OK"] });
       let page = 1
       that.setState({
-          results: data.cribRsErr,
+          results: cribRs,
           currentPage: page-1,
           maxPages: 1
 //          maxPages: Math.round(data.count/10)
