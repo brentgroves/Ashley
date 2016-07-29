@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import Griddle from 'griddle-react';
 import {poUpdate} from '../api/NoVenPoSql';
+import { Link } from 'react-router';
+
 var fakeData =  [
   {
     "id": 0,
@@ -113,6 +115,36 @@ var fakeData =  [
 ];
 
 var externalData = fakeData.slice(0, 53);
+
+var HeaderComponent = React.createClass({
+  textOnClick: function(e) {
+    e.stopPropagation();
+  },
+
+  filterText: function(e) {
+    this.props.filterByColumn(e.target.value, this.props.columnName)
+  },
+
+  render: function(){
+    return (
+      <span>
+        <div><strong style={{color: this.props.color}}>{this.props.displayName}</strong></div>
+        <input type='text' onChange={this.filterText} onClick={this.textOnClick} />
+      </span>
+    );
+  }
+});
+
+
+var LinkComponent = React.createClass({
+  render: function(){
+ //   url ="speakers/" + this.props.rowData.PONumber;
+    return  <Link to="/counter">to Counter</Link> 
+ 
+
+  }
+});
+
 var NoVenGriddle = React.createClass({
     getInitialState: function(){
       var initial = { "results": [],
@@ -155,8 +187,33 @@ var NoVenGriddle = React.createClass({
     setPageSize: function(size){
     },
     render: function(){
+      var columnMeta = [
+      {
+        "columnName": "PONumber",
+        "order": 1,
+        "locked": false,
+        "visible": true,
+        "displayName": "PO Number"
+      },
+      {
+        "columnName": "Item",
+        "customHeaderComponent": HeaderComponent,
+        "customHeaderComponentProps": { color: 'red' }
+      },
+      {
+        "columnName": "UDF_POCATEGORY",
+        "order": 3,
+        "locked": false,
+        "visible": true,
+        "displayName": "PO Category",
+        "customComponent": LinkComponent
+      }];
+//        "columnName": "UDF_POCATEGORY",
+
+
       //columns={["name", "city", "state", "country"]}
       return <Griddle useExternal={true} externalSetPage={this.setPage} enableSort={false} 
+        columnMetadata={columnMeta}
         columns={["PONumber","Item","UDF_POCATEGORY"]}
  //       columns={["name", "model", "manufacturer", "passengers"]}
         externalSetPageSize={this.setPageSize} externalMaxPage={this.state.maxPages}
