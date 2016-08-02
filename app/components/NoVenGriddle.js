@@ -3,116 +3,6 @@ import Griddle from 'griddle-react';
 import {poUpdate} from '../api/NoVenPoSql';
 import { Link } from 'react-router';
 
-var fakeData =  [
-  {
-    "id": 0,
-    "name": "Mayer Leonard",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 2,
-    "name": "Mayer Leonard 2",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 3,
-    "name": "Mayer Leonard 3",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 0,
-    "name": "Mayer Leonard",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 2,
-    "name": "Mayer Leonard 2",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 3,
-    "name": "Mayer Leonard 3",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 0,
-    "name": "Mayer Leonard",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 2,
-    "name": "Mayer Leonard 2",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 3,
-    "name": "Mayer Leonard 3",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 0,
-    "name": "Mayer Leonard",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 2,
-    "name": "Mayer Leonard 2",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 3,
-    "name": "Mayer Leonard 3",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  }
-];
 
 var externalData = fakeData.slice(0, 53);
 
@@ -136,13 +26,43 @@ var HeaderComponent = React.createClass({
 });
 
 
+var users = [{id:1,name:'ven1'},{id:2,name:'ven2'},{id:3,name:'ven3'}];
+
 var LinkComponent = React.createClass({
+  render: function(){
+    return (
+      <div>
+      <select ref="userInput" defaultValue="" required>
+      <option value="" disabled>User</option>
+        {
+          users.map(function(user) {
+            return <option key={user.id}
+              value={user.name}>{user.name}</option>;
+          })
+        }
+     
+      </select>
+      </div>
+    );
+  }
+
+//       <input type='text' onChange={this.filterText} onClick={this.textOnClick} />
+ 
+/*
+        <div>
+        <option value="A">Apple</option>
+        <option value="B">Banana</option>
+        <option value="C">Cranberry</option>
+
+<Link style={{color: 'red'}} to="/counter">to Counter</Link> 
+        </div>
+
   render: function(){
  //   url ="speakers/" + this.props.rowData.PONumber;
     return  <Link to="/counter">to Counter</Link> 
- 
-
   }
+ */
+
 });
 
 var NoVenGriddle = React.createClass({
@@ -206,7 +126,8 @@ var NoVenGriddle = React.createClass({
         "locked": false,
         "visible": true,
         "displayName": "PO Category",
-        "customComponent": LinkComponent
+        "customComponent": LinkComponent,
+        "customComponentProps": { color: 'red' }
       }];
 //        "columnName": "UDF_POCATEGORY",
 
