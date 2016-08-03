@@ -1,10 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import Griddle from 'griddle-react';
-import {poUpdate} from '../api/NoVenPoSql';
+import POUpdateAPI from '../api/NoVenPoSql';
 import { Link } from 'react-router';
-
-
-var externalData = fakeData.slice(0, 53);
+import Select from 'react-select';
 
 var HeaderComponent = React.createClass({
   textOnClick: function(e) {
@@ -27,11 +25,41 @@ var HeaderComponent = React.createClass({
 
 
 var users = [{id:1,name:'ven1'},{id:2,name:'ven2'},{id:3,name:'ven3'}];
+var options = [
+    { value: 'one', label: 'One' },
+    { value: 'two', label: 'Two' },
+    { value: 'three', label: 'Three' }
+];
+
+
+function logChange(val) {
+    console.log("Selected: " + val);
+}
 
 var LinkComponent = React.createClass({
   render: function(){
     return (
       <div>
+        <Select
+            name="form-field-name"
+            value="one"
+            options={options}
+            onChange={logChange}
+        />      
+      </div>
+    );
+  }
+
+//       <input type='text' onChange={this.filterText} onClick={this.textOnClick} />
+ 
+/*
+        <Select
+            name="form-field-name"
+            value="one"
+            options={options}
+            onChange={logChange}
+        />      
+
       <select ref="userInput" defaultValue="" required>
       <option value="" disabled>User</option>
         {
@@ -42,13 +70,7 @@ var LinkComponent = React.createClass({
         }
      
       </select>
-      </div>
-    );
-  }
 
-//       <input type='text' onChange={this.filterText} onClick={this.textOnClick} />
- 
-/*
         <div>
         <option value="A">Apple</option>
         <option value="B">Banana</option>
@@ -86,8 +108,8 @@ var NoVenGriddle = React.createClass({
     getExternalData: function(page){
       var that = this;
       page = page||1
-
-      poUpdate.call(that);
+      POUpdateAPI.noPOCategory.call(this);
+//      poUpdate.call(that);
 //      myPoUpdate();
 /*
       msSqlModule.getStarships(page, function(data) {

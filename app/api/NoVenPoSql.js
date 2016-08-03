@@ -38,7 +38,81 @@ var crib = {
 var prod=false;
 var errors=false;
 
-export function poUpdate() {
+let POUpdateAPI = {
+  noPOCategory(){
+    var that = this;
+    var cribConnection = new sql.Connection(crib,function(err){
+      // error checks
+      poCatChk.call(that,cribConnection);
+    });
+    cribConnection.on('error', function(err) {
+      console.log(`Connection1 err:  ${err}` );
+      // ... error handler
+    });
+  }
+}
+
+function  poCatChk(cribConnection) {
+    var that = this;
+    let qryCrib;
+    if (prod===true) {
+      qryCrib = `
+        SELECT PONumber,Item,UDF_POCATEGORY
+        FROM PODETAIL
+        WHERE PONUMBER in
+        (
+          SELECT ponumber FROM [PO]  WHERE [PO].POSTATUSNO = 3 and [PO].SITEID <> '90'
+        )
+        and UDF_POCATEGORY is null
+      `;
+    }else{
+      qryCrib = `
+        SELECT PONumber,Item,UDF_POCATEGORY
+        FROM btPODETAIL
+        WHERE PONUMBER in
+        (
+          SELECT ponumber FROM [btPO]  WHERE [btPO].POSTATUSNO = 3 and [btPO].SITEID <> '90'
+        )
+        and UDF_POCATEGORY is null
+      `;
+    }
+
+    let cribReq = new sql.Request(cribConnection);
+
+    cribReq.query(qryCrib, function(err,cribRs) {
+      // error checks
+      if(cribRs.length!==0){
+        let cribRsErr ="";
+        cribRs.forEach(function(podetail,i,arr){
+          console.log(podetail.Item);
+          if(arr.length===i+1){
+            cribRsErr+=`PO# ${podetail.PONumber}, Item: ${podetail.Item}`;
+          }else{
+            cribRsErr+= `PO# ${podetail.PONumber}, Item: ${podetail.Item}\n`;
+          }
+        });
+  //      document.getElementById('errContents').innerHTML = cribRsErr;
+        console.log("Failed PO category check.");
+  //      document.getElementById('msgToUsr').innerHTML += `<div class="failed">Failed Cribmaster PO category check.</div>`;
+  //      dialog.showMessageBox({ message:
+  //        `Failed PO category check:\nNo Cribmaster PO category is selected on the following PO(s):\n${cribRsErr}\n\nFix issue then click PO Update.`,
+  //        buttons: ["OK"] });
+        let page = 1
+        that.setState({
+            results: cribRs,
+            currentPage: page-1,
+            maxPages: 1
+  //          maxPages: Math.round(data.count/10)
+          })
+
+      }else {
+  //      document.getElementById('msgToUsr').innerHTML = `<div class="passed">Passed Cribmaster PO category check.</div>`;
+        poVendorChk(cribConnection);
+      }
+    });
+  }
+
+function poUpdate() {
   var that = this;
 //  document.getElementById('msgToUsr').innerHTML = '';
   var cribConnection = new sql.Connection(crib,function(err){
@@ -51,66 +125,6 @@ export function poUpdate() {
   });
 } // poUpdate
 
-//**CHECK IF ALL PO CATEGORIES HAVE BEEN SELECTED
-var poCatChk = function (cribConnection) {
-  var that = this;
-  let qryCrib;
-  if (prod===true) {
-    qryCrib = `
-      SELECT PONumber,Item,UDF_POCATEGORY
-      FROM PODETAIL
-      WHERE PONUMBER in
-      (
-        SELECT ponumber FROM [PO]  WHERE [PO].POSTATUSNO = 3 and [PO].SITEID <> '90'
-      )
-      and UDF_POCATEGORY is null
-    `;
-  }else{
-    qryCrib = `
-      SELECT PONumber,Item,UDF_POCATEGORY
-      FROM btPODETAIL
-      WHERE PONUMBER in
-      (
-        SELECT ponumber FROM [btPO]  WHERE [btPO].POSTATUSNO = 3 and [btPO].SITEID <> '90'
-      )
-      and UDF_POCATEGORY is null
-    `;
-  }
-
-  let cribReq = new sql.Request(cribConnection);
-
-  cribReq.query(qryCrib, function(err,cribRs) {
-    // error checks
-    if(cribRs.length!==0){
-      let cribRsErr ="";
-      cribRs.forEach(function(podetail,i,arr){
-        console.log(podetail.Item);
-        if(arr.length===i+1){
-          cribRsErr+=`PO# ${podetail.PONumber}, Item: ${podetail.Item}`;
-        }else{
-          cribRsErr+= `PO# ${podetail.PONumber}, Item: ${podetail.Item}\n`;
-        }
-      });
-//      document.getElementById('errContents').innerHTML = cribRsErr;
-      console.log("Failed PO category check.");
-//      document.getElementById('msgToUsr').innerHTML += `<div class="failed">Failed Cribmaster PO category check.</div>`;
-//      dialog.showMessageBox({ message:
-//        `Failed PO category check:\nNo Cribmaster PO category is selected on the following PO(s):\n${cribRsErr}\n\nFix issue then click PO Update.`,
-//        buttons: ["OK"] });
-      let page = 1
-      that.setState({
-          results: cribRs,
-          currentPage: page-1,
-          maxPages: 1
-//          maxPages: Math.round(data.count/10)
-        })
-
-    }else {
-//      document.getElementById('msgToUsr').innerHTML = `<div class="passed">Passed Cribmaster PO category check.</div>`;
-      poVendorChk(cribConnection);
-    }
-  });
-}
 
 
 var msSqlModule = function () {
@@ -193,3 +207,5 @@ var msSqlModule = function () {
   };
 
 }();
+
+export default POUpdateAPI;
