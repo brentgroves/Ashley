@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import styles from './NoVenPoList.css';
-import NoVenGriddle from './NoVenGriddle';
+import styles from './NoCatList.css';
+import NoCatGriddle from './NoCatGriddle';
+import POCategories from './POCategories';
 
 var Griddle = require('griddle-react');
 //equire('react-datagrid/index.css');
@@ -9,7 +10,7 @@ var Griddle = require('griddle-react');
 //const {Table, Column, Cell} = require('fixed-data-table');
 
 
-class NoVenPoList extends Component {
+class NoCatList extends Component {
   /*
   static propTypes = {
     noVenPoList: PropTypes.array.isRequired
@@ -18,7 +19,7 @@ class NoVenPoList extends Component {
 */
 
     render() {
-      const { noVenPoList } = this.props;
+      const { noCatList } = this.props;
  
       return (
           <div>
@@ -27,8 +28,8 @@ class NoVenPoList extends Component {
                 <i className="fa fa-arrow-left fa-3x" />
               </Link>
             </div>
-            <div className={`noVenPoList ${styles.noVenPoList}`}>
-              <NoVenGriddle />
+            <div className={`noVenPoList ${styles.noCatPoList}`}>
+                 <NoCatGriddle />
             </div>
           </div>        
       );
@@ -36,6 +37,16 @@ class NoVenPoList extends Component {
  };
     
 /*
+              <NumericSelect label="Numeric Values" />
+               <GithubUsers label="Github users (Async with fetch.js)" />
+
+                <POCategories />
+
+               <GithubUsers label="Github users (Async with fetch.js)" />
+
+
+              <NoVenGriddle />
+
   render() {
     const { getNoVenPoList,noVenPoList } = this.props;
 
@@ -119,4 +130,4 @@ class NoVenPoList extends Component {
   };
 }
 */
-export default NoVenPoList;
+export default NoCatList;

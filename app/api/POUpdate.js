@@ -5,14 +5,14 @@ const {dialog} = require('electron').remote;
 var m2m = {
   user: 'sa',
   password: 'buschecnc1',
-  server: '192.168.1.113', // You can use 'localhost\\instance' to connect to named instance
-//   server: 'busche-sql-1', // You can use 'localhost\\instance' to connect to named instance
+//  server: '192.168.1.113', // You can use 'localhost\\instance' to connect to named instance
+  server: '10.1.2.19',//   server: 'busche-sql-1', // You can use 'localhost\\instance' to connect to named instance
   database: 'm2mdata01',
   port: 1433,
 //    debug: true,
   options: {
       encrypt: false // Use this if you're on Windows Azure
-      ,instanceName: 'SQLEXPRESS'
+     // ,instanceName: 'SQLEXPRESS'
   },
   requestTimeout: 60000
 
@@ -21,8 +21,8 @@ var m2m = {
 var crib = {
   user: 'sa',
   password: 'buschecnc1',
-  server: '192.168.1.113',
-  //   server: 'busche-sql', // You can use 'localhost\\instance' to connect to named instance
+//  server: '192.168.1.113',
+  server: '10.1.2.17', //   server: 'busche-sql', // You can use 'localhost\\instance' to connect to named instance
   database: 'cribmaster',
   port: 1433,
   //    debug: true,
@@ -30,7 +30,7 @@ var crib = {
   requestTimeout: 60000,
   options: {
       encrypt: false // Use this if you're on Windows Azure
-      ,instanceName: 'SQLEXPRESS'
+      //,instanceName: 'SQLEXPRESS'
   }
 
 }
@@ -39,11 +39,22 @@ var prod=false;
 var errors=false;
 
 let POUpdateAPI = {
-  noPOCategory(){
+  noPOCategory(callBack){
     var that = this;
     var cribConnection = new sql.Connection(crib,function(err){
       // error checks
-      poCatChk.call(that,cribConnection);
+      poCatChk.call(that,cribConnection,callBack);
+    });
+    cribConnection.on('error', function(err) {
+      console.log(`Connection1 err:  ${err}` );
+      // ... error handler
+    });
+  },
+  getPOCategories(callBack){
+    var that = this;
+    var cribConnection = new sql.Connection(crib,function(err){
+      // error checks
+      POCategories.call(that,cribConnection,callBack);
     });
     cribConnection.on('error', function(err) {
       console.log(`Connection1 err:  ${err}` );
@@ -51,6 +62,34 @@ let POUpdateAPI = {
     });
   }
 }
+
+function  POCategories(cribConnection,callBack) {
+  var myOptions = { options: [
+      { id: 1, login:'user1'},
+      { id: 2, login:'user2'},
+      { id: 3, login:'user3'}
+  ] };
+  
+    var that = this;
+    let qryCrib = `
+      select UDF_POCATEGORY,UDF_POCATEGORYDescription descr from UDT_POCATEGORY
+    `;
+
+    let cribReq = new sql.Request(cribConnection);
+
+    cribReq.query(qryCrib, function(err,cribRs) {
+      // error checks
+      let myOptions = {
+        options:cribRs
+      }
+      if(cribRs.length!==0){
+        callBack(null, myOptions);
+      }else {
+      }
+    });
+  }
+
+
 
 function  poCatChk(cribConnection) {
     var that = this;
@@ -107,7 +146,7 @@ function  poCatChk(cribConnection) {
 
       }else {
   //      document.getElementById('msgToUsr').innerHTML = `<div class="passed">Passed Cribmaster PO category check.</div>`;
-        poVendorChk(cribConnection);
+  //      poVendorChk(cribConnection);
       }
     });
   }

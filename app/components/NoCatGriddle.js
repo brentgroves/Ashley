@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import Griddle from 'griddle-react';
-import POUpdateAPI from '../api/NoVenPoSql';
+import POUpdateAPI from '../api/POUpdate';
 import { Link } from 'react-router';
 import Select from 'react-select';
+import POCategories from './POCategories';
 
 var HeaderComponent = React.createClass({
   textOnClick: function(e) {
@@ -40,12 +41,7 @@ var LinkComponent = React.createClass({
   render: function(){
     return (
       <div>
-        <Select
-            name="form-field-name"
-            value="one"
-            options={options}
-            onChange={logChange}
-        />      
+        <NumericSelect label="Numeric Values" />
       </div>
     );
   }
@@ -87,7 +83,7 @@ var LinkComponent = React.createClass({
 
 });
 
-var NoVenGriddle = React.createClass({
+var NoCatGriddle = React.createClass({
     getInitialState: function(){
       var initial = { "results": [],
           "currentPage": 0,
@@ -109,8 +105,6 @@ var NoVenGriddle = React.createClass({
       var that = this;
       page = page||1
       POUpdateAPI.noPOCategory.call(this);
-//      poUpdate.call(that);
-//      myPoUpdate();
 /*
       msSqlModule.getStarships(page, function(data) {
        that.setState({
@@ -139,6 +133,7 @@ var NoVenGriddle = React.createClass({
       },
       {
         "columnName": "Item",
+        "order": 2,
         "customHeaderComponent": HeaderComponent,
         "customHeaderComponentProps": { color: 'red' }
       },
@@ -148,7 +143,7 @@ var NoVenGriddle = React.createClass({
         "locked": false,
         "visible": true,
         "displayName": "PO Category",
-        "customComponent": LinkComponent,
+        "customComponent": POCategories,
         "customComponentProps": { color: 'red' }
       }];
 //        "columnName": "UDF_POCATEGORY",
@@ -166,7 +161,7 @@ var NoVenGriddle = React.createClass({
     }
 });
 
-export default NoVenGriddle;
+export default NoCatGriddle;
 
 /*
         externalSetPage={this.setPage}

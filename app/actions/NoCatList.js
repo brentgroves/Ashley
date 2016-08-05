@@ -1,9 +1,9 @@
-export const GET_NO_VEN_PO_LIST = 'GET_NO_VEN_PO_LIST';
+export const GET_NO_VEN_PO_LIST = 'GET_NO_CAT_LIST';
 export const SET_POLIST = 'SET_POLIST';
 
-export function getNoVenPoList() {
+export function getNoCatList() {
   return {
-    type: GET_NO_VEN_PO_LIST
+    type: GET_NO_CAT_LIST
   };
 }
 
@@ -28,11 +28,4 @@ export function incrementIfOdd() {
   };
 }
 
-export function incrementAsync(delay = 1000) {
-  return dispatch => {
-    setTimeout(() => {
-      dispatch(increment());
-    }, delay);
-  };
-}
 */

@@ -4,7 +4,7 @@ import App from './containers/App';
 import HomePage from './containers/HomePage';
 import CounterPage from './containers/CounterPage';
 import TestsqlPage from './containers/TestsqlPage';
-import NoVenPoListPage from './containers/NoVenPoListPage';
+import NoCatListPage from './containers/NoCatListPage';
 
 
 export default (
@@ -12,6 +12,6 @@ export default (
     <IndexRoute component={HomePage} />
     <Route path="/counter" component={CounterPage} />
     <Route path="/testsql" component={TestsqlPage} />
-    <Route path="/noVenPoList" component={NoVenPoListPage} />
+    <Route path="/noCatList" component={NoCatListPage} />
   </Route>
 );

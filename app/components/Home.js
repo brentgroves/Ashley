@@ -13,7 +13,7 @@ export default class Home extends Component {
           <br/>
           <Link to="/testsql">to Testsql</Link>
           <br/>
-          <Link to="/noVenPoList">to No Vendor PO List</Link>
+          <Link to="/noCatList">to No PO Category List</Link>
 
         </div>
       </div>
