@@ -15,6 +15,7 @@ const POCategories = React.createClass({
 		};
 	},
 	onChange (value) {
+		this.props.rowData.UDF_POCATEGORY = value.UDF_POCATEGORY;
 		this.setState({
 			value: value,
 		});

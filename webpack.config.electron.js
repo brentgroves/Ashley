@@ -41,6 +41,8 @@ export default {
   externals: [
     ...baseConfig.externals,
     'font-awesome',
+    'semantic-ui-grid',
+    'semantic-ui-container',
     'source-map-support'
   ]
 };

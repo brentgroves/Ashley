@@ -4,6 +4,7 @@ import POUpdateAPI from '../api/POUpdate';
 import { Link } from 'react-router';
 import Select from 'react-select';
 import POCategories from './POCategories';
+import Button from 'react-button';
 
 var HeaderComponent = React.createClass({
   textOnClick: function(e) {
@@ -83,6 +84,11 @@ var LinkComponent = React.createClass({
 
 });
 
+function clicked(event){
+    console.log('handleClick');
+
+};
+
 var NoCatGriddle = React.createClass({
     getInitialState: function(){
       var initial = { "results": [],
@@ -122,6 +128,10 @@ var NoCatGriddle = React.createClass({
     },
     setPageSize: function(size){
     },
+  handleClick: function(event) {
+    console.log('handleClick');
+  },
+
     render: function(){
       var columnMeta = [
       {
@@ -148,29 +158,40 @@ var NoCatGriddle = React.createClass({
       }];
 //        "columnName": "UDF_POCATEGORY",
 
+      var divStyle = {
+          margin: 'auto',
+          width: '10%',
+      //    border: '3px solid #73AD21',
+          padding: '10px'
+      };
 
-      //columns={["name", "city", "state", "country"]}
-      return <Griddle useExternal={true} externalSetPage={this.setPage} enableSort={false} 
+      var boundClick = this.handleClick;
+      return (
+
+        <div>
+        <Griddle useExternal={true} externalSetPage={this.setPage} enableSort={false} 
         columnMetadata={columnMeta}
         columns={["PONumber","Item","UDF_POCATEGORY"]}
  //       columns={["name", "model", "manufacturer", "passengers"]}
         externalSetPageSize={this.setPageSize} externalMaxPage={this.state.maxPages}
         externalChangeSort={function(){}} externalSetFilter={function(){}}
         externalCurrentPage={this.state.currentPage} results={this.state.results} tableClassName="table" resultsPerPage={this.state.externalResultsPerPage}
-        externalSortColumn={this.state.externalSortColumn} externalSortAscending={this.state.externalSortAscending} />
-    }
-});
-
-export default NoCatGriddle;
-
-/*
-        externalSetPage={this.setPage}
-        externalChangeSort={this.changeSort} externalSetFilter={this.setFilter}
-        externalSetPageSize={this.setPageSize} externalMaxPage={this.state.maxPages}
-        externalCurrentPage={this.state.currentPage} results={this.state.results} 
-        tableClassName="table" resultsPerPage={this.state.externalResultsPerPage}
-        getExternalData= {this.getExternalData}
-        recordCnt={this.recordCnt}
         externalSortColumn={this.state.externalSortColumn} 
         externalSortAscending={this.state.externalSortAscending} 
+        />
+        <br/>
+        <div style={divStyle}>
+        <Button className="ui button" onClick={boundClick}>Save Updates</Button>
+        </div>
+        </div>
+        );
+
+    }
+});
+/*
+        <div style={divStyle}>
+<Button onClick={clicked} className="ui button" >Save Updates</Button>
+        </div>
 */
+export default NoCatGriddle;
+
