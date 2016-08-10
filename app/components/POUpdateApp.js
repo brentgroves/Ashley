@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import styles from './NoCatList.css';
+import styles from './POUpdateApp.css';
 import { Link } from 'react-router';
 import NoCatGriddle from './NoCatGriddle';
 import POCategories from './POCategories';
@@ -9,7 +9,7 @@ import Button from 'react-button';
 
 function clicked(event){};
 
-var MyFirstGrid = React.createClass({
+var POUpdateApp = React.createClass({
 
   render: function() {
     // layout is an array of objects, see the demo for more complete usage
@@ -37,4 +37,4 @@ var MyFirstGrid = React.createClass({
   }
 });
 
-export default MyFirstGrid;
+export default POUpdateApp;

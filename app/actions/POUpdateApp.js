@@ -1,5 +1,5 @@
-export const GET_NO_VEN_PO_LIST = 'GET_NO_CAT_LIST';
-export const SET_POLIST = 'SET_POLIST';
+export const GET_NO_CAT_LIST = 'GET_NO_CAT_LIST';
+export const SET_NO_CAT_LIST = 'SET_NO_CAT_LIST';
 
 export function getNoCatList() {
   return {
@@ -7,10 +7,10 @@ export function getNoCatList() {
   };
 }
 
-export function setPOList(poList) {
+export function setNoCatList(noCatList) {
   return {
-    type: SET_POLIST,
-    po:poList
+    type: SET_NO_CAT_LIST,
+    noCatList:noCatList
   };
 }
 

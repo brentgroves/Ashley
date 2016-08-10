@@ -38,51 +38,6 @@ function logChange(val) {
     console.log("Selected: " + val);
 }
 
-var LinkComponent = React.createClass({
-  render: function(){
-    return (
-      <div>
-        <NumericSelect label="Numeric Values" />
-      </div>
-    );
-  }
-
-//       <input type='text' onChange={this.filterText} onClick={this.textOnClick} />
- 
-/*
-        <Select
-            name="form-field-name"
-            value="one"
-            options={options}
-            onChange={logChange}
-        />      
-
-      <select ref="userInput" defaultValue="" required>
-      <option value="" disabled>User</option>
-        {
-          users.map(function(user) {
-            return <option key={user.id}
-              value={user.name}>{user.name}</option>;
-          })
-        }
-     
-      </select>
-
-        <div>
-        <option value="A">Apple</option>
-        <option value="B">Banana</option>
-        <option value="C">Cranberry</option>
-
-<Link style={{color: 'red'}} to="/counter">to Counter</Link> 
-        </div>
-
-  render: function(){
- //   url ="speakers/" + this.props.rowData.PONumber;
-    return  <Link to="/counter">to Counter</Link> 
-  }
- */
-
-});
 
 function clicked(event){
     console.log('handleClick');
@@ -172,7 +127,6 @@ var NoCatGriddle = React.createClass({
         <Griddle useExternal={true} externalSetPage={this.setPage} enableSort={false} 
         columnMetadata={columnMeta}
         columns={["PONumber","Item","UDF_POCATEGORY"]}
- //       columns={["name", "model", "manufacturer", "passengers"]}
         externalSetPageSize={this.setPageSize} externalMaxPage={this.state.maxPages}
         externalChangeSort={function(){}} externalSetFilter={function(){}}
         externalCurrentPage={this.state.currentPage} results={this.state.results} tableClassName="table" resultsPerPage={this.state.externalResultsPerPage}
@@ -188,10 +142,6 @@ var NoCatGriddle = React.createClass({
 
     }
 });
-/*
-        <div style={divStyle}>
-<Button onClick={clicked} className="ui button" >Save Updates</Button>
-        </div>
-*/
+
 export default NoCatGriddle;
 
