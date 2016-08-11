@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import Select from 'react-select';
 //import POCategories from './POCategories';
 import Button from 'react-button';
-import POCategories from './POCategories';
+import POCategoriesPage from '../containers/POCategoriesPage';
 //import GithubUsers from './GithubUsers';
 
 var HeaderComponent = React.createClass({
@@ -114,9 +114,9 @@ var NoCatGriddle = React.createClass({
         "order": 3,
         "locked": false,
         "visible": true,
-        "displayName": "PO Category"
-  //      "customComponent": POCategories,
-  //      "customComponentProps": { color: 'red' }
+        "displayName": "PO Category",
+        "customComponent": POCategoriesPage,
+        "customComponentProps": { color: 'red' }
       }];
 //        "columnName": "UDF_POCATEGORY",
 
@@ -128,47 +128,21 @@ var NoCatGriddle = React.createClass({
       };
 
       var boundClick = this.handleClick;
-var fakeData =  [
-  {
-    "id": 0,
-    "name": "Mayer Leonard",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 2,
-    "name": "Mayer Leonard2",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  },
-  {
-    "id": 3,
-    "name": "Mayer Leonard3",
-    "city": "Kapowsin",
-    "state": "Hawaii",
-    "country": "United Kingdom",
-    "company": "Ovolo",
-    "favoriteNumber": 7
-  }
-];      
       return (
 
         <div>
-<Griddle results={this.props.noCatList} tableClassName="table" showFilter={true}
- showSettings={true} 
-/>
+          <Griddle results={this.props.noCatList} 
+            tableClassName="table" showFilter={true}
+            columnMetadata={columnMeta}
+            columns={["PONumber","Item","UDF_POCATEGORY"]}
+            showSettings={true} 
+          />
 
-        <br/>
-        <div style={divStyle}>
-        <Button className="ui button" onClick={boundClick}>Save Updates</Button>
-        </div>
-        </div>
+          <br/>
+          <div style={divStyle}>
+          <Button className="ui button" onClick={boundClick}>Save Updates</Button>
+          </div>
+          </div>
         );
 
     }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
 import Select from 'react-select';
 import fetch from 'isomorphic-fetch';
 import POUpdateAPI from '../api/POUpdate';
@@ -7,9 +7,10 @@ import POUpdateAPI from '../api/POUpdate';
 const POCategories = React.createClass({
 
 	displayName: 'POCategories',
-	propTypes: {
-		label: React.PropTypes.string,
-	},
+    propTypes: {
+        poCategories: PropTypes.array.isRequired,
+   		label: React.PropTypes.string
+    },
 
 	getInitialState () {
 		return {
@@ -36,7 +37,7 @@ const POCategories = React.createClass({
 	},
 	getUsers (input,callBack) {
       var that = this;
-	  POUpdateAPI.getPOCategories.call(that,callBack);
+//	  POUpdateAPI.getPOCategories.call(that,callBack);
 	},
 	gotoUser (value, event) {
 		window.open(value.html_url);
@@ -51,13 +52,20 @@ const POCategories = React.createClass({
 		);
 	}
 
+				<h3 className="section-heading">{this.props.label}</h3>
 
 	*/
 	render () {
 		return (
 			<div className="section">
-				<h3 className="section-heading">{this.props.label}</h3>
-				<Select multi={this.state.multi} value={this.state.value} onChange={this.onChange} onValueClick={this.gotoUser} valueKey="UDF_POCATEGORY" labelKey="descr" loadOptions={this.getUsers} minimumInput={1} backspaceRemoves={false} />
+				<Select 
+				multi={this.state.multi} 
+				value={this.state.value} 
+				options={this.props.poCategories}
+				onChange={this.onChange} 
+				onValueClick={this.gotoUser} 
+				valueKey="UDF_POCATEGORY" 
+				labelKey="descr" options={this.props.poCategories} minimumInput={1} backspaceRemoves={false} />
 			</div>
 		);
 	}
