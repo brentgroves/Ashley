@@ -13,3 +13,7 @@ export default (
     <Route path="/POUpdateApp" component={POUpdateAppPage} />
   </Route>
 );
+/*
+    <Route path="/POUpdateApp" component={POUpdateAppPage} />
+
+*/

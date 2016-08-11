@@ -5,8 +5,9 @@ import * as POUpdateAppActions from '../actions/POUpdateApp';
 
 function mapStateToProps(state) {
   return {
-    noCatList: state.noCatList
-  };
+    	noCatList: state.NoCatList,
+    	poCategories: state.POCategories
+	};
 }
 
 function mapDispatchToProps(dispatch) {

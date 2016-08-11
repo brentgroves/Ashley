@@ -1,6 +1,7 @@
 
 var sql = require('mssql');
 const {dialog} = require('electron').remote;
+import {SET_PO_CATEGORIES,SET_NO_CAT_LIST} from '../actions/POUpdateApp';
 
 var m2m = {
   user: 'sa',
@@ -39,32 +40,22 @@ var prod=false;
 var errors=false;
 
 let POUpdateAPI = {
-  noPOCatList(noCatList){
+  noPOCatList(dispatch){
+    var disp = dispatch;
     var cribConnection = new sql.Connection(crib,function(err){
       // error checks
-      needPOCat(cribConnection,noCatList);
+      needPOCat(cribConnection,disp);
     });
     cribConnection.on('error', function(err) {
       console.log(`Connection1 err:  ${err}` );
       // ... error handler
     });
   },
-  noPOCategory(callBack){
-    var that = this;
+  fetchPOCategories(dispatch){
+    var disp = dispatch;
     var cribConnection = new sql.Connection(crib,function(err){
       // error checks
-      poCatChk.call(that,cribConnection,callBack);
-    });
-    cribConnection.on('error', function(err) {
-      console.log(`Connection1 err:  ${err}` );
-      // ... error handler
-    });
-  },
-  getPOCategories(callBack){
-    var that = this;
-    var cribConnection = new sql.Connection(crib,function(err){
-      // error checks
-      POCategories.call(that,cribConnection,callBack);
+      POCategories(cribConnection,disp);
     });
     cribConnection.on('error', function(err) {
       console.log(`Connection1 err:  ${err}` );
@@ -73,7 +64,8 @@ let POUpdateAPI = {
   }
 }
 
-function  needPOCat(cribConnection,noCatList) {
+function  needPOCat(cribConnection,disp) {
+    var dispatch = disp;
     let qryCrib;
     if (prod===true) {
       qryCrib = `
@@ -112,21 +104,15 @@ function  needPOCat(cribConnection,noCatList) {
           }
         });
         console.log("Failed PO category check.");
-        noCatList = cribRs;
+        dispatch({ type: SET_NO_CAT_LIST, noCatList:cribRs });
       }else {
   //      poVendorChk(cribConnection);
       }
     });
   }
 
-function  POCategories(cribConnection,callBack) {
-  var myOptions = { options: [
-      { id: 1, login:'user1'},
-      { id: 2, login:'user2'},
-      { id: 3, login:'user3'}
-  ] };
-  
-    var that = this;
+function  POCategories(cribConnection,disp) {
+  var dispatch = disp;
     let qryCrib = `
       select UDF_POCATEGORY,UDF_POCATEGORYDescription descr from UDT_POCATEGORY
     `;
@@ -135,11 +121,8 @@ function  POCategories(cribConnection,callBack) {
 
     cribReq.query(qryCrib, function(err,cribRs) {
       // error checks
-      let myOptions = {
-        options:cribRs
-      }
       if(cribRs.length!==0){
-        callBack(null, myOptions);
+        dispatch({ type:SET_PO_CATEGORIES, poCategories:cribRs });
       }else {
       }
     });

@@ -47,14 +47,17 @@ function clicked(event){
 };
 
 var NoCatGriddle = React.createClass({
+    propTypes: {
+        getNoCatList: PropTypes.func.isRequired,
+        setNoCatList: PropTypes.func.isRequired,
+        fetchNoCatList: PropTypes.func.isRequired,
+        noCatList: PropTypes.array.isRequired
+    },
+
     getInitialState: function(){
-      var initial = { "results": [],
+      var initial = { "results": this.props.noCatList,
           "currentPage": 0,
-          "maxPages": 0,
-          "externalResultsPerPage": 5,
-          "externalSortColumn":null,
-          "externalSortAscending":true,
-          "results": []
+          "maxPages": 0
       };
 
       return initial;
@@ -62,7 +65,8 @@ var NoCatGriddle = React.createClass({
     componentWillMount: function(){
     },
     componentDidMount: function(){
-      this.getExternalData();
+      var that=this;
+//      this.getExternalData();
     },
     getExternalData: function(page){
       var that = this;
@@ -81,11 +85,12 @@ var NoCatGriddle = React.createClass({
     setPage: function(index){
       //This should interact with the data source to get the page at the given index
       index = index > this.state.maxPages ? this.state.maxPages : index < 1 ? 1 : index + 1;
-      this.getExternalData(index);
+ //     this.getExternalData(index);
     },
     setPageSize: function(size){
     },
   handleClick: function(event) {
+    this.props.getNoCatList();
     console.log('handleClick');
   },
 
@@ -123,18 +128,42 @@ var NoCatGriddle = React.createClass({
       };
 
       var boundClick = this.handleClick;
+var fakeData =  [
+  {
+    "id": 0,
+    "name": "Mayer Leonard",
+    "city": "Kapowsin",
+    "state": "Hawaii",
+    "country": "United Kingdom",
+    "company": "Ovolo",
+    "favoriteNumber": 7
+  },
+  {
+    "id": 2,
+    "name": "Mayer Leonard2",
+    "city": "Kapowsin",
+    "state": "Hawaii",
+    "country": "United Kingdom",
+    "company": "Ovolo",
+    "favoriteNumber": 7
+  },
+  {
+    "id": 3,
+    "name": "Mayer Leonard3",
+    "city": "Kapowsin",
+    "state": "Hawaii",
+    "country": "United Kingdom",
+    "company": "Ovolo",
+    "favoriteNumber": 7
+  }
+];      
       return (
 
         <div>
-        <Griddle useExternal={true} externalSetPage={this.setPage} enableSort={false} 
-        columnMetadata={columnMeta}
-        columns={["PONumber","Item","UDF_POCATEGORY"]}
-        externalSetPageSize={this.setPageSize} externalMaxPage={this.state.maxPages}
-        externalChangeSort={function(){}} externalSetFilter={function(){}}
-        externalCurrentPage={this.state.currentPage} results={this.state.results} tableClassName="table" resultsPerPage={this.state.externalResultsPerPage}
-        externalSortColumn={this.state.externalSortColumn} 
-        externalSortAscending={this.state.externalSortAscending} 
-        />
+<Griddle results={this.props.noCatList} tableClassName="table" showFilter={true}
+ showSettings={true} 
+/>
+
         <br/>
         <div style={divStyle}>
         <Button className="ui button" onClick={boundClick}>Save Updates</Button>
@@ -145,5 +174,17 @@ var NoCatGriddle = React.createClass({
     }
 });
 
+/*
+        <Griddle useExternal={true} externalSetPage={this.setPage} enableSort={false} 
+        columnMetadata={columnMeta}
+        columns={["PONumber","Item","UDF_POCATEGORY"]}
+        externalSetPageSize={this.setPageSize} externalMaxPage={this.state.maxPages}
+        externalChangeSort={function(){}} externalSetFilter={function(){}}
+        externalCurrentPage={this.state.currentPage} results={this.state.results} tableClassName="table" resultsPerPage={this.state.externalResultsPerPage}
+        externalSortColumn={this.state.externalSortColumn} 
+        externalSortAscending={this.state.externalSortAscending} 
+        />
+ 
+*/
 export default NoCatGriddle;
 

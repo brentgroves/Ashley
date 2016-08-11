@@ -1,21 +1,45 @@
-export const GET_NO_CAT_LIST = 'GET_NO_CAT_LIST';
+export const FETCH_PO_CATEGORIES = 'FETCH_PO_CATEGORIES';
+export const SET_PO_CATEGORIES = 'SET_PO_CATEGORIES';
+export const FETCH_NO_CAT_LIST = 'FETCH_NO_CAT_LIST';
 export const SET_NO_CAT_LIST = 'SET_NO_CAT_LIST';
+import POUpdateAPI from '../api/POUpdate';
 
-export function getNoCatList() {
-  return {
-    type: GET_NO_CAT_LIST
+export function fetchNoCatList() {
+ return (dispatch,getState) => {
+    POUpdateAPI.noPOCatList(dispatch);
   };
 }
 
 export function setNoCatList(noCatList) {
   return {
     type: SET_NO_CAT_LIST,
-    noCatList:noCatList
+    noCatList: noCatList
   };
 }
 
+export function fetchPOCategories() {
+ return (dispatch,getState) => {
+    POUpdateAPI.fetchPOCategories(dispatch);
+  };
+}
+
+export function setPOCategories(POCategories) {
+  return {
+    type: SET_PO_CATEGORIES,
+    POCategories: POCategories
+  };
+}
 
 /*
+ fetchAirports(origin, destination) {
+ return (dispatch) => {
+ dispatch({ type: REQUEST_AIRPORTS });
+ AirCheapAPI.fetchAirports().then(
+ (airports) => dispatch({ type: RECEIVE_AIRPORTS, success:true, airports }),
+ (error) => dispatch({ type: RECEIVE_AIRPORTS, success:false })
+ );
+ };
+
 export function incrementIfOdd() {
   return (dispatch, getState) => {
     const { vendor } = getState();

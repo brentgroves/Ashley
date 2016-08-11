@@ -57,11 +57,7 @@ const POCategories = React.createClass({
 		return (
 			<div className="section">
 				<h3 className="section-heading">{this.props.label}</h3>
-
-<Select.Async
-	asyncOptions={getOptions}
-    name="form-field-name"
-/>
+				<Select multi={this.state.multi} value={this.state.value} onChange={this.onChange} onValueClick={this.gotoUser} valueKey="UDF_POCATEGORY" labelKey="descr" loadOptions={this.getUsers} minimumInput={1} backspaceRemoves={false} />
 			</div>
 		);
 	}

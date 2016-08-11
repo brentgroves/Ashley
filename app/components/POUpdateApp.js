@@ -1,19 +1,26 @@
 import React, { Component, PropTypes } from 'react';
 import styles from './POUpdateApp.css';
 import { Link } from 'react-router';
-import NoCatGriddle from './NoCatGriddle';
+import NoCatGriddlePage from '../containers/NoCatGriddlePage';
 //import POCategories from './POCategories';
 import ReactGridLayout from  'react-grid-layout';
 import Button from 'react-button';
 
 class POUpdateApp extends Component {
   static propTypes = {
-    getNoCatList: PropTypes.func.isRequired,
-    POUpdateApp: PropTypes.array.isRequired
+    fetchNoCatList: PropTypes.func.isRequired,
+    fetchPOCategories: PropTypes.func.isRequired
   };
 
+  componentDidMount() {
+
+    console.log('Component DID MOUNT!');
+    this.props.fetchNoCatList();
+    this.props.fetchPOCategories();
+  }
+
   render() {
-    const { getNoCatList, POUpdateApp } = this.props;
+    const { getNoCatList, noCatList } = this.props;
     // layout is an array of objects, see the demo for more complete usage
     var layout = [
       {i: 'a', x: 0, y: 0, w: 1, h: 2, static: true},
@@ -32,8 +39,8 @@ class POUpdateApp extends Component {
             </div>
           </div>
         <div key={'b'}>
-        GridStub
-         </div>
+          <NoCatGriddlePage />
+        </div>
       </ReactGridLayout>
     )
   }
