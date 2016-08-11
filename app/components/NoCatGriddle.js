@@ -3,8 +3,10 @@ import Griddle from 'griddle-react';
 import POUpdateAPI from '../api/POUpdate';
 import { Link } from 'react-router';
 import Select from 'react-select';
-import POCategories from './POCategories';
+//import POCategories from './POCategories';
 import Button from 'react-button';
+import POCategories from './POCategories';
+//import GithubUsers from './GithubUsers';
 
 var HeaderComponent = React.createClass({
   textOnClick: function(e) {
@@ -107,9 +109,9 @@ var NoCatGriddle = React.createClass({
         "order": 3,
         "locked": false,
         "visible": true,
-        "displayName": "PO Category",
-        "customComponent": POCategories,
-        "customComponentProps": { color: 'red' }
+        "displayName": "PO Category"
+  //      "customComponent": POCategories,
+  //      "customComponentProps": { color: 'red' }
       }];
 //        "columnName": "UDF_POCATEGORY",
 

@@ -39,6 +39,16 @@ var prod=false;
 var errors=false;
 
 let POUpdateAPI = {
+  noPOCatList(noCatList){
+    var cribConnection = new sql.Connection(crib,function(err){
+      // error checks
+      needPOCat(cribConnection,noCatList);
+    });
+    cribConnection.on('error', function(err) {
+      console.log(`Connection1 err:  ${err}` );
+      // ... error handler
+    });
+  },
   noPOCategory(callBack){
     var that = this;
     var cribConnection = new sql.Connection(crib,function(err){
@@ -62,6 +72,52 @@ let POUpdateAPI = {
     });
   }
 }
+
+function  needPOCat(cribConnection,noCatList) {
+    let qryCrib;
+    if (prod===true) {
+      qryCrib = `
+        SELECT PONumber,Item,UDF_POCATEGORY
+        FROM PODETAIL
+        WHERE PONUMBER in
+        (
+          SELECT ponumber FROM [PO]  WHERE [PO].POSTATUSNO = 3 and [PO].SITEID <> '90'
+        )
+        and UDF_POCATEGORY is null
+      `;
+    }else{
+      qryCrib = `
+        SELECT PONumber,Item,UDF_POCATEGORY
+        FROM btPODETAIL
+        WHERE PONUMBER in
+        (
+          SELECT ponumber FROM [btPO]  WHERE [btPO].POSTATUSNO = 3 and [btPO].SITEID <> '90'
+        )
+        and UDF_POCATEGORY is null
+      `;
+    }
+
+    let cribReq = new sql.Request(cribConnection);
+
+    cribReq.query(qryCrib, function(err,cribRs) {
+      // error checks
+      if(cribRs.length!==0){
+        let cribRsErr ="";
+        cribRs.forEach(function(podetail,i,arr){
+          console.log(podetail.Item);
+          if(arr.length===i+1){
+            cribRsErr+=`PO# ${podetail.PONumber}, Item: ${podetail.Item}`;
+          }else{
+            cribRsErr+= `PO# ${podetail.PONumber}, Item: ${podetail.Item}\n`;
+          }
+        });
+        console.log("Failed PO category check.");
+        noCatList = cribRs;
+      }else {
+  //      poVendorChk(cribConnection);
+      }
+    });
+  }
 
 function  POCategories(cribConnection,callBack) {
   var myOptions = { options: [

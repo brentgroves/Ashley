@@ -5,10 +5,12 @@ import POUpdateAPI from '../api/POUpdate';
 
 
 const POCategories = React.createClass({
+
 	displayName: 'POCategories',
 	propTypes: {
 		label: React.PropTypes.string,
 	},
+
 	getInitialState () {
 		return {
 			multi: false
@@ -39,11 +41,27 @@ const POCategories = React.createClass({
 	gotoUser (value, event) {
 		window.open(value.html_url);
 	},
+	/*
 	render () {
 		return (
 			<div className="section">
 				<h3 className="section-heading">{this.props.label}</h3>
 				<Select.Async multi={this.state.multi} value={this.state.value} onChange={this.onChange} onValueClick={this.gotoUser} valueKey="UDF_POCATEGORY" labelKey="descr" loadOptions={this.getUsers} minimumInput={1} backspaceRemoves={false} />
+			</div>
+		);
+	}
+
+
+	*/
+	render () {
+		return (
+			<div className="section">
+				<h3 className="section-heading">{this.props.label}</h3>
+
+<Select.Async
+	asyncOptions={getOptions}
+    name="form-field-name"
+/>
 			</div>
 		);
 	}
