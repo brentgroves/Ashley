@@ -109,6 +109,7 @@
     "mssql": "^3.3.0",
     "postcss": "^5.0.21",
     "react": "^15.1.0",
+    "react-bootstrap": "^0.30.2",
     "react-button": "^1.2.1",
     "react-dom": "^15.1.0",
     "react-grid-layout": "^0.13.0",

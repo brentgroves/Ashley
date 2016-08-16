@@ -69,7 +69,7 @@ function  needPOCat(cribConnection,disp) {
     let qryCrib;
     if (prod===true) {
       qryCrib = `
-        SELECT PONumber,Item,UDF_POCATEGORY
+        SELECT PONumber,Item,UDF_POCATEGORY, 0 as dirty
         FROM PODETAIL
         WHERE PONUMBER in
         (
@@ -79,7 +79,7 @@ function  needPOCat(cribConnection,disp) {
       `;
     }else{
       qryCrib = `
-        SELECT PONumber,Item,UDF_POCATEGORY
+        SELECT PONumber,Item,UDF_POCATEGORY, 0 as dirty
         FROM btPODETAIL
         WHERE PONUMBER in
         (

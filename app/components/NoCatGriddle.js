@@ -117,13 +117,19 @@ var NoCatGriddle = React.createClass({
         "displayName": "PO Category",
         "customComponent": POCategoriesPage,
         "customComponentProps": { color: 'red' }
+      },
+      {
+        "columnName": "dirty",
+        "order": 4,
+        "locked": false,
+        "visible": true,
+        "displayName": "dirty"
       }];
 //        "columnName": "UDF_POCATEGORY",
 
       var divStyle = {
           margin: 'auto',
           width: '10%',
-      //    border: '3px solid #73AD21',
           padding: '10px'
       };
 
@@ -134,7 +140,7 @@ var NoCatGriddle = React.createClass({
           <Griddle results={this.props.noCatList} 
             tableClassName="table" showFilter={true}
             columnMetadata={columnMeta}
-            columns={["PONumber","Item","UDF_POCATEGORY"]}
+            columns={["PONumber","Item","UDF_POCATEGORY","dirty"]}
             showSettings={true} 
           />
 
