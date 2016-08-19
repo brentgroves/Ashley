@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
+import {LinkContainer} from 'react-router-bootstrap';
 //import styles from './Home.css';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem} from 'react-bootstrap';
@@ -8,6 +9,7 @@ export default class Home extends Component {
   render() {
 
     return (
+      <div>
   <Navbar inverse>
     <NavbarHeader>
       <NavbarBrand>
@@ -17,11 +19,15 @@ export default class Home extends Component {
     </NavbarHeader>
     <NavbarCollapse>
       <Nav>
-        <NavItem eventKey={1} href="#">Link</NavItem>
+        <LinkContainer to="/POUpdateApp">
+          <NavItem eventKey={1}>PO Update</NavItem>
+        </LinkContainer>      
         <NavItem eventKey={2} href="#">Link</NavItem>
         <NavDropdown eventKey={3} title="Dropdown" id="basic-nav-dropdown">
           <MenuItem eventKey={3.1}>Action</MenuItem>
-          <MenuItem eventKey={3.2}>Another action</MenuItem>
+          <LinkContainer to="/POUpdateApp">
+            <MenuItem eventKey={3.2}>PO Update</MenuItem>
+          </LinkContainer>      
           <MenuItem eventKey={3.3}>Something else here</MenuItem>
           <MenuItem divider />
           <MenuItem eventKey={3.3}>Separated link</MenuItem>
@@ -33,6 +39,9 @@ export default class Home extends Component {
       </Nav>
     </NavbarCollapse>
   </Navbar>
+            <Link to="/POUpdateApp">PO Update</Link>
+            </div>
+
     );
   }
 }
