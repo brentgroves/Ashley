@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 //import styles from './Home.css';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
-import { Navbar, Nav, NavItem, NavDropdown, MenuItem} from 'react-bootstrap';
+import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse } from 'react-bootstrap/lib/Navbar'
 export default class Home extends Component {
   render() {
@@ -39,6 +39,13 @@ export default class Home extends Component {
       </Nav>
     </NavbarCollapse>
   </Navbar>
+
+  <Jumbotron >
+    <h1>Hello, world!</h1>
+    <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+    <p><Button bsStyle="primary">Learn more</Button></p>
+  </Jumbotron>
+
             <Link to="/POUpdateApp">PO Update</Link>
             </div>
 
