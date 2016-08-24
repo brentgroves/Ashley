@@ -65,6 +65,7 @@
     "babel-preset-react-optimize": "^1.0.1",
     "babel-preset-stage-0": "^6.5.0",
     "babel-register": "^6.9.0",
+    "bootstrap": "^3.3.7",
     "chai": "^3.5.0",
     "chromedriver": "^2.21.2",
     "co-mocha": "^1.1.2",
@@ -95,7 +96,6 @@
     "redux-logger": "^2.6.1",
     "selenium-webdriver": "^2.53.2",
     "sinon": "^1.17.4",
-    "style-loader": "^0.13.1",
     "webpack": "^1.13.1",
     "webpack-dev-middleware": "^1.6.1",
     "webpack-hot-middleware": "^2.10.0"

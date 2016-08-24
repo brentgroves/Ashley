@@ -5,15 +5,23 @@ import {LinkContainer} from 'react-router-bootstrap';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse } from 'react-bootstrap/lib/Navbar'
+/*
+.jumbotron {
+    background-color:black !important; 
+}
+
+
+*/
 export default class Home extends Component {
   render() {
-
+  const jbk ={backgroundColor: 'black'};
+//  const jbk ={backgroundColor: '#F16E10'};
     return (
       <div>
   <Navbar inverse>
     <NavbarHeader>
       <NavbarBrand>
-        <a href="#">React-Bootstrap</a>
+        <a href="#">IT Groves</a>
       </NavbarBrand>
       <NavbarToggle />
     </NavbarHeader>
@@ -40,7 +48,7 @@ export default class Home extends Component {
     </NavbarCollapse>
   </Navbar>
 
-  <Jumbotron >
+  <Jumbotron style={jbk} >
     <h1>Hello, world!</h1>
     <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
     <p><Button bsStyle="primary">Learn more</Button></p>
