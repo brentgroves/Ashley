@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 //import styles from './Home.css';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
-import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
+import { FormGroup,ControlLabel, FormControl, Col, Checkbox, ListGroup, ListGroupItem, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse } from 'react-bootstrap/lib/Navbar'
 /*
 .jumbotron {
@@ -12,7 +12,7 @@ import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Co
 
 
 */
-export default class Home extends Component {
+export default class POReqTrans extends Component {
   render() {
   const jbk ={backgroundColor: 'black'};
 //  const jbk ={backgroundColor: '#F16E10'};
@@ -30,9 +30,7 @@ export default class Home extends Component {
         <LinkContainer to="/POUpdateApp">
           <NavItem eventKey={1}>PO Update</NavItem>
         </LinkContainer>      
-        <LinkContainer to="/POReqTrans">
-          <NavItem eventKey={2}>PO Request Transfer</NavItem>
-        </LinkContainer>      
+        <NavItem eventKey={2} href="#">Link</NavItem>
         <NavDropdown eventKey={3} title="Dropdown" id="basic-nav-dropdown">
           <MenuItem eventKey={3.1}>Action</MenuItem>
           <LinkContainer to="/POUpdateApp">
@@ -51,23 +49,67 @@ export default class Home extends Component {
   </Navbar>
 
   <Jumbotron style={jbk} >
-    <h1>Hello, world!</h1>
+    <h1>PO Request Transfer</h1>
     <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
     <p><Button bsStyle="primary">Learn more</Button></p>
   </Jumbotron>
 
-            <Link to="/POUpdateApp">PO Update</Link>
+  <ListGroup>
+    <ListGroupItem style={jbk}>Item 1</ListGroupItem>
+    <ListGroupItem style={jbk}>Item 2</ListGroupItem>
+    <ListGroupItem style={jbk}>Item 3 
+      {/* Indicates a successful or positive action */}
+    <FormGroup controlId="formValidationSuccess2" validationState="success">
+      <ControlLabel>Input with success and feedback icon</ControlLabel>
+      <FormControl.Feedback />
+    </FormGroup>
+
+      <Button bsStyle="success">Success</Button>
+
+    </ListGroupItem>
+    <CustomComponent>Item 3     
+      {/* Indicates a successful or positive action */}
+      <Button bsStyle="warning">Success</Button>
+    </CustomComponent>
+    <CustomComponent>Custom Child 2 </CustomComponent>
+    <CustomComponent>Custom Child 3</CustomComponent>
+
+  </ListGroup>
+
+    <FormGroup>
+      <Col smOffset={2} sm={10}>
+        <Checkbox>Remember me</Checkbox>
+      </Col>
+    </FormGroup>
+
             </div>
 
     );
   }
 }
+
+const CustomComponent = React.createClass({
+
+  render() {
+  const jbk ={backgroundColor: 'black'};
+    return (
+      <li
+        className="list-group-item"
+        style={jbk}
+        onClick={() => {}}>
+        {this.props.children}
+      </li>
+    );
+  }
+});
+
+
 /*
       <div>
         <header>
           <div className="header-brand">
             <img src="../logodoc.bmp" height="35" />
-            <p>Busche Production Software</p>
+            <p>PO Request Transfer</p>
           </div>
         </header>
         <div className={styles.container}>
