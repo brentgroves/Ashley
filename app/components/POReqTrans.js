@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 //import styles from './Home.css';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
-import { FormGroup,ControlLabel, FormControl, Col, Checkbox, ListGroup, ListGroupItem, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
+import { Glyphicon, FormGroup,ControlLabel, FormControl, Col, Checkbox, ListGroup, ListGroupItem, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse } from 'react-bootstrap/lib/Navbar'
 /*
 .jumbotron {
@@ -14,7 +14,8 @@ import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Co
 */
 export default class POReqTrans extends Component {
   render() {
-  const jbk ={backgroundColor: 'black'};
+  const jbk ={backgroundColor: 'black' };
+  const catChk ={backgroundColor: 'black' , color: 'green' };
 //  const jbk ={backgroundColor: '#F16E10'};
     return (
       <div>
@@ -56,15 +57,20 @@ export default class POReqTrans extends Component {
 
   <ListGroup>
     <ListGroupItem style={jbk}>Item 1</ListGroupItem>
-    <ListGroupItem style={jbk}>Item 2</ListGroupItem>
-    <ListGroupItem style={jbk}>Item 3 
-      {/* Indicates a successful or positive action */}
-    <FormGroup controlId="formValidationSuccess2" validationState="success">
+    <ListGroupItem style={jbk}><span>PO Category Check.&nbsp;&nbsp;&nbsp; </span>
+      <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>
+    </ListGroupItem>
+    <ListGroupItem style={catChk}><span>PO Vendor Check.&nbsp;&nbsp;&nbsp; </span>
+      <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>
+
+      {/* Indicates a successful or positive action 
+    <FormGroup controlId="formValidationSuccess2" validationState="success" bsSize="large">
       <ControlLabel>Input with success and feedback icon</ControlLabel>
       <FormControl.Feedback />
     </FormGroup>
+      <Button bsSize="large" bsStyle="success"><Glyphicon glyph="ok" /></Button>
 
-      <Button bsStyle="success">Success</Button>
+*/}
 
     </ListGroupItem>
     <CustomComponent>Item 3     
