@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
+import POReqTransButton from './POReqTransButton';
 //import styles from './Home.css';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
 import { Glyphicon, FormGroup,ControlLabel, FormControl, Col, Checkbox, ListGroup, ListGroupItem, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
@@ -9,10 +11,24 @@ import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Co
 .jumbotron {
     background-color:black !important; 
 }
-
-
 */
+
+
 export default class POReqTrans extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false
+    };
+
+  }
+
+  toggle() {
+    this.setState({loading: !this.state.loading});
+  }
+
+
+
   render() {
   const jbk ={backgroundColor: 'black' };
   const catChk ={backgroundColor: 'black' , color: 'green' };
@@ -55,6 +71,9 @@ export default class POReqTrans extends Component {
     <p><Button bsStyle="primary">Learn more</Button></p>
   </Jumbotron>
 
+      <POReqTransButton />
+
+
   <ListGroup>
     <ListGroupItem style={jbk}>Item 1</ListGroupItem>
     <ListGroupItem style={jbk}><span>PO Category Check.&nbsp;&nbsp;&nbsp; </span>
@@ -62,15 +81,6 @@ export default class POReqTrans extends Component {
     </ListGroupItem>
     <ListGroupItem style={catChk}><span>PO Vendor Check.&nbsp;&nbsp;&nbsp; </span>
       <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>
-
-      {/* Indicates a successful or positive action 
-    <FormGroup controlId="formValidationSuccess2" validationState="success" bsSize="large">
-      <ControlLabel>Input with success and feedback icon</ControlLabel>
-      <FormControl.Feedback />
-    </FormGroup>
-      <Button bsSize="large" bsStyle="success"><Glyphicon glyph="ok" /></Button>
-
-*/}
 
     </ListGroupItem>
     <CustomComponent>Item 3     
