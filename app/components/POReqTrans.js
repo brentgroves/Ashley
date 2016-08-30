@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
@@ -15,6 +15,12 @@ import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Co
 
 
 export default class POReqTrans extends Component {
+
+  static propTypes = {
+    checks: PropTypes.object.isRequired,
+    setCheck1: PropTypes.func.isRequired
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -28,8 +34,26 @@ export default class POReqTrans extends Component {
   }
 
 
+/*
+if (loggedIn) {
+  loginButton = <LogoutButton />;
+} else {
+  loginButton = <LoginButton />;
+}
+*/
 
   render() {
+
+var isSuccess = true;
+
+var check1Button;
+if(this.props.checks.chk1="success"){
+  check1Button= <Button bsStyle="warning"><Glyphicon glyph="ok" /></Button>;
+  check1Button= <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>;
+}else{
+  check1Button= <Button bsStyle="warning"><Glyphicon glyph="ok" /></Button>;
+}
+
   const jbk ={backgroundColor: 'black' };
   const catChk ={backgroundColor: 'black' , color: 'green' };
 //  const jbk ={backgroundColor: '#F16E10'};
@@ -77,7 +101,7 @@ export default class POReqTrans extends Component {
   <ListGroup>
     <ListGroupItem style={jbk}>Item 1</ListGroupItem>
     <ListGroupItem style={jbk}><span>PO Category Check.&nbsp;&nbsp;&nbsp; </span>
-      <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>
+    {check1Button}
     </ListGroupItem>
     <ListGroupItem style={catChk}><span>PO Vendor Check.&nbsp;&nbsp;&nbsp; </span>
       <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>

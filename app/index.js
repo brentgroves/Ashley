@@ -10,7 +10,9 @@ import './app.global.css';
 const initialState = {
 	counter:1,
 	NoCatList:[{}],
-	POCategories:[{}] 
+	POCategories:[{}],
+	checks:{chk1:'success',chk2:'failure',chk3:'unknown'}
+
 //	noVenPoList:[{PONumber:1,Vendor:2,Address1:'1633 S US HWY 33'}]
 }
 const store = configureStore(initialState);

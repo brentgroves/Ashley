@@ -2,6 +2,7 @@ export const FETCH_PO_CATEGORIES = 'FETCH_PO_CATEGORIES';
 export const SET_PO_CATEGORIES = 'SET_PO_CATEGORIES';
 export const FETCH_NO_CAT_LIST = 'FETCH_NO_CAT_LIST';
 export const SET_NO_CAT_LIST = 'SET_NO_CAT_LIST';
+export const SET_CHECK1 = 'SET_CHECK1';
 import POUpdateAPI from '../api/POUpdate';
 
 export function fetchNoCatList() {
@@ -29,6 +30,14 @@ export function setPOCategories(POCategories) {
     POCategories: POCategories
   };
 }
+
+export function setCheck1(setMe) {
+  return {
+    type: SET_CHECK1,
+    checks: {chk1:'success',chk2:'failure',chk3:'unknown'}
+  };
+}
+
 
 /*
  fetchAirports(origin, destination) {
