@@ -5,7 +5,7 @@ import {LinkContainer} from 'react-router-bootstrap';
 import POReqTransButton from './POReqTransButton';
 //import styles from './Home.css';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
-import { Glyphicon, FormGroup,ControlLabel, FormControl, Col, Checkbox, ListGroup, ListGroupItem, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
+import { Grid, Row, Glyphicon, FormGroup,ControlLabel, FormControl, Col, Checkbox, ListGroup, ListGroupItem, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse } from 'react-bootstrap/lib/Navbar'
 /*
 .jumbotron {
@@ -44,19 +44,46 @@ if (loggedIn) {
 
   render() {
 
-var isSuccess = true;
+  var isSuccess = true;
+  const  chk ={backgroundColor: 'black' , color: 'green' };
 
-var check1Button;
-if(this.props.checks.chk1="success"){
-  check1Button= <Button bsStyle="warning"><Glyphicon glyph="ok" /></Button>;
-  check1Button= <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>;
-}else{
-  check1Button= <Button bsStyle="warning"><Glyphicon glyph="ok" /></Button>;
-}
+  var check1Button;
+  switch (this.props.checks.chk1) {
+      case "success":
+          check1Button= <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>;
+          break; 
+      case "failure":
+          check1Button= <Button bsStyle="danger"><Glyphicon glyph="remove" /></Button>;
+          break; 
+      default: 
+           check1Button= <Button bsStyle="info"><Glyphicon glyph="time" /></Button>;
+  }
+
+  var check2Button;
+  switch (this.props.checks.chk2) {
+      case "success":
+          check2Button= <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>;
+          break; 
+      case "failure":
+          check2Button= <Button bsStyle="danger"><Glyphicon glyph="remove" /></Button>;
+          break; 
+      default: 
+           check2Button= <Button bsStyle="info"><Glyphicon glyph="time" /></Button>;
+  }
+
+  var check3Button;
+  switch (this.props.checks.chk3) {
+      case "success":
+          check3Button= <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>;
+          break; 
+      case "failure":
+          check3Button= <Button bsStyle="danger"><Glyphicon glyph="remove" /></Button>;
+          break; 
+      default: 
+           check3Button= <Button bsStyle="info"><Glyphicon glyph="time" /></Button>;
+  }
 
   const jbk ={backgroundColor: 'black' };
-  const catChk ={backgroundColor: 'black' , color: 'green' };
-//  const jbk ={backgroundColor: '#F16E10'};
     return (
       <div>
   <Navbar inverse>
@@ -93,36 +120,60 @@ if(this.props.checks.chk1="success"){
     <h1>PO Request Transfer</h1>
     <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
     <p><Button bsStyle="primary">Learn more</Button></p>
+    <Grid>
+
+      <Row>
+        <Col xs={2} md={4}></Col>
+        <Col xs={4} md={4}><POReqTransButton /></Col>
+        <Col xs={2} md={4}></Col>
+      </Row>
+    </Grid>
+
   </Jumbotron>
 
-      <POReqTransButton />
+      
 
+      {/*     <CustomComponent>Custom Child 3</CustomComponent>  */}
 
   <ListGroup>
-    <ListGroupItem style={jbk}>Item 1</ListGroupItem>
-    <ListGroupItem style={jbk}><span>PO Category Check.&nbsp;&nbsp;&nbsp; </span>
-    {check1Button}
+    <ListGroupItem style={chk}>
+    <Grid>
+      <Row>
+        <Col xs={6} md={4}>PO Category Check</Col>
+        <Col xs={6} md={4}>{check1Button}</Col>
+        </Row>
+    </Grid>
     </ListGroupItem>
-    <ListGroupItem style={catChk}><span>PO Vendor Check.&nbsp;&nbsp;&nbsp; </span>
-      <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>
-
+    <ListGroupItem style={chk}>
+      <Grid>
+        <Row>
+          <Col xs={6} md={4}>PO Vendor Check</Col>
+          <Col xs={6} md={4}>{check2Button}</Col>
+          </Row>
+      </Grid>
     </ListGroupItem>
-    <CustomComponent>Item 3     
-      {/* Indicates a successful or positive action */}
-      <Button bsStyle="warning">Success</Button>
-    </CustomComponent>
-    <CustomComponent>Custom Child 2 </CustomComponent>
-    <CustomComponent>Custom Child 3</CustomComponent>
+    <ListGroupItem style={chk}>
+      <Grid>
+        <Row>
+          <Col xs={6} md={4}>Check #3</Col>
+          <Col xs={6} md={4}>{check3Button}</Col>
+          </Row>
+      </Grid>
+    </ListGroupItem>
 
+    {/*
+    <ListGroupItem style={chk}><span>PO Vendor Check.&nbsp;&nbsp;&nbsp; </span>
+    {check3Button}
+    </ListGroupItem>
+    <ListGroupItem style={chk}><span>PO Vendor Check.&nbsp;&nbsp;&nbsp; </span>
+    {check4Button}
+    </ListGroupItem>
+*/}
+  
   </ListGroup>
 
-    <FormGroup>
-      <Col smOffset={2} sm={10}>
-        <Checkbox>Remember me</Checkbox>
-      </Col>
-    </FormGroup>
 
-            </div>
+  </div>
 
     );
   }
