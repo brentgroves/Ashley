@@ -2,8 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
-import POReqTransChecks from './POReqTransChecks';
-import POReqTransButton from './POReqTransButton';
+import POReqTransChecks from '../containers/POReqTransChecks';
 //import styles from './Home.css';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
 import { Grid, Row, Glyphicon, FormGroup,ControlLabel, FormControl, Col, Checkbox, ListGroup, ListGroupItem, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
@@ -81,25 +80,15 @@ if (loggedIn) {
   <Jumbotron style={jbk} >
     <h1>PO Request Transfer</h1>
     <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
-    <p><Button bsStyle="primary"><img src="../logodoc.bmp" height="35" /></Button></p>
           
 
 
   </Jumbotron>
 
-    <Grid>
-
-      <Row>
-        <Col xs={2} md={4}></Col>
-        <Col xs={4} md={4}><POReqTransButton /></Col>
-        <Col xs={2} md={4}></Col>
-      </Row>
-    </Grid>
-    <br/>
-    <br/>
 
     <POReqTransChecks />
-      
+    <br/>
+    <br/>
   </div>
 
     );

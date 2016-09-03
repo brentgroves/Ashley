@@ -15,12 +15,9 @@ import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Co
 export default class Home extends Component {
   render() {
   const jbk ={backgroundColor: 'black'};
-  const st1 ={backgroundImage: 'url(intro-bg.jpg)',backgroundSize: 'cover'};
-
 //  const jbk ={backgroundColor: '#F16E10'};
     return (
       <div>
-
   <Navbar inverse>
     <NavbarHeader>
       <NavbarBrand>
@@ -53,13 +50,10 @@ export default class Home extends Component {
     </NavbarCollapse>
   </Navbar>
 
-  <Jumbotron style={st1} >
-
+  <Jumbotron style={jbk} >
     <h1>Hello, world!</h1>
     <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
     <p><Button bsStyle="primary">Learn more</Button></p>
-
-
   </Jumbotron>
 
             <Link to="/POUpdateApp">PO Update</Link>
@@ -69,10 +63,6 @@ export default class Home extends Component {
   }
 }
 /*
-  background-color:black;
-
-  <Jumbotron style={jbk} >
-
       <div>
         <header>
           <div className="header-brand">

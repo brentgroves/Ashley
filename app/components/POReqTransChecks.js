@@ -78,7 +78,16 @@ export default class POReqTransChecks extends Component {
   const jbk ={backgroundColor: 'black' };
     return (
       <div>
-     
+
+    <Grid>
+
+      <Row>
+        <Col xs={2} md={4}></Col>
+        <Col xs={4} md={4}><POReqTransButton /></Col>
+        <Col xs={2} md={4}></Col>
+      </Row>
+    </Grid>
+     <br/><br/>
   <ListGroup>
     <ListGroupItem style={chk}>
     <Grid>
