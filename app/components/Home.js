@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component,StyleSheet } from 'react';
 import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
+import Dimensions from 'react-dimensions';
 //import styles from './Home.css';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
@@ -10,18 +11,31 @@ import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Co
     background-color:black !important; 
 }
 
+body {
+  position: relative;
+  color: white;
+  height: 100vh;
+  background-color: #232C39;
+  background-image: url("intro-bg.jpg")
+  background-image: linear-gradient(45deg, rgba(0, 216, 255, .5) 10%, rgba(0, 1, 127, .7));
+  font-family: Arial, Helvetica, Helvetica Neue;
+  overflow-y: hidden;
+}
 
+  <Jumbotron  style={st1}>
 */
 export default class Home extends Component {
   render() {
   const jbk ={backgroundColor: 'black'};
-  const st1 ={backgroundImage: 'url(intro-bg.jpg)',backgroundSize: 'cover'};
+  const st1 ={backgroundImage: 'url(intro-bg.jpg)', backgroundSize: 'cover'};
+  //  background: url("http://placehold.it/1920x1080") no-repeat center center fixed; 
 
-//  const jbk ={backgroundColor: '#F16E10'};
+//  const st1 ={backgroundImage: 'url(intro-bg.jpg)',backgroundSize: 'cover'};
+
+//  const jbk ={backgroundColor: '#F16E10'};width={ '200px' } height={ '300px' } 
     return (
-      <div>
-
-  <Navbar inverse>
+      <div  >
+  <Navbar inverse  fixedBottom>
     <NavbarHeader>
       <NavbarBrand>
         <a href="#">IT Groves</a>
@@ -53,21 +67,22 @@ export default class Home extends Component {
     </NavbarCollapse>
   </Navbar>
 
-  <Jumbotron style={st1} >
 
-    <h1>Hello, world!</h1>
-    <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
-    <p><Button bsStyle="primary">Learn more</Button></p>
+            <p>Busche Production Software</p>
+            <p>Busche Production Software</p>
+            <p>Busche Production Software</p>
+            <p>Busche Production Software</p>
+            <br/>
+             <p><Button bsStyle="primary">Learn more</Button></p>
+             <img src="../logodoc.bmp" height="35" />
 
 
-  </Jumbotron>
-
-            <Link to="/POUpdateApp">PO Update</Link>
-            </div>
+      </div>
 
     );
   }
 }
+
 /*
   background-color:black;
 
@@ -123,6 +138,5 @@ export default class Home extends Component {
     <NavItem eventKey={2} title="Item">NavItem 2 content</NavItem>
     <NavItem eventKey={3} disabled>NavItem 3 content</NavItem>
 </Nav>
-
 
         */
