@@ -34,7 +34,7 @@ export default class Home extends Component {
 
 //  const jbk ={backgroundColor: '#F16E10'};width={ '200px' } height={ '300px' } 
     return (
-      <div  >
+      <div >
   <Navbar inverse  fixedBottom>
     <NavbarHeader>
       <NavbarBrand>

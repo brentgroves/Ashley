@@ -45,9 +45,11 @@ if (loggedIn) {
   render() {
 
   const jbk ={backgroundColor: 'black' };
+  const st1 ={backgroundImage: 'url(intro-bg.jpg)', backgroundSize: 'cover'};
+
     return (
-      <div>
-  <Navbar inverse>
+      <div  >
+  <Navbar inverse fixedTop>
     <NavbarHeader>
       <NavbarBrand>
         <a href="#">IT Groves</a>
@@ -77,7 +79,7 @@ if (loggedIn) {
     </NavbarCollapse>
   </Navbar>
 
-  <Jumbotron style={jbk} >
+  <Jumbotron >
     <h1>PO Request Transfer</h1>
     <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
           
@@ -89,6 +91,15 @@ if (loggedIn) {
     <POReqTransChecks />
     <br/>
     <br/>
+
+  <Navbar inverse fixedBottom>
+    <NavbarHeader>
+      <NavbarBrand>
+        <a href="#">IT Groves</a>
+      </NavbarBrand>
+      <NavbarToggle />
+    </NavbarHeader>
+</Navbar>
   </div>
 
     );
