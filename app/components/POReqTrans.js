@@ -47,6 +47,8 @@ if (loggedIn) {
   const jbk ={backgroundColor: 'black' };
   const st1 ={backgroundImage: 'url(intro-bg.jpg)', backgroundSize: 'cover'};
 
+  const bnr ={backgroundImage: 'url(banner.jpg)', backgroundSize: 'cover'};
+
     return (
       <div  >
   <Navbar inverse fixedTop>
@@ -79,7 +81,7 @@ if (loggedIn) {
     </NavbarCollapse>
   </Navbar>
 
-  <Jumbotron >
+  <Jumbotron style={bnr}>
     <h1>PO Request Transfer</h1>
     <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
           
