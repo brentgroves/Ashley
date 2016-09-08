@@ -4,6 +4,28 @@ body {
   background: none;
 }
 
+.navbar-inverse .navbar-brand {
+    color: #33ccff;
+}
+
+.navbar-inverse .navbar-brand:hover {
+    color:#524E4D;
+}
+
+
+.intro-header {
+  color: #33ccff;  
+  margin-top: 20%;
+  margin-bottom: 80%;
+  text-align: center;
+}
+
+.nblogo {
+  height: 100%;
+  padding: 15px;
+  width: auto;
+}
+
 .full {
   background: url("intro-bg.jpg") no-repeat center center fixed; 
   -webkit-background-size: cover;

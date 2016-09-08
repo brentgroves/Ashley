@@ -1,8 +1,10 @@
-import React, { Component,StyleSheet } from 'react';
+import React, { Component } from 'react';
 import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
-import Dimensions from 'react-dimensions';
 //import styles from './Home.css';
+//  background-image: linear-gradient(45deg, rgba(0, 216, 255, .5) 10%, rgba(0, 1, 127, .7));
+//  background: url(http://placehold.it/1920x1080) no-repeat center center fixed; 
+
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse } from 'react-bootstrap/lib/Navbar'
@@ -26,25 +28,17 @@ body {
 */
 export default class Home extends Component {
   render() {
-  const nba ={color:'blue'};
-
   const jbk ={backgroundColor: 'black'};
-  const st1 ={backgroundImage: 'url(intro-bg.jpg)', backgroundSize: 'cover'};
-  //  background: url("http://placehold.it/1920x1080") no-repeat center center fixed; 
+  const st1 ={backgroundImage: 'url(intro-bg.jpg)',backgroundSize: 'cover'};
 
-//  const st1 ={backgroundImage: 'url(intro-bg.jpg)',backgroundSize: 'cover'};
-
-//  const jbk ={backgroundColor: '#F16E10'};width={ '200px' } height={ '300px' } 
-//         <a href="#"><img src="logodoc.bmp" style={nb}  /></a>
-//<a class="navbar-brand" href="http://disputebills.com"><img src="http://res.cloudinary.com/candidbusiness/image/upload/v1455406304/dispute-bills-chicago.png" alt="Dispute Bills" />
-//        </a>
-
+//  const jbk ={backgroundColor: '#F16E10'};
     return (
       <div >
-  <Navbar inverse  fixedBottom>
+
+  <Navbar inverse>
     <NavbarHeader>
       <NavbarBrand>
-        <a href="#"  >Busche CNC</a>
+        <a href="#">IT Groves</a>
       </NavbarBrand>
       <NavbarToggle />
     </NavbarHeader>
@@ -73,18 +67,21 @@ export default class Home extends Component {
     </NavbarCollapse>
   </Navbar>
 
-    <div className="intro-header">
-      <p>Busche Production Software</p>
-      <br/>
-       <p><Button bsStyle="primary">Request Transfer</Button>&nbsp;&nbsp;&nbsp;<Button bsStyle="warning">Gen Receivers</Button></p>
-    </div>   
+  <Jumbotron style={st1} >
 
-  </div>
+    <h1>Hello, world!</h1>
+    <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+    <p><Button bsStyle="primary">Learn more</Button></p>
+
+
+  </Jumbotron>
+
+            <Link to="/POUpdateApp">PO Update</Link>
+            </div>
 
     );
   }
 }
-
 /*
   background-color:black;
 
@@ -140,5 +137,6 @@ export default class Home extends Component {
     <NavItem eventKey={2} title="Item">NavItem 2 content</NavItem>
     <NavItem eventKey={3} disabled>NavItem 3 content</NavItem>
 </Nav>
+
 
         */
