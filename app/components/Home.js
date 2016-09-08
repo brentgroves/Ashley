@@ -23,6 +23,21 @@ body {
 }
 
   <Jumbotron  style={st1}>
+        <Nav pullRight>
+        <NavItem eventKey={1} href="#">Link Right</NavItem>
+        <NavItem eventKey={2} href="#">Link Right</NavItem>
+      </Nav>
+        <NavDropdown eventKey={3} title="Dropdown" id="basic-nav-dropdown">
+          <MenuItem eventKey={3.1}>Action</MenuItem>
+          <LinkContainer to="/POUpdateApp">
+            <MenuItem eventKey={3.2}>PO Update</MenuItem>
+          </LinkContainer>      
+          <MenuItem eventKey={3.3}>Something else here</MenuItem>
+          <MenuItem divider />
+          <MenuItem eventKey={3.3}>Separated link</MenuItem>
+        </NavDropdown>
+
+
 */
 export default class Home extends Component {
   render() {
@@ -44,7 +59,7 @@ export default class Home extends Component {
   <Navbar inverse  fixedBottom>
     <NavbarHeader>
       <NavbarBrand>
-        <a href="#"  >Busche CNC</a>
+        <div style={{color: '#33ccff'}}>Busche CNC</div>
       </NavbarBrand>
       <NavbarToggle />
     </NavbarHeader>
@@ -56,19 +71,6 @@ export default class Home extends Component {
         <LinkContainer to="/POReqTrans">
           <NavItem eventKey={2}>PO Request Transfer</NavItem>
         </LinkContainer>      
-        <NavDropdown eventKey={3} title="Dropdown" id="basic-nav-dropdown">
-          <MenuItem eventKey={3.1}>Action</MenuItem>
-          <LinkContainer to="/POUpdateApp">
-            <MenuItem eventKey={3.2}>PO Update</MenuItem>
-          </LinkContainer>      
-          <MenuItem eventKey={3.3}>Something else here</MenuItem>
-          <MenuItem divider />
-          <MenuItem eventKey={3.3}>Separated link</MenuItem>
-        </NavDropdown>
-      </Nav>
-      <Nav pullRight>
-        <NavItem eventKey={1} href="#">Link Right</NavItem>
-        <NavItem eventKey={2} href="#">Link Right</NavItem>
       </Nav>
     </NavbarCollapse>
   </Navbar>
@@ -76,7 +78,14 @@ export default class Home extends Component {
     <div className="intro-header">
       <p>Busche Production Software</p>
       <br/>
-       <p><Button bsStyle="primary">Request Transfer</Button>&nbsp;&nbsp;&nbsp;<Button bsStyle="warning">Gen Receivers</Button></p>
+       <p>
+        <LinkContainer to="/POReqTrans">
+         <Button href="#" bsStyle="primary">Request Transfer</Button>
+        </LinkContainer>      
+
+       &nbsp;&nbsp;&nbsp;
+       <Button bsStyle="warning">Gen Receivers</Button>
+       </p>
     </div>   
 
   </div>
