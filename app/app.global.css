@@ -62,6 +62,10 @@ a:hover {
   cursor: pointer;
 }
 
+.test1 {
+  border: 5px solid blue;
+}
+
 .jumbotron {
   background-color:black;
   background-image: url("/intro-bg.jpg");

@@ -11,6 +11,71 @@ import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Co
 .jumbotron {
     background-color:black !important; 
 }
+
+    <Grid>
+
+      <Row>
+        <Col xs={3} md={3}><POReqTransButton /></Col>
+      </Row>
+    </Grid>
+     <br/><br/>
+  <ListGroup>
+    <ListGroupItem >
+    <Grid style={chk}>
+      <Row>
+        <Col xs={1} md={1}>PO Category Check</Col>
+        <Col xs={1} md={1}>{check1Button}</Col>
+        <Col xs={1} md={1}>{check1Button}</Col>
+        <Col xs={1} md={1}>{check1Button}</Col>
+        </Row>
+    </Grid>
+    </ListGroupItem>
+    <ListGroupItem style={chk}>
+      <Grid>
+        <Row>
+          <Col xs={6} md={4}>PO Vendor Check</Col>
+          <Col xs={6} md={4}>{check2Button}</Col>
+          </Row>
+      </Grid>
+    </ListGroupItem>
+    <ListGroupItem style={chk}>
+      <Grid>
+        <Row>
+          <Col xs={6} md={4}>Check #3</Col>
+          <Col xs={6} md={4}>{check3Button}</Col>
+          </Row>
+      </Grid>
+    </ListGroupItem>
+  </ListGroup>
+  </div>
+
+      <ListGroup >
+        <ListGroupItem style={chk}>
+        <Grid  >
+          <Row>
+            <Col  xs={2} md={2}>PO Category Check</Col>
+            <Col xs={2} md={2}>{check1Button}</Col>
+          </Row>
+        </Grid>
+        </ListGroupItem>
+      <ListGroupItem >
+        <Grid>
+          <Row>
+            <Col xs={3} md={3}>PO Vendor Check</Col>
+            <Col xs={1} md={1}>{check2Button}</Col>
+            </Row>
+        </Grid>
+      </ListGroupItem>
+      <ListGroupItem style={chk} >
+        <Grid >
+          <Row>
+            <Col xs={2} md={2}>PO Category Check</Col>
+            <Col xs={2} md={2}>{check1Button}</Col>
+          </Row>
+        </Grid>
+      </ListGroupItem>
+    </ListGroup>
+
 */
 
 
@@ -37,7 +102,8 @@ export default class POReqTransChecks extends Component {
   render() {
 
   var isSuccess = true;
-  const  chk ={backgroundColor: 'black' , color: 'green' };
+  const  chk ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '10px 50px 10px 10px' };
+  const  chk1 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '10px' };
 
   var check1Button;
   switch (this.props.checks.chk1) {
@@ -79,41 +145,39 @@ export default class POReqTransChecks extends Component {
     return (
       <div>
 
-    <Grid>
-
-      <Row>
-        <Col xs={2} md={4}></Col>
-        <Col xs={4} md={4}><POReqTransButton /></Col>
-        <Col xs={2} md={4}></Col>
-      </Row>
-    </Grid>
-     <br/><br/>
-  <ListGroup>
-    <ListGroupItem style={chk}>
-    <Grid>
-      <Row>
-        <Col xs={6} md={4}>PO Category Check</Col>
-        <Col xs={6} md={4}>{check1Button}</Col>
+        <Row style={chk}>
+          <Col xs={1}>&nbsp;</Col>
         </Row>
-    </Grid>
-    </ListGroupItem>
-    <ListGroupItem style={chk}>
-      <Grid>
         <Row>
-          <Col xs={6} md={4}>PO Vendor Check</Col>
-          <Col xs={6} md={4}>{check2Button}</Col>
-          </Row>
-      </Grid>
-    </ListGroupItem>
-    <ListGroupItem style={chk}>
-      <Grid>
+          <Col xs={1}>&nbsp;</Col>
+        </Row>
         <Row>
-          <Col xs={6} md={4}>Check #3</Col>
-          <Col xs={6} md={4}>{check3Button}</Col>
-          </Row>
-      </Grid>
-    </ListGroupItem>
-  </ListGroup>
+          <Col xs={1}>&nbsp;</Col>
+        </Row>
+        <Row>
+          <Col xs={3} sm={3} md={3}>&nbsp;</Col>
+          <Col xs={6} sm={6} md={6}><POReqTransButton /></Col>
+          <Col xs={3} sm={3} md={3}>&nbsp;</Col>
+        </Row>
+        <Row>
+          <Col xs={1}>&nbsp;</Col>
+        </Row>
+        <Row >
+          <Col xs={11} sm={11} md={11}>
+              <Row style={chk} >
+                <Col xs={8} sm={8} md={8}>PO Category Check</Col>
+                <Col style={chk} xs={2} sm={2} md={2}>{check1Button}</Col>
+              </Row>
+              <Row style={chk}>
+                <Col xs={10} sm={10} md={10}>PO Vendor Check</Col>
+                <Col xs={2} md={2} md={2}>{check2Button}</Col>
+              </Row>
+              <Row style={chk}>
+                <Col xs={10} sm={10} md={10}>Transfering</Col>
+                <Col xs={2} sm={2} md={2}>{check3Button}</Col>
+              </Row>
+          </Col>
+        </Row>
   </div>
 
     );
