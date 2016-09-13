@@ -35,10 +35,12 @@ app.on('ready', async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1330,
+    width: 1300,
     height: 756
   });
 /*
+    width: 1330,
+    height: 756
     width: 1900,
     height:1267
     width: 1024,

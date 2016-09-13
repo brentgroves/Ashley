@@ -67,10 +67,10 @@ if (loggedIn) {
         </Col>
       </Row>
 
-      <Row style={chk2}>
-        <Col style={chk2} xs={4}></Col>
-        <Col style={chk2} xs={4}><POReqTransChecks /></Col>
-        <Col style={chk2} xs={4}></Col>
+      <Row >
+        <Col xs={4}></Col>
+        <Col xs={4}><POReqTransChecks /></Col>
+        <Col xs={4}></Col>
       </Row>
           
     </Grid>

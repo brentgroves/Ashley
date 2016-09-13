@@ -102,8 +102,8 @@ export default class POReqTransChecks extends Component {
   render() {
 
   var isSuccess = true;
-  const  chk ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '10px 50px 10px 10px' };
-  const  chk1 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '10px' };
+  const  chk ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '10px 30px 10px 10px' };
+  const  chk1 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   };
 
   var check1Button;
   switch (this.props.checks.chk1) {
@@ -145,7 +145,7 @@ export default class POReqTransChecks extends Component {
     return (
       <div>
 
-        <Row style={chk}>
+        <Row >
           <Col xs={1}>&nbsp;</Col>
         </Row>
         <Row>
@@ -165,14 +165,14 @@ export default class POReqTransChecks extends Component {
         <Row >
           <Col xs={11}>
               <Row style={chk} >
-                <Col xs={8}>PO Category Check</Col>
-                <Col style={chk} xs={2}>{check1Button}</Col>
+                <Col  xs={10}>PO Category Check</Col>
+                <Col  xs={2}>{check1Button}</Col>
               </Row>
-              <Row style={chk}>
+              <Row style={chk} >
                 <Col xs={10}>PO Vendor Check</Col>
                 <Col xs={2}>{check2Button}</Col>
               </Row>
-              <Row style={chk}>
+              <Row style={chk} >
                 <Col xs={10}>Transfering</Col>
                 <Col xs={2}>{check3Button}</Col>
               </Row>
