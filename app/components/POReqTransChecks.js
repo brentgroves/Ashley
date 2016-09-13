@@ -155,26 +155,26 @@ export default class POReqTransChecks extends Component {
           <Col xs={1}>&nbsp;</Col>
         </Row>
         <Row>
-          <Col xs={3} sm={3} md={3}>&nbsp;</Col>
-          <Col xs={6} sm={6} md={6}><POReqTransButton /></Col>
-          <Col xs={3} sm={3} md={3}>&nbsp;</Col>
+          <Col xs={3} >&nbsp;</Col>
+          <Col xs={6}><POReqTransButton /></Col>
+          <Col xs={3}>&nbsp;</Col>
         </Row>
         <Row>
           <Col xs={1}>&nbsp;</Col>
         </Row>
         <Row >
-          <Col xs={11} sm={11} md={11}>
+          <Col xs={11}>
               <Row style={chk} >
-                <Col xs={8} sm={8} md={8}>PO Category Check</Col>
-                <Col style={chk} xs={2} sm={2} md={2}>{check1Button}</Col>
+                <Col xs={8}>PO Category Check</Col>
+                <Col style={chk} xs={2}>{check1Button}</Col>
               </Row>
               <Row style={chk}>
-                <Col xs={10} sm={10} md={10}>PO Vendor Check</Col>
-                <Col xs={2} md={2} md={2}>{check2Button}</Col>
+                <Col xs={10}>PO Vendor Check</Col>
+                <Col xs={2}>{check2Button}</Col>
               </Row>
               <Row style={chk}>
-                <Col xs={10} sm={10} md={10}>Transfering</Col>
-                <Col xs={2} sm={2} md={2}>{check3Button}</Col>
+                <Col xs={10}>Transfering</Col>
+                <Col xs={2}>{check3Button}</Col>
               </Row>
           </Col>
         </Row>

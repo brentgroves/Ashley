@@ -35,14 +35,20 @@ app.on('ready', async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1600,
-    height: 900
+    width: 1330,
+    height: 756
   });
 /*
+    width: 1900,
+    height:1267
     width: 1024,
     height: 728
     width: 1600,
     height: 900
+    width: 1900,
+    height: 1080
+    width: 1366,
+    height: 768
 
 */
 
@@ -57,8 +63,10 @@ app.on('ready', async () => {
     mainWindow = null;
   });
 
+
   if (process.env.NODE_ENV === 'development') {
-    mainWindow.openDevTools();
+ //   mainWindow.openDevTools();
+  
     mainWindow.webContents.on('context-menu', (e, props) => {
       const { x, y } = props;
 
@@ -274,6 +282,9 @@ app.on('ready', async () => {
       }]
     }];
     menu = Menu.buildFromTemplate(template);
-    mainWindow.setMenu(menu);
+//    mainWindow.setMenu(menu);
+    mainWindow.setMenu(null);
+
   }
+
 });

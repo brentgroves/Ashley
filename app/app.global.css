@@ -1,39 +1,9 @@
 body {
-  margin-top: 50px;
-  margin-bottom: 50px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding: 0px;
   background: none;
 }
-
-.navbar-inverse .navbar-brand {
-    color: #33ccff;
-}
-
-.navbar-inverse .navbar-brand:hover {
-    color:#524E4D;
-}
-
-
-.intro-header {
-  color: #33ccff;  
-  margin-top: 20%;
-  margin-bottom: 80%;
-  text-align: center;
-}
-
-.nblogo {
-  height: 100%;
-  padding: 15px;
-  width: auto;
-}
-
-.full {
-  background: url("intro-bg.jpg") no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-}
-
 h2 {
   margin: 0;
   font-size: 2.25rem;
@@ -62,13 +32,45 @@ a:hover {
   cursor: pointer;
 }
 
+.navbar-inverse .navbar-brand {
+    color: #33ccff;
+}
+
+.navbar-inverse .navbar-brand:hover {
+    color:#524E4D;
+}
+
+
+.intro-header {
+  color: #33ccff;  
+  margin-top: 20%;
+  margin-bottom: 20%;
+  text-align: center;
+}
+
+.nblogo {
+  height: 100%;
+  padding: 15px;
+  width: auto;
+}
+
+.full {
+  background: url("intro-bg.jpg") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+
 .test1 {
   border: 5px solid blue;
 }
 
 .jumbotron {
-  background-color:black;
-  background-image: url("/intro-bg.jpg");
+  background-image: url("banner.jpg");
+  background-size: 'cover';  
+  padding: 0px 10px 0px 20px;
 }
 .pb-container {
   display: inline-block;
