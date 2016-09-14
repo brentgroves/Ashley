@@ -6,12 +6,14 @@ import { syncHistoryWithStore } from 'react-router-redux';
 import routes from './routes';
 import configureStore from './store/configureStore';
 import './app.global.css';
+import POUpdateAPI from './api/POUpdate';
+
 
 const initialState = {
 	counter:1,
 	NoCatList:[{}],
 	POCategories:[{}],
-	checks:{chk1:'success',chk2:'failure',chk3:'unknown',chk4:'unknown'}
+	checks:{chk1:'success',chk2:'failure',chk3:'unknown',chk4:'unknown',noPOCategory:POUpdateAPI.noPOCategory.call(this);}
 
 //	noVenPoList:[{PONumber:1,Vendor:2,Address1:'1633 S US HWY 33'}]
 }
