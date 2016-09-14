@@ -1,5 +1,5 @@
-import {SET_PO_CATEGORIES} from '../actions/POUpdateApp';
-import POUpdateAPI from '../api/POUpdate';
+import {SET_PO_CATEGORIES} from '../actions/POReqTrans';
+import POReqTrans from '../api/POReqTrans';
 
 export default function POCategories( state = [{}], action) {
   switch (action.type) {
@@ -11,5 +11,4 @@ export default function POCategories( state = [{}], action) {
       return state;
   }
 }
-
 

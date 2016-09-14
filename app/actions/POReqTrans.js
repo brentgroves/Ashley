@@ -3,7 +3,7 @@ export const SET_PO_CATEGORIES = 'SET_PO_CATEGORIES';
 export const FETCH_NO_CAT_LIST = 'FETCH_NO_CAT_LIST';
 export const SET_NO_CAT_LIST = 'SET_NO_CAT_LIST';
 export const SET_CHECK1 = 'SET_CHECK1';
-import POUpdateAPI from '../api/POUpdate';
+import POReqTrans from '../api/POReqTrans';
 
 export function fetchNoCatList() {
  return (dispatch,getState) => {
@@ -20,7 +20,7 @@ export function setNoCatList(noCatList) {
 
 export function fetchPOCategories() {
  return (dispatch,getState) => {
-    POUpdateAPI.fetchPOCategories(dispatch);
+    POReqTrans.fetchPOCategories(dispatch);
   };
 }
 
@@ -34,7 +34,7 @@ export function setPOCategories(POCategories) {
 export function setCheck1(setMe) {
   return {
     type: SET_CHECK1,
-    checks: {chk1:'success',chk2:'failure',chk3:'unknown'}
+    POReqTrans: {chk1:'success',chk2:'failure',chk3:'unknown'}
   };
 }
 

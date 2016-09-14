@@ -1,9 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import Griddle from 'griddle-react';
-import POUpdateAPI from '../api/POUpdate';
+import POReqTrans from '../api/POReqTrans';
 import { Link } from 'react-router';
 import Select from 'react-select';
-//import POCategories from './POCategories';
 import Button from 'react-button';
 import POCategoriesPage from '../containers/POCategoriesPage';
 //import GithubUsers from './GithubUsers';

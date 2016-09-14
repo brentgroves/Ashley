@@ -15,16 +15,16 @@ export default class POReqTransPage extends Component {
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import POReqTransChecks from '../components/POReqTransChecks';
-import * as POUpdateAppActions from '../actions/POUpdateApp';
+import * as POReqTrans from '../actions/POReqTrans';
 
 function mapStateToProps(state) {
   return {
-    	checks: state.checks
+    	POReqTrans: state.POReqTrans
 	};
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(POUpdateAppActions, dispatch);
+  return bindActionCreators(POReqTrans, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(POReqTransChecks);

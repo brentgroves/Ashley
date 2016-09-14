@@ -1,5 +1,5 @@
-import {SET_NO_CAT_LIST} from '../actions/POUpdateApp';
-import POUpdateAPI from '../api/POUpdate';
+import {SET_NO_CAT_LIST} from '../actions/POReqTrans';
+import POReqTrans from '../api/POReqTrans';
 
 export default function noCatList( state = [{}], action) {
   switch (action.type) {

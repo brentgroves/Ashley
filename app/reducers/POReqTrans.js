@@ -1,5 +1,5 @@
-import {SET_CHECK1} from '../actions/POUpdateApp';
-import POUpdateAPI from '../api/POUpdate';
+import {SET_CHECK1} from '../actions/POReqTrans';
+import POReqTrans from '../api/POReqTrans';
 
 export default function checks( state = {}, action) {
   switch (action.type) {
@@ -11,5 +11,3 @@ export default function checks( state = {}, action) {
       return state;
   }
 }
-
-

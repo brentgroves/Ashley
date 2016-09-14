@@ -1,7 +1,7 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import NoCatGriddle from '../components/NoCatGriddle';
-import * as POUpdateAppActions from '../actions/POUpdateApp';
+import * as POReqTrans from '../actions/POReqTrans';
 
 function mapStateToProps(state) {
   return {
@@ -10,7 +10,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(POUpdateAppActions, dispatch);
+  return bindActionCreators(POReqTrans, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(NoCatGriddle);

@@ -17,8 +17,7 @@ import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Co
 export default class POReqTrans extends Component {
 
   static propTypes = {
-    checks: PropTypes.object.isRequired,
-    setCheck1: PropTypes.func.isRequired
+    POReqTrans: PropTypes.object.isRequired
   };
 
   constructor(props) {

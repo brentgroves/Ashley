@@ -1,15 +1,13 @@
 import { combineReducers } from 'redux';
 import { routerReducer as routing } from 'react-router-redux';
-import counter from './counter';
 import NoCatList from './NoCatList';
 import POCategories from './POCategories';
-import checks from './checks';
+import POReqTrans from './POReqTrans';
 
 const rootReducer = combineReducers({
-  counter,
   NoCatList,
   POCategories,
-  checks,
+  POReqTrans,
   routing
 });
 

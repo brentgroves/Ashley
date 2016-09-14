@@ -82,8 +82,7 @@ import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Co
 export default class POReqTransChecks extends Component {
 
   static propTypes = {
-    checks: PropTypes.object.isRequired,
-    setCheck1: PropTypes.func.isRequired
+    POReqTrans: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -106,7 +105,7 @@ export default class POReqTransChecks extends Component {
   const  chk1 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   };
 
   var check1Button;
-  switch (this.props.checks.chk1) {
+  switch (this.props.POReqTrans.chk1) {
       case "success":
           check1Button= <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>;
           break; 
@@ -118,7 +117,7 @@ export default class POReqTransChecks extends Component {
   }
 
   var check2Button;
-  switch (this.props.checks.chk2) {
+  switch (this.props.POReqTrans.chk2) {
       case "success":
           check2Button= <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>;
           break; 
@@ -130,7 +129,7 @@ export default class POReqTransChecks extends Component {
   }
 
   var check3Button;
-  switch (this.props.checks.chk3) {
+  switch (this.props.POReqTrans.chk3) {
       case "success":
           check3Button= <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>;
           break; 

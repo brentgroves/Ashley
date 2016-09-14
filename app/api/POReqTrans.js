@@ -1,7 +1,7 @@
 
 var sql = require('mssql');
 const {dialog} = require('electron').remote;
-import {SET_PO_CATEGORIES,SET_NO_CAT_LIST} from '../actions/POUpdateApp';
+import {SET_PO_CATEGORIES,SET_NO_CAT_LIST} from '../actions/POReqTrans';
 
 var m2m = {
   user: 'sa',
@@ -39,7 +39,7 @@ var crib = {
 var prod=false;
 var errors=false;
 
-let POUpdateAPI = {
+let POReqTransAPI = {
   noPOCatList(dispatch){
     var disp = dispatch;
     var cribConnection = new sql.Connection(crib,function(err){
@@ -190,7 +190,7 @@ function  poCatChk(cribConnection) {
     });
   }
 
-function poUpdate() {
+function POReqTrans() {
   var that = this;
 //  document.getElementById('msgToUsr').innerHTML = '';
   var cribConnection = new sql.Connection(crib,function(err){
@@ -286,4 +286,4 @@ var msSqlModule = function () {
 
 }();
 
-export default POUpdateAPI;
+export default POReqTrans;
