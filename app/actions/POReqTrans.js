@@ -34,7 +34,7 @@ export function setPOCategories(POCategories) {
 export function setCheck1(setMe) {
   return {
     type: SET_CHECK1,
-    POReqTrans: {chk1:'success',chk2:'failure',chk3:'unknown'}
+    chk1: {chk1:setMe}
   };
 }
 

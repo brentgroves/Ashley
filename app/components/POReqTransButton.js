@@ -1,5 +1,6 @@
 import ProgressButton from 'react-progress-button'
 import React, { Component } from 'react';
+import POReqTrans from '../api/POReqTrans';
 
 const POReqTransButton = React.createClass({
   getInitialState () {
@@ -19,11 +20,15 @@ const POReqTransButton = React.createClass({
   },
 
   handleClick () {
-    this.setState({buttonState: 'loading'})
-    // make asynchronous call
-    setTimeout(function() {
-      this.setState({buttonState: 'success'})
-    }.bind(this), 3000)
+    this.setState({buttonState: 'loading'});
+      POReqTrans.call(this);
+
+   // make asynchronous call
+  //   setTimeout(function() {
+  //     POReqTrans.call(this);
+  // //    this.props.setCheck1('failure');
+  // //    this.setState({buttonState: 'success'})
+  //   }.bind(this), 3000)
   }
 })
 

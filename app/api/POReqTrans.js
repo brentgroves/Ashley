@@ -175,14 +175,15 @@ function  poCatChk(cribConnection) {
   //      dialog.showMessageBox({ message:
   //        `Failed PO category check:\nNo Cribmaster PO category is selected on the following PO(s):\n${cribRsErr}\n\nFix issue then click PO Update.`,
   //        buttons: ["OK"] });
-        let page = 1
-        that.setState({
-            results: cribRs,
-            currentPage: page-1,
-            maxPages: 1
-  //          maxPages: Math.round(data.count/10)
-          })
-
+        that.props.setCheck1('failure');
+  //       let page = 1
+  //       that.setState({
+  //           results: cribRs,
+  //           currentPage: page-1,
+  //           maxPages: 1
+  // //          maxPages: Math.round(data.count/10)
+  //         })
+          //        that.props.setCheck1('failure');
       }else {
   //      document.getElementById('msgToUsr').innerHTML = `<div class="passed">Passed Cribmaster PO category check.</div>`;
   //      poVendorChk(cribConnection);

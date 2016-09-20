@@ -1,7 +1,7 @@
 import React, { Component,StyleSheet } from 'react';
 import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
-import Dimensions from 'react-dimensions';
+//import Dimensions from 'react-dimensions';
 //import styles from './Home.css';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
