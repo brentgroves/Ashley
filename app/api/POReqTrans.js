@@ -130,8 +130,9 @@ function  POCategories(cribConnection,disp) {
 
 
 
-function  poCatChk(cribConnection) {
-    var that = this;
+function  poCatChk(disp,cribConnection) {
+//    var that = this;
+    var dispatch = disp;
     let qryCrib;
     if (prod===true) {
       qryCrib = `
@@ -175,7 +176,8 @@ function  poCatChk(cribConnection) {
   //      dialog.showMessageBox({ message:
   //        `Failed PO category check:\nNo Cribmaster PO category is selected on the following PO(s):\n${cribRsErr}\n\nFix issue then click PO Update.`,
   //        buttons: ["OK"] });
-        that.props.setCheck1('failure');
+//        that.props.setCheck1('failure');
+        dispatch({ type: SET_NO_CAT_LIST, noCatList:cribRs });
   //       let page = 1
   //       that.setState({
   //           results: cribRs,
@@ -191,12 +193,13 @@ function  poCatChk(cribConnection) {
     });
   }
 
-function POReqTrans() {
-  var that = this;
+function POReqTrans(dispatch) {
+//  var that = this;
+  var disp = dispatch;
 //  document.getElementById('msgToUsr').innerHTML = '';
   var cribConnection = new sql.Connection(crib,function(err){
     // error checks
-  poCatChk.call(that,cribConnection);
+    poCatChk(disp,cribConnection);
   });
   cribConnection.on('error', function(err) {
     console.log(`Connection1 err:  ${err}` );

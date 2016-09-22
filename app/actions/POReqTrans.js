@@ -5,9 +5,12 @@ export const SET_NO_CAT_LIST = 'SET_NO_CAT_LIST';
 export const SET_CHECK1 = 'SET_CHECK1';
 import POReqTrans from '../api/POReqTrans';
 
-export function fetchNoCatList() {
+export function getNoCatList() {
  return (dispatch,getState) => {
-    POUpdateAPI.noPOCatList(dispatch);
+   // POUpdateAPI.noPOCatList(dispatch);
+      var disp = dispatch;
+      POReqTrans(disp);
+//      POReqTrans.call(this,disp);
   };
 }
 
@@ -30,6 +33,8 @@ export function setPOCategories(POCategories) {
     POCategories: POCategories
   };
 }
+
+
 
 export function setCheck1(setMe) {
   return {
