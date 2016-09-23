@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
+import POReqTransButton from '../containers/POReqTransButton';
 import POReqTransChecks from '../containers/POReqTransChecks';
 //import styles from './Home.css';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
@@ -53,6 +54,21 @@ if (loggedIn) {
   const chk2 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '5px 13px' };
   const dbg1 ={border: '1px solid blue', padding: '0px' };
 
+  var checks;
+
+  if(('failure'!=this.props.POReqTrans.chk1) &&
+    ('failure'!=this.props.POReqTrans.chk2) && 
+    ('failure'!=this.props.POReqTrans.chk3))  
+  {
+    checks =
+      <Row >
+        <Col xs={4}></Col>
+        <Col xs={4}><POReqTransChecks /></Col>
+        <Col xs={4}></Col>
+      </Row>;
+
+  }
+
     return (
       <div  >
     <Grid >
@@ -65,17 +81,45 @@ if (loggedIn) {
           </Jumbotron>
         </Col>
       </Row>
-
       <Row >
-        <Col xs={4}></Col>
-        <Col xs={4}><POReqTransChecks /></Col>
-        <Col xs={4}></Col>
+        <Col xs={1}>&nbsp;</Col>
       </Row>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+
+      <Row>
+        <Col xs={5} >&nbsp;</Col>
+        <Col xs={2}><POReqTransButton /></Col>
+        <Col xs={5}>&nbsp;</Col>
+      </Row>
+
+        <Row >
+          <Col xs={1}>&nbsp;</Col>
+        </Row>
+        <Row>
+          <Col xs={1}>&nbsp;</Col>
+        </Row>
+        <Row>
+          <Col xs={1}>&nbsp;</Col>
+        </Row>
+        <Row>
+          <Col xs={1}>&nbsp;</Col>
+        </Row>
+
+        {checks}
           
     </Grid>
 
     <br/>
     <br/>
+        }
 
   <Navbar inverse fixedBottom>
     <NavbarHeader>

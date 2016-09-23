@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
-import POReqTransButton from '../containers/POReqTransButton';
 //import styles from './Home.css';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
 import { Grid, Row, Glyphicon, FormGroup,ControlLabel, FormControl, Col, Checkbox, ListGroup, ListGroupItem, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
@@ -105,6 +104,41 @@ export default class POReqTransChecks extends Component {
   const  chk1 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   };
 
   var check1Button;
+  if('success'==this.props.POReqTrans.chk1){
+    check1Button = 
+              <Row style={chk} >
+                <Col  xs={10}>PO Category Check</Col>
+                <Col  xs={2}><Button bsStyle="success"><Glyphicon glyph="ok" /></Button></Col>
+              </Row>;
+  }
+/*
+        <Row style={chk} >
+          <Col xs={10}>PO Vendor Check</Col>
+          <Col xs={2}>{check2Button}</Col>
+        </Row>
+        <Row style={chk} >
+          <Col xs={10}>Transfering</Col>
+          <Col xs={2}>{check3Button}</Col>
+        </Row>
+
+*/
+
+  const jbk ={backgroundColor: 'black' };
+    return (
+      <div>
+        <Row >
+          <Col xs={11}>
+              {check1Button}
+          </Col>
+        </Row>
+      </div>
+
+    );
+  }
+}
+
+
+/*
   switch (this.props.POReqTrans.chk1) {
       case "success":
           check1Button= <Button bsStyle="success"><Glyphicon glyph="ok" /></Button>;
@@ -140,47 +174,4 @@ export default class POReqTransChecks extends Component {
            check3Button= <Button bsStyle="info"><Glyphicon glyph="time" /></Button>;
   }
 
-  const jbk ={backgroundColor: 'black' };
-    return (
-      <div>
-
-        <Row >
-          <Col xs={1}>&nbsp;</Col>
-        </Row>
-        <Row>
-          <Col xs={1}>&nbsp;</Col>
-        </Row>
-        <Row>
-          <Col xs={1}>&nbsp;</Col>
-        </Row>
-        <Row>
-          <Col xs={3} >&nbsp;</Col>
-          <Col xs={6}><POReqTransButton /></Col>
-          <Col xs={3}>&nbsp;</Col>
-        </Row>
-        <Row>
-          <Col xs={1}>&nbsp;</Col>
-        </Row>
-        <Row >
-          <Col xs={11}>
-              <Row style={chk} >
-                <Col  xs={10}>PO Category Check</Col>
-                <Col  xs={2}>{check1Button}</Col>
-              </Row>
-              <Row style={chk} >
-                <Col xs={10}>PO Vendor Check</Col>
-                <Col xs={2}>{check2Button}</Col>
-              </Row>
-              <Row style={chk} >
-                <Col xs={10}>Transfering</Col>
-                <Col xs={2}>{check3Button}</Col>
-              </Row>
-          </Col>
-        </Row>
-  </div>
-
-    );
-  }
-}
-
-
+*/
