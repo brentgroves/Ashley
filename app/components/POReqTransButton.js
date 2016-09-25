@@ -10,6 +10,7 @@ const POReqTransButton = React.createClass({
   },
 
   render () {
+    console.log('button render =' + this.props.POReqTrans.btnState);
     var btnState;
     switch (this.props.POReqTrans.chk1) {
         case "success":
@@ -26,7 +27,7 @@ const POReqTransButton = React.createClass({
 
     return (
       <div>
-        <ProgressButton onClick={this.handleClick} state={btnState}>
+        <ProgressButton onClick={this.handleClick} state={this.props.POReqTrans.btnState}>
           Go!
         </ProgressButton>
       </div>
@@ -34,6 +35,7 @@ const POReqTransButton = React.createClass({
   },
 
   handleClick () {
+    console.log('handleClick');
     this.setState({buttonState: 'loading'});
     this.props.getNoCatList();
      // POReqTrans.call(this);

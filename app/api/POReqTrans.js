@@ -187,7 +187,7 @@ function  poCatChk(disp,cribConnection) {
   //         })
           //        that.props.setCheck1('failure');
       }else {
-        dispatch({ type: SET_CHECK1, status:'success' });
+        dispatch({ type: SET_CHECK1, status:'failure' });
   //      document.getElementById('msgToUsr').innerHTML = `<div class="passed">Passed Cribmaster PO category check.</div>`;
   //      poVendorChk(cribConnection);
       }

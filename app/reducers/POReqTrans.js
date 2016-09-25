@@ -16,7 +16,8 @@ export default function reducer( state = {}, action) {
       console.log('update noCatList');
       var newData = update(state, 
         { noCatList: {$set: action.noCatList},
-          chk1: {$set: 'success'}
+          chk1: {$set: 'success'},
+          btnState:{$set:'success'}
         });
     //  return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
       return newData;
