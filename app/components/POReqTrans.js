@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 import POReqTransButton from '../containers/POReqTransButton';
 import POReqTransChecks from '../containers/POReqTransChecks';
+import NoCatGriddlePage from '../containers/NoCatGriddlePage';
 //import styles from './Home.css';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
 import { Grid, Row, Glyphicon, FormGroup,ControlLabel, FormControl, Col, Checkbox, ListGroup, ListGroupItem, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
@@ -54,7 +55,7 @@ if (loggedIn) {
   const chk2 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '5px 13px' };
   const dbg1 ={border: '1px solid blue', padding: '0px' };
 
-  var checks;
+  var checks,goButton,noCatGrid;
 
   if(('failure'!=this.props.POReqTrans.chk1) &&
     ('failure'!=this.props.POReqTrans.chk2) && 
@@ -65,6 +66,18 @@ if (loggedIn) {
         <Col xs={4}></Col>
         <Col xs={4}><POReqTransChecks /></Col>
         <Col xs={4}></Col>
+      </Row>;
+
+    goButton =
+      <Row>
+        <Col xs={5} >&nbsp;</Col>
+        <Col xs={2}><POReqTransButton /></Col>
+        <Col xs={5}>&nbsp;</Col>
+      </Row>;
+
+    noCatGrid =
+      <Row>
+        <Col xs={12}><NoCatGriddlePage /></Col>
       </Row>;
 
   }
@@ -94,11 +107,7 @@ if (loggedIn) {
         <Col xs={1}>&nbsp;</Col>
       </Row>
 
-      <Row>
-        <Col xs={5} >&nbsp;</Col>
-        <Col xs={2}><POReqTransButton /></Col>
-        <Col xs={5}>&nbsp;</Col>
-      </Row>
+        {goButton}
 
         <Row >
           <Col xs={1}>&nbsp;</Col>
