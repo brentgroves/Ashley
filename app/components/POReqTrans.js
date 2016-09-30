@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 import POReqTransButton from '../containers/POReqTransButton';
 import POReqTransChecks from '../containers/POReqTransChecks';
-import NoCatGriddlePage from '../containers/NoCatGriddlePage';
+import PORTChk1 from '../containers/PORTChk1';
 //import styles from './Home.css';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
 import { Grid, Row, Glyphicon, FormGroup,ControlLabel, FormControl, Col, Checkbox, ListGroup, ListGroupItem, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
@@ -55,7 +55,7 @@ if (loggedIn) {
   const chk2 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '5px 13px' };
   const dbg1 ={border: '1px solid blue', padding: '0px' };
 
-  var checks,goButton,noCatGrid;
+  var checks,goButton,portChk1;
 
   if(('failure'!=this.props.POReqTrans.chk1) &&
     ('failure'!=this.props.POReqTrans.chk2) && 
@@ -75,11 +75,16 @@ if (loggedIn) {
         <Col xs={5}>&nbsp;</Col>
       </Row>;
 
-    noCatGrid =
-      <Row>
-        <Col xs={12}><NoCatGriddlePage /></Col>
-      </Row>;
 
+  }
+  if(('failure'==this.props.POReqTrans.chk1) ||
+    ('failure'==this.props.POReqTrans.chk2) || 
+    ('failure'==this.props.POReqTrans.chk3))  
+  {
+    portChk1 =
+      <Row>
+        <Col xs={12}><PORTChk1 /></Col>
+      </Row>;
   }
 
     return (
@@ -108,7 +113,7 @@ if (loggedIn) {
       </Row>
 
         {goButton}
-
+        {portChk1}
         <Row >
           <Col xs={1}>&nbsp;</Col>
         </Row>

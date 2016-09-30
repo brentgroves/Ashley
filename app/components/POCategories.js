@@ -1,7 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import Select from 'react-select';
 import fetch from 'isomorphic-fetch';
-import POUpdateAPI from '../api/POUpdate';
+import POReqTrans from '../api/POReqTrans';
+import { form, FormGroup, ControlLabel, FormControl, HelpBlock} from 'react-bootstrap';
+import {Feedback as FeedbackX, } from 'react-bootstrap/lib/FormControl'
 
 
 const POCategories = React.createClass({
@@ -11,12 +13,21 @@ const POCategories = React.createClass({
         poCategories: PropTypes.array.isRequired,
    		label: React.PropTypes.string
     },
+  getInitialState() {
+    return {
+      value: ''
+    };
+  },
 
-	getInitialState () {
-		return {
-			multi: false
-		};
-	},
+  handleChange(e) {
+    this.setState({ value: e.target.value });
+  },
+
+	// getInitialState () {
+	// 	return {
+	// 		multi: false
+	// 	};
+	// },
 	onChange (value) {
 		this.props.rowData.UDF_POCATEGORY = value.UDF_POCATEGORY;
 		this.setState({
@@ -42,6 +53,13 @@ const POCategories = React.createClass({
 	gotoUser (value, event) {
 		window.open(value.html_url);
 	},
+	  getValidationState() {
+	    const length = this.state.value.length;
+	    if (length > 10) return 'success';
+	    else if (length > 5) return 'warning';
+	    else if (length > 0) return 'error';
+	  },
+
 	/*
 	render () {
 		return (
@@ -54,10 +72,6 @@ const POCategories = React.createClass({
 
 				<h3 className="section-heading">{this.props.label}</h3>
 
-	*/
-	render () {
-		return (
-			<div className="section">
 				<Select 
 				multi={this.state.multi} 
 				value={this.state.value} 
@@ -66,6 +80,28 @@ const POCategories = React.createClass({
 				onValueClick={this.gotoUser} 
 				valueKey="UDF_POCATEGORY" 
 				labelKey="descr" options={this.props.poCategories} minimumInput={1} backspaceRemoves={false} />
+
+	*/
+	render () {
+		return (
+			<div className="section">
+      <form>
+        <FormGroup
+          controlId="formBasicText"
+          validationState={this.getValidationState()}
+        >
+          <ControlLabel>Working example with validation</ControlLabel>
+          <FormControl
+            type="text"
+            value={this.state.value}
+            placeholder="Enter text"
+            onChange={this.handleChange}
+          />
+          <FeedbackX />
+          <HelpBlock>Validation is based on string length.</HelpBlock>
+        </FormGroup>
+      </form>
+
 			</div>
 		);
 	}

@@ -10,7 +10,8 @@ import './app.global.css';
 
 const initialState = {
 	NoCatList:[{}],
-	POCategories:[{}],
+	POCategories:['cat1','cat2','cat3'],
+	label:'hello',
 	POReqTrans:{ started:'false',btnState:'', chk1:'unknown',chk2:'unknown',chk3:'unknown',chk4:'unknown',noCatList:[{}]}
 
 //	noVenPoList:[{PONumber:1,Vendor:2,Address1:'1633 S US HWY 33'}]
