@@ -6,8 +6,7 @@ import * as POReqTrans from '../actions/POReqTrans';
 
 function mapStateToProps(state) {
   return {
-    	poCategories: state.POCategories,
-    	label: state.label
+    	poCategories: state.POCategories
 	};
 }
 

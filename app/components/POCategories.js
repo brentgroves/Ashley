@@ -10,8 +10,7 @@ const POCategories = React.createClass({
 
 	displayName: 'POCategories',
     propTypes: {
-        poCategories: PropTypes.array.isRequired,
-   		label: React.PropTypes.string
+        poCategories: PropTypes.array.isRequired
     },
   getInitialState() {
     return {

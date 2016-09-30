@@ -41,12 +41,7 @@ export default {
   externals: [
     ...baseConfig.externals,
     'font-awesome',
-    'semantic-ui-button',
-    'semantic-ui-grid',
-    'semantic-ui-container',
-    'react-grid-layout',
-    'react-resizable',
-    'react-select',
+    'bootstrap',
     'source-map-support'
   ]
 };
