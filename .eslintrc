@@ -7,18 +7,26 @@
     "node": true
   },
   "rules": {
-    "consistent-return": 0,
-    "comma-dangle": 0,
-    "no-use-before-define": 0,
-    "import/no-unresolved": [2, { ignore: ['electron'] }],
-    "react/jsx-no-bind": 0,
-    "react/prefer-stateless-function": 0
+    "arrow-parens": ["error", "as-needed"],
+    "consistent-return": "off",
+    "comma-dangle": "off",
+    "no-use-before-define": "off",
+    "import/no-unresolved": ["error", { "ignore": ["electron"] }],
+    "import/no-extraneous-dependencies": "off",
+    "react/jsx-no-bind": "off",
+    "react/jsx-filename-extension": ["error", { "extensions": [".js", ".jsx"] }],
+    "react/prefer-stateless-function": "off",
+    "generator-star-spacing": "off"
   },
   "plugins": [
     "import",
     "react"
   ],
   "settings": {
-    "import/resolver": "webpack"
+    "import/resolver": {
+      "webpack": {
+        "config": "webpack.config.eslint.js"
+      }
+    }
   }
 }

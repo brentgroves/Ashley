@@ -18,13 +18,15 @@ app.on('window-all-closed', () => {
 const installExtensions = async () => {
   if (process.env.NODE_ENV === 'development') {
     const installer = require('electron-devtools-installer'); // eslint-disable-line global-require
+
     const extensions = [
       'REACT_DEVELOPER_TOOLS',
       'REDUX_DEVTOOLS'
     ];
+    const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
     for (const name of extensions) {
       try {
-        await installer.default(installer[name]);
+        await installer.default(installer[name], forceDownload);
       } catch (e) {} // eslint-disable-line
     }
   }
@@ -35,7 +37,7 @@ app.on('ready', async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1300,
+     width: 1300,
     height: 756
   });
 /*
@@ -65,10 +67,8 @@ app.on('ready', async () => {
     mainWindow = null;
   });
 
-
   if (process.env.NODE_ENV === 'development') {
     mainWindow.openDevTools();
-  
     mainWindow.webContents.on('context-menu', (e, props) => {
       const { x, y } = props;
 
@@ -252,12 +252,6 @@ app.on('ready', async () => {
         click() {
           mainWindow.setFullScreen(!mainWindow.isFullScreen());
         }
-      }, {
-        label: 'Toggle &Developer Tools',
-        accelerator: 'Alt+Ctrl+I',
-        click() {
-          mainWindow.toggleDevTools();
-        }
       }]
     }, {
       label: 'Help',
@@ -286,7 +280,5 @@ app.on('ready', async () => {
     menu = Menu.buildFromTemplate(template);
 //    mainWindow.setMenu(menu);
     mainWindow.setMenu(null);
-
   }
-
 });
