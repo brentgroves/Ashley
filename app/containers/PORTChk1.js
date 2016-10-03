@@ -5,7 +5,7 @@ import * as POReqTrans from '../actions/POReqTrans';
 
 function mapStateToProps(state) {
   return {
-    noCatList: state.POReqTrans.noCatList
+	POReqTrans: state.POReqTrans
   };
 }
 

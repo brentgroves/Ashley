@@ -20,13 +20,13 @@ function jobNameValidator(value){
 
 export default class PORTChk1 extends React.Component{
   static propTypes = {
-    noCatList: PropTypes.array.isRequired
+    POReqTrans: PropTypes.object.isRequired
   };
 
   constructor(props) {
     super(props);
     this.state = {
- //     loading: false
+ //     loading: false PONumber,Item,UDF_POCATEGORY
     };
 
   }
@@ -35,16 +35,21 @@ export default class PORTChk1 extends React.Component{
     var t;
     t=1;
     return (
-      <h1>Hello</h1>
-      /*
-      <BootstrapTable data={this.props.noCatList} cellEdit={cellEditProp} insertRow={true}>
+      <BootstrapTable data={this.props.POReqTrans.noCatList} cellEdit={cellEditProp} insertRow={true}>
+          <TableHeaderColumn dataField="PONumber" isKey={false}>PO Number</TableHeaderColumn>
+          <TableHeaderColumn dataField="Item" isKey={true}>Item Number</TableHeaderColumn>
+          <TableHeaderColumn dataField="UDF_POCATEGORY" isKey={false}>UDF_POCATEGORY</TableHeaderColumn>
+      </BootstrapTable>
+    );
+  }
+};
+
+/* PONumber,Item,UDF_POCATEGORY
+      <BootstrapTable data={this.props.POReqTrans.noCatList} cellEdit={cellEditProp} insertRow={true}>
           <TableHeaderColumn dataField="id" isKey={true}>Job ID</TableHeaderColumn>
           <TableHeaderColumn dataField="name" editable={{type:'textarea', validator:jobNameValidator}}>Job Name</TableHeaderColumn>
           <TableHeaderColumn dataField="type" editable={{type:'select', options:{values:jobTypes}}}>Job Type</TableHeaderColumn>
           <TableHeaderColumn dataField="active" editable={{type:'checkbox', options:{values:'Y:N'}}}>Active</TableHeaderColumn>
       </BootstrapTable>
-      */
 
-    );
-  }
-};
+*/
