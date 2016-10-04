@@ -1,9 +1,8 @@
-export const FETCH_PO_CATEGORIES = 'FETCH_PO_CATEGORIES';
 export const SET_PO_CATEGORIES = 'SET_PO_CATEGORIES';
-export const FETCH_NO_CAT_LIST = 'FETCH_NO_CAT_LIST';
 export const SET_NO_CAT_LIST = 'SET_NO_CAT_LIST';
 export const SET_CHECK1 = 'SET_CHECK1';
-import POReqTrans from '../api/POReqTrans';
+export const SET_GO_BUTTON = 'SET_GO_BUTTON';
+import POReqTrans,{fetchPOCategories} from '../api/POReqTrans';
 
 export function getNoCatList() {
  return (dispatch,getState) => {
@@ -21,25 +20,32 @@ export function setNoCatList(noCatList) {
   };
 }
 
-export function fetchPOCategories() {
+export function getPOCategories() {
  return (dispatch,getState) => {
-    POReqTrans.fetchPOCategories(dispatch);
-  };
+      var disp = dispatch;
+      fetchPOCategories(disp);
+ };
 }
 
-export function setPOCategories(POCategories) {
+export function setPOCategories(catTypes) {
   return {
     type: SET_PO_CATEGORIES,
-    POCategories: POCategories
+    catTypes: catTypes
   };
 }
 
+export function setGoButton(setMe) {
+  return {
+    type: SET_GO_BUTTON,
+    goButton: setMe
+  };
+}
 
 
 export function setCheck1(setMe) {
   return {
     type: SET_CHECK1,
-    chk1: {chk1:setMe}
+    chk1: setMe
   };
 }
 

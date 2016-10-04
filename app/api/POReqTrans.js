@@ -1,7 +1,7 @@
 
 var sql = require('mssql');
 const {dialog} = require('electron').remote;
-import {SET_PO_CATEGORIES,SET_NO_CAT_LIST} from '../actions/POReqTrans';
+import {SET_CHECK1,SET_PO_CATEGORIES,SET_NO_CAT_LIST,SET_GO_BUTTON} from '../actions/POReqTrans';
 
 var m2m = {
   user: 'sa',
@@ -53,20 +53,87 @@ var crib = {
 */
 var prod=false;
 var errors=false;
+export function fetchPOCategories(dispatch){
+  var disp = dispatch;
+  console.log('start of fetchPOCategories');
 
-function POReqTrans(dispatch) {
+  var cribConnection = new sql.Connection(crib,function(err){
+    // error checks
+  console.log('call poCategories');
+    poCategories(disp,cribConnection);
+  });
+  cribConnection.on('error', function(err) {
+    console.log(`Connection1 err:  ${err}` );
+    // ... error handler
+  });
+}
+
+function  poCategories(disp,cribConnection) {
+  var dispatch = disp;
+  let qryCrib = `
+    select UDF_POCATEGORY,UDF_POCATEGORYDescription descr from UDT_POCATEGORY
+  `;
+
+  console.log('start of poCategories');
+
+
+  let cribReq = new sql.Request(cribConnection);
+
+  cribReq.query(qryCrib, function(err,cribRs) {
+ //   console.log(`PO category query done. ${err}`);
+    // error checks
+    if(cribRs.length!==0){
+      console.log("PO category retrieved.");
+      dispatch({ type:SET_PO_CATEGORIES, catTypes:cribRs });
+
+    }
+  });
+}
+
+
+
+
+export default function POReqTrans(dispatch) {
 //  var that = this;
   var disp = dispatch;
 //  document.getElementById('msgToUsr').innerHTML = '';
   var cribConnection = new sql.Connection(crib,function(err){
     // error checks
-    poCatChk(disp,cribConnection);
+    getAllCats(disp,cribConnection);
   });
   cribConnection.on('error', function(err) {
     console.log(`Connection1 err:  ${err}` );
     // ... error handler
   });
 } // poUpdate
+
+function  getAllCats(disp,cribConnection) {
+  var dispatch = disp;
+  let qryCrib = `
+    select UDF_POCATEGORY,UDF_POCATEGORYDescription descr from UDT_POCATEGORY
+  `;
+
+  console.log('start of poCategories');
+
+
+  let cribReq = new sql.Request(cribConnection);
+
+  cribReq.query(qryCrib, function(err,cribRs) {
+ //   console.log(`PO category query done. ${err}`);
+    // error checks
+    if(cribRs.length!==0){
+      console.log("PO category retrieved.");
+      var allCats=[];
+      for(var rec in cribRs){
+          allCats.push(rec.descr);
+      }      
+      dispatch({ type:SET_PO_CATEGORIES, catTypes:allCats });
+      poCatChk(dispatch,cribConnection);
+
+    }
+  });
+}
+
 
 function  poCatChk(disp,cribConnection) {
 //    var that = this;
@@ -108,13 +175,9 @@ function  poCatChk(disp,cribConnection) {
             cribRsErr+= `PO# ${podetail.PONumber}, Item: ${podetail.Item}\n`;
           }
         });
-  //      document.getElementById('errContents').innerHTML = cribRsErr;
         console.log("Failed PO category check.");
-  //      document.getElementById('msgToUsr').innerHTML += `<div class="failed">Failed Cribmaster PO category check.</div>`;
-  //      dialog.showMessageBox({ message:
-  //        `Failed PO category check:\nNo Cribmaster PO category is selected on the following PO(s):\n${cribRsErr}\n\nFix issue then click PO Update.`,
-  //        buttons: ["OK"] });
-//        that.props.setCheck1('failure');
+        dispatch({ type:SET_GO_BUTTON, goButton:'error' });
+        dispatch({ type:SET_CHECK1, chk1:'failure' });
         dispatch({ type: SET_NO_CAT_LIST, noCatList:cribRs });
   //       let page = 1
   //       that.setState({
@@ -125,107 +188,12 @@ function  poCatChk(disp,cribConnection) {
   //         })
           //        that.props.setCheck1('failure');
       }else {
-        dispatch({ type: SET_CHECK1, status:'success' });
-  //      document.getElementById('msgToUsr').innerHTML = `<div class="passed">Passed Cribmaster PO category check.</div>`;
-  //      poVendorChk(cribConnection);
-      }
-    });
-  }
-
-let POReqTransAPI = {
-  noPOCatList(dispatch){
-    var disp = dispatch;
-    var cribConnection = new sql.Connection(crib,function(err){
-      // error checks
-      needPOCat(cribConnection,disp);
-    });
-    cribConnection.on('error', function(err) {
-      console.log(`Connection1 err:  ${err}` );
-      // ... error handler
-    });
-  },
-  fetchPOCategories(dispatch){
-    var disp = dispatch;
-    var cribConnection = new sql.Connection(crib,function(err){
-      // error checks
-      POCategories(cribConnection,disp);
-    });
-    cribConnection.on('error', function(err) {
-      console.log(`Connection1 err:  ${err}` );
-      // ... error handler
-    });
-  }
-}
-
-function  needPOCat(cribConnection,disp) {
-    var dispatch = disp;
-    let qryCrib;
-    if (prod===true) {
-      qryCrib = `
-        SELECT PONumber,Item,UDF_POCATEGORY, 0 as dirty
-        FROM PODETAIL
-        WHERE PONUMBER in
-        (
-          SELECT ponumber FROM [PO]  WHERE [PO].POSTATUSNO = 3 and [PO].SITEID <> '90'
-        )
-        and UDF_POCATEGORY is null
-      `;
-    }else{
-      qryCrib = `
-        SELECT PONumber,Item,UDF_POCATEGORY, 0 as dirty
-        FROM btPODETAIL
-        WHERE PONUMBER in
-        (
-          SELECT ponumber FROM [btPO]  WHERE [btPO].POSTATUSNO = 3 and [btPO].SITEID <> '90'
-        )
-        and UDF_POCATEGORY is null
-      `;
-    }
-
-    let cribReq = new sql.Request(cribConnection);
-
-    cribReq.query(qryCrib, function(err,cribRs) {
-      // error checks
-      if(cribRs.length!==0){
-        let cribRsErr ="";
-        cribRs.forEach(function(podetail,i,arr){
-          console.log(podetail.Item);
-          if(arr.length===i+1){
-            cribRsErr+=`PO# ${podetail.PONumber}, Item: ${podetail.Item}`;
-          }else{
-            cribRsErr+= `PO# ${podetail.PONumber}, Item: ${podetail.Item}\n`;
-          }
-        });
-        console.log("Failed PO category check.");
-        dispatch({ type: SET_NO_CAT_LIST, noCatList:cribRs });
-      }else {
-  //      poVendorChk(cribConnection);
-      }
-    });
-  }
-
-function  POCategories(cribConnection,disp) {
-  var dispatch = disp;
-    let qryCrib = `
-      select UDF_POCATEGORY,UDF_POCATEGORYDescription descr from UDT_POCATEGORY
-    `;
-
-    let cribReq = new sql.Request(cribConnection);
-
-    cribReq.query(qryCrib, function(err,cribRs) {
-      // error checks
-      if(cribRs.length!==0){
-        dispatch({ type:SET_PO_CATEGORIES, poCategories:cribRs });
-      }else {
+        dispatch({ type: SET_CHECK1, chk1:'success' });
       }
     });
   }
 
 
 
-
-
-
-
-
-export default POReqTrans;
+//export default POReqTrans;
+///export fetchPOCategories;

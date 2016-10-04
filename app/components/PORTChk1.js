@@ -30,21 +30,30 @@ export default class PORTChk1 extends React.Component{
     };
 
   }
-
+//table-striped table-bordered table-condensed
   render(){
+    var tblStyle = {
+        backgroundColor: 'white'
+    };
+//      <div style={tblStyle}>
+
     var t;
     t=1;
     return (
-      <BootstrapTable data={this.props.POReqTrans.noCatList} cellEdit={cellEditProp} insertRow={true}>
+<div className="container" style={tblStyle}>
+      <BootstrapTable  data={this.props.POReqTrans.noCatList} striped={true} bordered={true} condensed={true} cellEdit={cellEditProp} insertRow={false}>
           <TableHeaderColumn dataField="PONumber" isKey={false}>PO Number</TableHeaderColumn>
           <TableHeaderColumn dataField="Item" isKey={true}>Item Number</TableHeaderColumn>
-          <TableHeaderColumn dataField="UDF_POCATEGORY" isKey={false}>UDF_POCATEGORY</TableHeaderColumn>
+          <TableHeaderColumn dataField="type" editable={{type:'select', options:{values:this.props.POReqTrans.catTypes}}}>Job Type</TableHeaderColumn>
       </BootstrapTable>
+      </div>
     );
   }
 };
 
 /* PONumber,Item,UDF_POCATEGORY
+          <TableHeaderColumn dataField="UDF_POCATEGORY" isKey={false}>Category</TableHeaderColumn>
+
       <BootstrapTable data={this.props.POReqTrans.noCatList} cellEdit={cellEditProp} insertRow={true}>
           <TableHeaderColumn dataField="id" isKey={true}>Job ID</TableHeaderColumn>
           <TableHeaderColumn dataField="name" editable={{type:'textarea', validator:jobNameValidator}}>Job Name</TableHeaderColumn>
