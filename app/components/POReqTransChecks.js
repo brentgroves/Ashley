@@ -104,12 +104,29 @@ export default class POReqTransChecks extends Component {
   const  chk1 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   };
 
   var check1Button;
-  if('success'==this.props.POReqTrans.chk1){
-    check1Button = 
-              <Row style={chk} >
-                <Col  xs={10}>PO Category Check</Col>
-                <Col  xs={2}><Button bsStyle="success"><Glyphicon glyph="ok" /></Button></Col>
-              </Row>;
+ switch (this.props.POReqTrans.chk1) {
+      case "success":
+        check1Button = 
+                  <Row style={chk} >
+                    <Col  xs={10}>PO Category Check</Col>
+                    <Col  xs={2}><Button bsStyle="success"><Glyphicon glyph="ok" /></Button></Col>
+                  </Row>;
+          break; 
+      case "failure":
+        check1Button = 
+                  <Row style={chk} >
+                    <Col  xs={10}>PO Category Check</Col>
+                    <Col  xs={2}><Button bsStyle="danger"><Glyphicon glyph="remove" /></Button></Col>
+                  </Row>;
+        break;
+      default: 
+        check1Button = 
+                  <Row style={chk} >
+                    <Col  xs={10}>PO Category Check</Col>
+                    <Col  xs={2}><Button bsStyle="info"><Glyphicon glyph="time" /></Button></Col>
+                  </Row>;
+        break;
+
   }
 /*
         <Row style={chk} >

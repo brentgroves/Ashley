@@ -2,7 +2,25 @@ export const SET_PO_CATEGORIES = 'SET_PO_CATEGORIES';
 export const SET_NO_CAT_LIST = 'SET_NO_CAT_LIST';
 export const SET_CHECK1 = 'SET_CHECK1';
 export const SET_GO_BUTTON = 'SET_GO_BUTTON';
+export const SET_PO_CAT_RECORDS = 'SET_PO_CAT_RECORDS';
+export const INIT_PORT = 'INIT_PORT';
+export const SET_STARTED = 'SET_STARTED';
+
+
 import POReqTrans,{fetchPOCategories} from '../api/POReqTrans';
+
+export function initPORT() {
+  return {
+    type: INIT_PORT
+  };
+}
+
+export function setStarted(started) {
+  return {
+    type: SET_STARTED,
+    started: started
+  };
+}
 
 export function getNoCatList() {
  return (dispatch,getState) => {
@@ -12,6 +30,7 @@ export function getNoCatList() {
 //      POReqTrans.call(this,disp);
   };
 }
+
 
 export function setNoCatList(noCatList) {
   return {

@@ -10,14 +10,15 @@ import './app.global.css';
 
 const initialState = {
 	POReqTrans:{ 
-		started:'false',
+		started:false,
 		goButton:'', 
 		chk1:'unknown',
 		chk2:'unknown',
 		chk3:'unknown',
 		chk4:'unknown',
 		noCatList:[{}],
-		catTypes:['cat1','cat2','cat3']	
+		catTypes:['cat1','cat2','cat3'],
+		catRecs:[{}]	
 	}
 
 //	noVenPoList:[{PONumber:1,Vendor:2,Address1:'1633 S US HWY 33'}]

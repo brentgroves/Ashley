@@ -1,7 +1,7 @@
 
 var sql = require('mssql');
 const {dialog} = require('electron').remote;
-import {SET_CHECK1,SET_PO_CATEGORIES,SET_NO_CAT_LIST,SET_GO_BUTTON} from '../actions/POReqTrans';
+import {SET_STARTED,SET_CHECK1,SET_PO_CATEGORIES,SET_PO_CAT_RECORDS,SET_NO_CAT_LIST,SET_GO_BUTTON} from '../actions/POReqTrans';
 
 var m2m = {
   user: 'sa',
@@ -53,6 +53,20 @@ var crib = {
 */
 var prod=false;
 var errors=false;
+export function linuxSQLPrime(){
+  console.log('start of linuxSQLPrime');
+
+  var cribConnection = new sql.Connection(crib,function(err){
+    // error checks
+    console.log('Connection created');
+  });
+  cribConnection.on('error', function(err) {
+    console.log(`Connection1 err:  ${err}` );
+    // ... error handler
+  });
+}
+
+
 export function fetchPOCategories(dispatch){
   var disp = dispatch;
   console.log('start of fetchPOCategories');
@@ -110,7 +124,7 @@ export default function POReqTrans(dispatch) {
 function  getAllCats(disp,cribConnection) {
   var dispatch = disp;
   let qryCrib = `
-    select UDF_POCATEGORY,UDF_POCATEGORYDescription descr from UDT_POCATEGORY
+    select UDF_POCATEGORY,RTrim(UDF_POCATEGORYDescription) descr from UDT_POCATEGORY
   `;
 
   console.log('start of poCategories');
@@ -124,10 +138,22 @@ function  getAllCats(disp,cribConnection) {
     if(cribRs.length!==0){
       console.log("PO category retrieved.");
       var allCats=[];
-      for(var rec in cribRs){
-          allCats.push(rec.descr);
-      }      
+      var catRecs=[];
+      var cribRsLog;
+      cribRs.forEach(function(pocat,i,arr){
+        console.log(pocat.descr);
+        if(arr.length===i+1){
+          cribRsLog+=`UDF_POCATEGORY# ${pocat.UDF_POCATEGORY}, descr: ${pocat.descr}`;
+        }else{
+          cribRsLog+=`UDF_POCATEGORY# ${pocat.UDF_POCATEGORY}, descr: ${pocat.descr}\n`;
+        }
+        allCats.push(pocat.descr);
+        catRecs.push({UDF_POCATEGORY:pocat.UDF_POCATEGORY, descr:pocat.descr});
+      });
+//      dispatch({ type:SET_PO_CATEGORIES, catTypes:['pocat1','pocat2'] });
+      dispatch({ type:SET_STARTED, started:true });
       dispatch({ type:SET_PO_CATEGORIES, catTypes:allCats });
+      dispatch({ type:SET_PO_CAT_RECORDS, catRecs:catRecs });
       poCatChk(dispatch,cribConnection);
 
     }
@@ -141,7 +167,7 @@ function  poCatChk(disp,cribConnection) {
     let qryCrib;
     if (prod===true) {
       qryCrib = `
-        SELECT PONumber,Item,UDF_POCATEGORY
+        SELECT ROW_NUMBER() OVER(ORDER BY PONumber, Item) id,PONumber,RTrim(Item) Item,RTrim(ItemDescription) ItemDescription,RTrim(UDF_POCATEGORY) UDF_POCATEGORY
         FROM PODETAIL
         WHERE PONUMBER in
         (
@@ -151,7 +177,7 @@ function  poCatChk(disp,cribConnection) {
       `;
     }else{
       qryCrib = `
-        SELECT PONumber,Item,UDF_POCATEGORY
+        SELECT ROW_NUMBER() OVER(ORDER BY PONumber, Item) id,PONumber,RTrim(Item) Item,RTrim(ItemDescription) ItemDescription,RTrim(UDF_POCATEGORY) UDF_POCATEGORY
         FROM btPODETAIL
         WHERE PONUMBER in
         (
