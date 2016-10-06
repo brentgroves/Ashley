@@ -33,6 +33,33 @@ a:hover {
   cursor: pointer;
 }
 
+.my-header-class{
+  color:#D5DDE5;;
+  background:#1b1e24;
+  border-bottom:4px solid #9ea7af;
+  border-right: 1px solid #343a45;
+  font-size:23px;
+  font-weight: 100;
+  padding:24px;
+  text-align:left;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  vertical-align:middle;
+}
+
+.tr-odd-example{
+  border-top: 1px solid #C1C3D1;
+  border-bottom-: 1px solid #C1C3D1;
+  color:#666B85;
+  font-size:16px;
+  font-weight:normal;
+  text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
+}
+
+.tr-even-example{
+    color: red;
+    background-color: yellowgreen;
+}
+
 .jumbotron {
   background-image: url("banner.jpg");
   background-size: 'cover';  

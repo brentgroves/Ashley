@@ -7,6 +7,20 @@ var catRecs = [{}];
 // can't find a way for onAfterSaveCell() to access this.props??
 var cancelApp,updateChk1;
 
+/*
+function columnClassNameFormat(fieldValue, row, rowIdx, colIdx) {
+  // fieldValue is column value
+  // row is whole row object
+  // rowIdx is index of row
+  // colIdx is index of column
+  return rowIdx % 2 === 0 ? 'td-column-function-even-example' : 'td-column-function-odd-example';
+}
+*/
+
+function trClassFormat(rowData,rowIndex){
+   return rowIndex%2==0?"tr-odd-example":"tr-even-example";  //return a class name.
+}
+
 export default class PORTChk1 extends React.Component{
   static propTypes = {
     POReqTrans: PropTypes.object.isRequired
@@ -74,19 +88,34 @@ export default class PORTChk1 extends React.Component{
   render(){
     var tblStyle = {
         backgroundColor: 'white'
-    };
-//      <div style={tblStyle}>
+    }; 
+//      <div style={tblStyle}> style={tblStyle} striped={true}
+/*
+          trClassName='trClassFormat'          
 
+          tableHeaderClass='my-header-class'
+          tableBodyClass='my-body-class'
+          containerClass='my-container-class'
+          tableContainerClass='my-table-container-class'
+          headerContainerClass='my-header-container-class'
+          bodyContainerClass='my-body-container-class'>
+          <TableHeaderColumn dataField="type" width="275" className='td-header-string-example'  editable={{type:'select', options:{values:this.props.POReqTrans.catTypes}}}>Category</TableHeaderColumn>
+
+*/
     var t;
     t=1;
     return (
-<div className="container" style={tblStyle}>
-      <BootstrapTable  data={this.props.POReqTrans.noCatList} striped={true} hover={true} bordered={true} condensed={true} cellEdit={this.cellEditProp} insertRow={false}>
+<div className="container" >
+      <BootstrapTable  
+          data={this.props.POReqTrans.noCatList} pagination 
+          trClassName={trClassFormat} tableHeaderClass='my-header-class'
+           hover={true} bordered={true} condensed={true} 
+          cellEdit={this.cellEditProp} insertRow={false}>
           <TableHeaderColumn dataField="id" isKey={true} >Row</TableHeaderColumn>
           <TableHeaderColumn dataField="PONumber" editable={false} >PO Number</TableHeaderColumn>
           <TableHeaderColumn dataField="Item" editable={false} >Item Number</TableHeaderColumn>
           <TableHeaderColumn dataField="ItemDescription" editable={false} >Item Description</TableHeaderColumn>
-          <TableHeaderColumn dataField="type" width="275" editable={{type:'select', options:{values:this.props.POReqTrans.catTypes}}}>Category</TableHeaderColumn>
+          <TableHeaderColumn dataField="type" width="275"  editable={{type:'select', options:{values:this.props.POReqTrans.catTypes}}}>Category</TableHeaderColumn>
       </BootstrapTable>
       </div>
     );

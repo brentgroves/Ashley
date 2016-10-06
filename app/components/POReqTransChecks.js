@@ -105,12 +105,13 @@ export default class POReqTransChecks extends Component {
 
   var check1Button;
  switch (this.props.POReqTrans.chk1) {
-      case "success":
+      default: 
+//      case "success":
         check1Button = 
                   <Row style={chk} >
                     <Col  xs={10}>PO Category Check</Col>
                     <Col  xs={2}><Button bsStyle="success"><Glyphicon glyph="ok" /></Button></Col>
-                  </Row>;
+                  </Row>
           break; 
           /*
       case "failure":
@@ -144,13 +145,11 @@ export default class POReqTransChecks extends Component {
 
   const jbk ={backgroundColor: 'black' };
     return (
-      <div>
         <Row >
           <Col xs={11}>
               {check1Button}
           </Col>
         </Row>
-      </div>
 
     );
   }

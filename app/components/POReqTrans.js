@@ -72,7 +72,26 @@ if (loggedIn) {
 
 //            <a href="#">Home</a> activeStyle={{color: '#33e0ff'}}
 //<div onClick={this.handleClick}>Click me!</div>
-  if(true!=this.props.POReqTrans.started)  
+/*
+          {goButton}
+          {portChk1}
+          {checks}
+          {exitBtn}
+
+
+        <br/>
+        <br/>
+        {navbar}
+    <div>
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+
+*/  
+if(true!=this.props.POReqTrans.started)  
   {
     navbar =
       <Navbar inverse fixedBottom>
@@ -84,12 +103,26 @@ if (loggedIn) {
             </NavbarBrand>
           <NavbarToggle />
         </NavbarHeader>
-      </Navbar>;
+      </Navbar>
   }else{
-    exitBtn =
-      <Button  onClick={this.handleClick} bsSize="large" bsStyle="warning">Exit</Button>;
+    exitBtn = 
+    <div>
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+
+      <Row>
+        <Col xs={5} >&nbsp;</Col>
+        <Col xs={2}><Button  onClick={this.handleClick} bsSize="large" bsStyle="warning">Exit</Button></Col>
+        <Col xs={5}>&nbsp;</Col>
+      </Row>
+    </div>
 
   }
+
 
   if(('failure'!=this.props.POReqTrans.chk1) &&
     ('failure'!=this.props.POReqTrans.chk2) && 
@@ -97,32 +130,56 @@ if (loggedIn) {
     ('failure'!=this.props.POReqTrans.chk4) &&  
     (true==this.props.POReqTrans.started))  
   {
-    checks =
+//  if(true){
+    checks = 
+    <div>
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
       <Row >
         <Col xs={4}></Col>
         <Col xs={4}><POReqTransChecks /></Col>
         <Col xs={4}></Col>
-      </Row>;
+      </Row>
+    </div>
   }
 
   if(('failure'!=this.props.POReqTrans.chk1) &&
     ('failure'!=this.props.POReqTrans.chk2) && 
     ('failure'!=this.props.POReqTrans.chk3))  
   {
-    goButton =
+    goButton = 
+    <div>
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
       <Row>
         <Col xs={5} >&nbsp;</Col>
         <Col xs={2}><POReqTransButton /></Col>
         <Col xs={5}>&nbsp;</Col>
-      </Row>;
-
-
+      </Row>
+    </div>
   }
+
   if('failure'==this.props.POReqTrans.chk1)  {
-    portChk1 =
+    portChk1 = 
+    <div>
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
       <Row>
         <Col xs={12}><PORTChk1 /></Col>
-      </Row>;
+      </Row>
+    </div>;
   }
 
     return (
@@ -137,42 +194,12 @@ if (loggedIn) {
               </Jumbotron>
             </Col>
           </Row>
-          <Row >
-            <Col xs={1}>&nbsp;</Col>
-          </Row>
-          <Row>
-            <Col xs={1}>&nbsp;</Col>
-          </Row>
-          <Row>
-            <Col xs={1}>&nbsp;</Col>
-          </Row>
-          <Row>
-            <Col xs={1}>&nbsp;</Col>
-          </Row>
-
           {goButton}
           {portChk1}
-          <Row >
-            <Col xs={1}>&nbsp;</Col>
-          </Row>
-          <Row>
-            <Col xs={1}>&nbsp;</Col>
-          </Row>
-          <Row>
-            <Col xs={1}>&nbsp;</Col>
-          </Row>
-          <Row>
-            <Col xs={1}>&nbsp;</Col>
-          </Row>
-
           {checks}
           {exitBtn}
-        </Grid>
 
-        <br/>
-        <br/>
-        {navbar}
-          }
+        </Grid>
       </div>
 
     );
