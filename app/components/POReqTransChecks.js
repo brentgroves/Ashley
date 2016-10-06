@@ -112,6 +112,7 @@ export default class POReqTransChecks extends Component {
                     <Col  xs={2}><Button bsStyle="success"><Glyphicon glyph="ok" /></Button></Col>
                   </Row>;
           break; 
+          /*
       case "failure":
         check1Button = 
                   <Row style={chk} >
@@ -126,6 +127,7 @@ export default class POReqTransChecks extends Component {
                     <Col  xs={2}><Button bsStyle="info"><Glyphicon glyph="time" /></Button></Col>
                   </Row>;
         break;
+        */
 
   }
 /*

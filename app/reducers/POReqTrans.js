@@ -64,14 +64,15 @@ export default function reducer( state = {}, action) {
       console.log('INIT_PORT');
       var newData = update(state, 
         { 
-          goButton:{$set:''},
+          catTypes:{$set: ['cat1','cat2','cat3']},
+          catRecs:{$set: [{}]},  
           chk1: {$set: 'unknown'},
           chk2: {$set: 'unknown'},
           chk3: {$set: 'unknown'},
           chk4: {$set: 'unknown'},
+          goButton:{$set:''},
           noCatList:{$set: [{}]},
-          catTypes:{$set: ['cat1','cat2','cat3']},
-          catRecs:{$set: [{}]}  
+          started:{$set: false},
         });
       return newData;
     }

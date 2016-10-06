@@ -1,6 +1,6 @@
 import ProgressButton from 'react-progress-button'
 import React, { Component } from 'react';
-import POReqTrans from '../api/POReqTrans';
+import POReqTrans,{linuxSQLPrime} from '../api/POReqTrans';
 
 const POReqTransButton = React.createClass({
   getInitialState () {
@@ -37,9 +37,10 @@ const POReqTransButton = React.createClass({
 
   handleClick () {
     console.log('handleClick');
+
 //    this.setState({buttonState: 'loading'});
 //    this.props.getPOCategories();
-    this.props.getNoCatList();
+    this.props.startPORT();
      // POReqTrans.call(this);
 //        <ProgressButton onClick={this.handleClick} state={this.state.buttonState}>
 

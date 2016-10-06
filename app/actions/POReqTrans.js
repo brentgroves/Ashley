@@ -1,19 +1,23 @@
-export const SET_PO_CATEGORIES = 'SET_PO_CATEGORIES';
-export const SET_NO_CAT_LIST = 'SET_NO_CAT_LIST';
+export const CANCEL_APP = 'CANCEL_APP';
+export const INIT_PORT = 'INIT_PORT';
 export const SET_CHECK1 = 'SET_CHECK1';
 export const SET_GO_BUTTON = 'SET_GO_BUTTON';
+export const SET_NO_CAT_LIST = 'SET_NO_CAT_LIST';
+export const SET_PO_CATEGORIES = 'SET_PO_CATEGORIES';
 export const SET_PO_CAT_RECORDS = 'SET_PO_CAT_RECORDS';
-export const INIT_PORT = 'INIT_PORT';
 export const SET_STARTED = 'SET_STARTED';
+export const UPDATE_CHK1 = 'UPDATE_CHK1';
 
+import { push } from 'react-router-redux';
 
-import POReqTrans,{fetchPOCategories} from '../api/POReqTrans';
+import POReqTrans,{updateCheck1,linuxSQLPrime} from '../api/POReqTrans';
 
 export function initPORT() {
   return {
     type: INIT_PORT
   };
 }
+
 
 export function setStarted(started) {
   return {
@@ -22,12 +26,34 @@ export function setStarted(started) {
   };
 }
 
-export function getNoCatList() {
+export function updateChk1(poNumber,item,poCategory) {
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    updateCheck1(disp,poNumber,item,poCategory);
+  };
+}
+
+export function startPORT() {
  return (dispatch,getState) => {
    // POUpdateAPI.noPOCatList(dispatch);
-      var disp = dispatch;
-      POReqTrans(disp);
+    //  dispatch(push('/'));
+/*    var disp = dispatch;
+    dispatch({ type:INIT_PORT });
+    linuxSQLPrime();
+*/
+    var disp = dispatch;
+    POReqTrans(disp);
 //      POReqTrans.call(this,disp);
+  };
+}
+export function cancelApp() {
+ return (dispatch,getState) => {
+   // POUpdateAPI.noPOCatList(dispatch);
+      dispatch({ type:INIT_PORT });
+      dispatch(push('/'));
+/*      var disp = dispatch;
+      POReqTrans(disp);
+*///      POReqTrans.call(this,disp);
   };
 }
 

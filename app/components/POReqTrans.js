@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import { Link,IndexLink,browserHistory } from 'react-router';
+import { Link,IndexLink } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 import POReqTransButton from '../containers/POReqTransButton';
 import POReqTransChecks from '../containers/POReqTransChecks';
@@ -37,13 +37,15 @@ export default class POReqTrans extends Component {
   goHome() {
     console.log("go Home");
     console.log(initPORT);
-    initPORT();
+/*    initPORT();
+*/    this.props.cancelApp();
+
 //    this.props.initPORT();
   }
 
   handleClick(e) {
     console.log('handleClick');
-    browserHistory.push('/');
+    this.props.cancelApp();
   }
 
 /*
@@ -116,10 +118,7 @@ if (loggedIn) {
 
 
   }
-  if(('failure'==this.props.POReqTrans.chk1) ||
-    ('failure'==this.props.POReqTrans.chk2) || 
-    ('failure'==this.props.POReqTrans.chk3))  
-  {
+  if('failure'==this.props.POReqTrans.chk1)  {
     portChk1 =
       <Row>
         <Col xs={12}><PORTChk1 /></Col>

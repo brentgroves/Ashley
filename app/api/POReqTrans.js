@@ -1,7 +1,7 @@
 
 var sql = require('mssql');
 const {dialog} = require('electron').remote;
-import {SET_STARTED,SET_CHECK1,SET_PO_CATEGORIES,SET_PO_CAT_RECORDS,SET_NO_CAT_LIST,SET_GO_BUTTON} from '../actions/POReqTrans';
+import {INIT_PORT,SET_STARTED,SET_CHECK1,SET_PO_CATEGORIES,SET_PO_CAT_RECORDS,SET_NO_CAT_LIST,SET_GO_BUTTON} from '../actions/POReqTrans';
 
 var m2m = {
   user: 'sa',
@@ -67,50 +67,60 @@ export function linuxSQLPrime(){
 }
 
 
-export function fetchPOCategories(dispatch){
-  var disp = dispatch;
-  console.log('start of fetchPOCategories');
 
+export function updateCheck1(dispatch,poNumber,item,poCategory) {
+//  var that = this;
+  var disp = dispatch;
+//  document.getElementById('msgToUsr').innerHTML = '';
   var cribConnection = new sql.Connection(crib,function(err){
     // error checks
-  console.log('call poCategories');
-    poCategories(disp,cribConnection);
+    updChk1(disp,cribConnection,poNumber,item,poCategory);
   });
   cribConnection.on('error', function(err) {
     console.log(`Connection1 err:  ${err}` );
     // ... error handler
   });
-}
+} // poUpdate
 
-function  poCategories(disp,cribConnection) {
-  var dispatch = disp;
-  let qryCrib = `
-    select UDF_POCATEGORY,UDF_POCATEGORYDescription descr from UDT_POCATEGORY
-  `;
-
-  console.log('start of poCategories');
-
-
-  let cribReq = new sql.Request(cribConnection);
-
-  cribReq.query(qryCrib, function(err,cribRs) {
- //   console.log(`PO category query done. ${err}`);
-    // error checks
-    if(cribRs.length!==0){
-      console.log("PO category retrieved.");
-      dispatch({ type:SET_PO_CATEGORIES, catTypes:cribRs });
-
+function  updChk1(disp,cribConnection,poNumber,item,poCategory) {
+//    var that = this;
+    var dispatch = disp;
+    let qryCrib;
+    if (prod===true) {
+      qryCrib = `
+        update PODETAIL
+        set UDF_POCATEGORY = ${poCategory}
+        where 
+        PONumber = ${poNumber} and Item = ${item}
+      `;
+    }else{
+      qryCrib = `
+        update btPODETAIL
+        set UDF_POCATEGORY = ${poCategory}
+        where 
+        PONumber = ${poNumber} and Item = ${item}
+      `;
     }
-  });
-}
 
+    let cribReq = new sql.Request(cribConnection);
+
+    cribReq.query(qryCrib, function(err,cribRs) {
+      // error checks
+      console.dir(err);
+      console.dir(cribRs);
+      POReqTrans(dispatch);
+    });
+  }
 
 
 
 export default function POReqTrans(dispatch) {
 //  var that = this;
   var disp = dispatch;
-//  document.getElementById('msgToUsr').innerHTML = '';
+
+  linuxSQLPrime();
+  dispatch({ type:INIT_PORT});
+
   var cribConnection = new sql.Connection(crib,function(err){
     // error checks
     getAllCats(disp,cribConnection);
@@ -151,7 +161,6 @@ function  getAllCats(disp,cribConnection) {
         catRecs.push({UDF_POCATEGORY:pocat.UDF_POCATEGORY, descr:pocat.descr});
       });
 //      dispatch({ type:SET_PO_CATEGORIES, catTypes:['pocat1','pocat2'] });
-      dispatch({ type:SET_STARTED, started:true });
       dispatch({ type:SET_PO_CATEGORIES, catTypes:allCats });
       dispatch({ type:SET_PO_CAT_RECORDS, catRecs:catRecs });
       poCatChk(dispatch,cribConnection);
@@ -202,9 +211,11 @@ function  poCatChk(disp,cribConnection) {
           }
         });
         console.log("Failed PO category check.");
-        dispatch({ type:SET_GO_BUTTON, goButton:'error' });
         dispatch({ type:SET_CHECK1, chk1:'failure' });
+        dispatch({ type:SET_STARTED, started:true });
+        dispatch({ type:SET_GO_BUTTON, goButton:'error' });
         dispatch({ type: SET_NO_CAT_LIST, noCatList:cribRs });
+
   //       let page = 1
   //       that.setState({
   //           results: cribRs,
