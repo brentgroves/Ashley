@@ -22,8 +22,8 @@ var m2m = {
 var crib = {
  user: 'sa',
   password: 'buschecnc1',
-  server: '192.168.1.113', // You can use 'localhost\\instance' to connect to named instance
-//  server: '10.1.2.17',//   server: 'busche-sql-1', // You can use 'localhost\\instance' to connect to named instance
+//  server: '192.168.1.113', // You can use 'localhost\\instance' to connect to named instance
+  server: '10.1.2.17',//   server: 'busche-sql-1', // You can use 'localhost\\instance' to connect to named instance
   options: {
     database: 'Cribmaster',
     port: 1433 // Use this if you're on Windows Azure
@@ -118,7 +118,7 @@ export default function POReqTrans(dispatch) {
 //  var that = this;
   var disp = dispatch;
 
-  linuxSQLPrime();
+ // linuxSQLPrime();
   dispatch({ type:INIT_PORT});
 
   var cribConnection = new sql.Connection(crib,function(err){
@@ -145,6 +145,8 @@ function  getAllCats(disp,cribConnection) {
   cribReq.query(qryCrib, function(err,cribRs) {
  //   console.log(`PO category query done. ${err}`);
     // error checks
+    console.dir(err);
+    
     if(cribRs.length!==0){
       console.log("PO category retrieved.");
       var allCats=[];
@@ -160,7 +162,6 @@ function  getAllCats(disp,cribConnection) {
         allCats.push(pocat.descr);
         catRecs.push({UDF_POCATEGORY:pocat.UDF_POCATEGORY, descr:pocat.descr});
       });
-//      dispatch({ type:SET_PO_CATEGORIES, catTypes:['pocat1','pocat2'] });
       dispatch({ type:SET_PO_CATEGORIES, catTypes:allCats });
       dispatch({ type:SET_PO_CAT_RECORDS, catRecs:catRecs });
       poCatChk(dispatch,cribConnection);
