@@ -18,7 +18,8 @@ const initialState = {
 		chk4:'unknown',
 		noCatList:[{}],
 		catTypes:['cat1','cat2','cat3'],
-		catRecs:[{}]	
+		catRecs:[{}],
+		noCribVen:[{}]	
 	}
 
 //	noVenPoList:[{PONumber:1,Vendor:2,Address1:'1633 S US HWY 33'}]

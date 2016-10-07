@@ -1,7 +1,7 @@
 
 var sql = require('mssql');
 const {dialog} = require('electron').remote;
-import {INIT_PORT,SET_STARTED,SET_CHECK1,SET_PO_CATEGORIES,SET_PO_CAT_RECORDS,SET_NO_CAT_LIST,SET_GO_BUTTON} from '../actions/POReqTrans';
+import {INIT_PORT,SET_STARTED,SET_CHECK1,SET_CHECK2,SET_PO_CATEGORIES,SET_PO_CAT_RECORDS,SET_NO_CAT_LIST,SET_NO_CRIB_VEN,SET_GO_BUTTON} from '../actions/POReqTrans';
 
 var m2m = {
   user: 'sa',
@@ -71,7 +71,6 @@ export function linuxSQLPrime(){
 export function updateCheck1(dispatch,poNumber,item,poCategory) {
 //  var that = this;
   var disp = dispatch;
-//  document.getElementById('msgToUsr').innerHTML = '';
   var cribConnection = new sql.Connection(crib,function(err){
     // error checks
     updChk1(disp,cribConnection,poNumber,item,poCategory);
@@ -170,6 +169,7 @@ function  getAllCats(disp,cribConnection) {
   });
 }
 
+/********************CHECK IF ALL PO CATEGORIES HAVE BEEN SELECTED FOR EACH PO ITEM & THE RECORDS ARE NOT LOCKED****************/
 
 function  poCatChk(disp,cribConnection) {
 //    var that = this;
@@ -213,7 +213,6 @@ function  poCatChk(disp,cribConnection) {
         });
         console.log("Failed PO category check.");
         dispatch({ type:SET_CHECK1, chk1:'failure' });
-
         dispatch({ type:SET_STARTED, started:true });
         dispatch({ type:SET_GO_BUTTON, goButton:'error' });
         dispatch({ type: SET_NO_CAT_LIST, noCatList:cribRs });
@@ -228,10 +227,98 @@ function  poCatChk(disp,cribConnection) {
           //        that.props.setCheck1('failure');
       }else {
         dispatch({ type: SET_CHECK1, chk1:'success' });
+        dispatch({ type:SET_STARTED, started:true });
+        // crib connection gets closed if check1 failed prev
+        portCheck2(dispatch);
       }
+
     });
   }
 
+function portCheck2(dispatch) {
+//  var that = this;
+  var disp = dispatch;
+
+ // linuxSQLPrime();
+  console.log("portCheck2 stated")
+  var cribConnection = new sql.Connection(crib,function(err){
+    // error checks
+    console.log("portCheck2 Connection made")
+    portChk2(disp,cribConnection);
+  });
+  cribConnection.on('error', function(err) {
+    console.log(`Connection2 err:  ${err}` );
+    // ... error handler
+  });
+} // poUpdate
+
+/*******************CHECK IF PO HAS A VALID VENDOR IN CRIBMASTER****************/
+
+function  portChk2(disp,cribConnection) {
+//    var that = this;
+    var dispatch = disp;
+    let qryCrib;
+    if (prod===true) {
+      qryCrib = `
+        select ROW_NUMBER() OVER(ORDER BY PONumber) id, po.PONumber, po.Address1
+        from
+        (
+            SELECT PONumber,Vendor,Address1 FROM [PO]  WHERE [PO].POSTATUSNO = 3 and [PO].SITEID <> '90'
+        ) po
+        left outer join
+        vendor
+        on po.vendor = Vendor.VendorNumber
+        where Vendor.VendorNumber is null
+      `;
+    }else{
+      qryCrib = `
+        select ROW_NUMBER() OVER(ORDER BY PONumber) id,po.PONumber, po.Address1
+        from
+        (
+            SELECT PONumber,Vendor,Address1 FROM [btPO]  WHERE [btPO].POSTATUSNO = 3 and [btPO].SITEID <> '90'
+        ) po
+        left outer join
+        vendor
+        on po.vendor = Vendor.VendorNumber
+        where Vendor.VendorNumber is null
+      `;
+    }
+
+    let cribReq = new sql.Request(cribConnection);
+
+    cribReq.query(qryCrib, function(err,cribRs) {
+      console.log("portCheck2 query done");
+
+      // error checks
+      if(cribRs.length!==0){
+        let cribRsErr ="";
+        cribRs.forEach(function(podetail,i,arr){
+          console.log(podetail.Item);
+          if(arr.length===i+1){
+            cribRsErr+=`PO# ${podetail.PONumber}, Item: ${podetail.Item}`;
+          }else{
+            cribRsErr+= `PO# ${podetail.PONumber}, Item: ${podetail.Item}\n`;
+          }
+        });
+        console.log("portCheck2 query had records.");
+        dispatch({ type:SET_CHECK2, chk2:'failure' });
+
+        dispatch({ type:SET_GO_BUTTON, goButton:'error' });
+        dispatch({ type: SET_NO_CRIB_VEN, noCribVen:cribRs });
+
+  //       let page = 1
+  //       that.setState({
+  //           results: cribRs,
+  //           currentPage: page-1,
+  //           maxPages: 1
+  // //          maxPages: Math.round(data.count/10)S
+  //         })
+          //        that.props.setCheck1('failure');
+      }else {
+        dispatch({ type: SET_CHECK2, chk2:'success' });
+      }
+    });
+  }
 
 
 //export default POReqTrans;

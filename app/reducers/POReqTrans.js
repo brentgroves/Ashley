@@ -1,4 +1,4 @@
-import {SET_STARTED,SET_CHECK1,INIT_PORT,SET_GO_BUTTON, SET_NO_CAT_LIST, SET_PO_CATEGORIES,SET_PO_CAT_RECORDS} from '../actions/POReqTrans';
+import {SET_STARTED,SET_CHECK1,SET_CHECK2,INIT_PORT,SET_GO_BUTTON, SET_NO_CAT_LIST,SET_NO_CRIB_VEN, SET_PO_CATEGORIES,SET_PO_CAT_RECORDS} from '../actions/POReqTrans';
 
 import update from 'react-addons-update';
 
@@ -18,12 +18,16 @@ export default function reducer( state = {}, action) {
         { 
           chk1: {$set: action.chk1}
         });
-/*
-    	var newData = update(state, {chk1: {$set: action.chk1}});
-    //	return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
-    	return newData;
-      return state;
-*/
+      return newData;
+
+    }
+    case SET_CHECK2:
+    {
+      console.log(`set check2`);
+      var newData = update(state, 
+        { 
+          chk2: {$set: action.chk2}
+        });
       return newData;
 
     }
@@ -57,6 +61,24 @@ export default function reducer( state = {}, action) {
       var newData = update(state, 
         { 
           noCatList: {$set: action.noCatList}
+        });
+/*
+     var newData = update(state, 
+        { 
+          btnState:{$set:'error'},
+          chk1: {$set: 'failure'},
+          noCatList: {$set: action.noCatList}
+        });
+        */
+    //  return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
+      return newData;
+    }
+    case SET_NO_CRIB_VEN:
+    {
+      console.log('updating noCribVen');
+      var newData = update(state, 
+        { 
+          noCribVen: {$set: action.noCribVen}
         });
 /*
      var newData = update(state, 

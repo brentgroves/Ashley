@@ -5,6 +5,7 @@ import {LinkContainer} from 'react-router-bootstrap';
 import POReqTransButton from '../containers/POReqTransButton';
 import POReqTransChecks from '../containers/POReqTransChecks';
 import PORTChk1 from '../containers/PORTChk1';
+import PORTChk2 from '../containers/PORTChk2';
 import {linuxSQLPrime} from '../api/POReqTrans';
 //import styles from './Home.css';
 //import { Jumbotron, Button, Navbar, NavbarHeader, NavbarBrand,NavbarToggle,NavbarCollapse,  Nav, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
@@ -32,15 +33,12 @@ export default class POReqTrans extends Component {
     };
     initPORT=this.props.initPORT;
     this.handleClick = this.handleClick.bind(this);
+    this.props.cancelApp;
   }
 
   goHome() {
     console.log("go Home");
-    console.log(initPORT);
-/*    initPORT();
-*/    this.props.cancelApp();
-
-//    this.props.initPORT();
+    this.props.cancelApp();
   }
 
   handleClick(e) {
@@ -68,29 +66,8 @@ if (loggedIn) {
   const chk2 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '5px 13px' };
   const dbg1 ={border: '1px solid blue', padding: '0px' };
 
-  var checks,goButton,portChk1,navbar,exitBtn;
+  var checks,goButton,portChk1,portChk2,navbar,exitBtn;
 
-//            <a href="#">Home</a> activeStyle={{color: '#33e0ff'}}
-//<div onClick={this.handleClick}>Click me!</div>
-/*
-          {goButton}
-          {portChk1}
-          {checks}
-          {exitBtn}
-
-
-        <br/>
-        <br/>
-        {navbar}
-    <div>
-      <Row >
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-
-*/  
 if(true!=this.props.POReqTrans.started)  
   {
     navbar =
@@ -173,6 +150,18 @@ if(true!=this.props.POReqTrans.started)
     </div>;
   }
 
+  if('failure'==this.props.POReqTrans.chk2)  {
+    portChk2 = 
+    <div>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={12}><PORTChk2 /></Col>
+      </Row>
+    </div>;
+  }
+
 /*
                            {
                                 // We can always force white space by interpolating a
@@ -203,6 +192,7 @@ if(true!=this.props.POReqTrans.started)
           </Row>
           {goButton}
           {portChk1}
+          {portChk2}
           {checks}
           {exitBtn}
 

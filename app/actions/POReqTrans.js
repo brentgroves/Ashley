@@ -1,8 +1,10 @@
 export const CANCEL_APP = 'CANCEL_APP';
 export const INIT_PORT = 'INIT_PORT';
 export const SET_CHECK1 = 'SET_CHECK1';
+export const SET_CHECK2 = 'SET_CHECK2';
 export const SET_GO_BUTTON = 'SET_GO_BUTTON';
 export const SET_NO_CAT_LIST = 'SET_NO_CAT_LIST';
+export const SET_NO_CRIB_VEN = 'SET_NO_CRIB_VEN';
 export const SET_PO_CATEGORIES = 'SET_PO_CATEGORIES';
 export const SET_PO_CAT_RECORDS = 'SET_PO_CAT_RECORDS';
 export const SET_STARTED = 'SET_STARTED';
@@ -46,6 +48,7 @@ export function startPORT() {
 //      POReqTrans.call(this,disp);
   };
 }
+
 export function cancelApp() {
  return (dispatch,getState) => {
    // POUpdateAPI.noPOCatList(dispatch);
@@ -54,6 +57,14 @@ export function cancelApp() {
 /*      var disp = dispatch;
       POReqTrans(disp);
 *///      POReqTrans.call(this,disp);
+  };
+}
+
+
+export function setNoCribVen(noCribVen) {
+  return {
+    type: SET_NO_CRIB_VEN,
+    noCribVen: noCribVen
   };
 }
 
@@ -91,6 +102,13 @@ export function setCheck1(setMe) {
   return {
     type: SET_CHECK1,
     chk1: setMe
+  };
+}
+
+export function setCheck2(setMe) {
+  return {
+    type: SET_CHECK2,
+    chk2: setMe
   };
 }
 

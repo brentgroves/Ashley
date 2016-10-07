@@ -96,6 +96,7 @@ a:hover {
 }
 */
 .my-header-class {
+  border: purple 5px solid;
   border-top: 1px solid #C1C3D1;
   border-bottom-: 1px solid #C1C3D1;
   background: steelblue;
@@ -103,6 +104,11 @@ a:hover {
   font-size:20px;
   font-weight:bolder;
   text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
+  padding: 0px 0px 0px 0px;
+  margin-top: 0%;
+  margin-left: 0%;
+  margin-right: 0%;
+  margin-bottom: 0%;
 
   /*
   background: steelblue;
@@ -118,29 +124,45 @@ a:hover {
 }
 
 .my-body-class {
+  border: yellow 5px solid;
+  padding: 0px 0px 0px 0px;
+  margin-top: 0%;
+  margin-left: 0%;
+  margin-right: 0%;
+  margin-bottom: 0%;
+
   /*
   background-color: #CC00FF;
   */
 }
 
 .my-container-class {
-/*   background: steelblue;
- border: #0000FF 2.5px solid; */
+  border: green 5px solid;
   padding: 0px 0px 0px 0px;
   margin-top: 0%;
   margin-left: 0%;
   margin-right: 0%;
   margin-bottom: 0%;
+
+/*   background: steelblue;
+ border: #0000FF 2.5px solid; 
+  padding: 0px 0px 0px 0px;
+  margin-top: 0%;
+  margin-left: 0%;
+  margin-right: 0%;
+  margin-bottom: 0%;
+  */
 }
 
 .my-table-container-class {
-  border: #FFBB73 5px solid;
+border: white 5px solid;
+/*  border: #FFBB73 5px solid;
+*/  margin-top: 50px;
   padding: 0px 0px 0px 0px;
   margin-top: 0%;
   margin-left: 0%;
   margin-right: 0%;
   margin-bottom: 0%;
-
 }
 
 .td-first-column{
@@ -156,6 +178,11 @@ a:hover {
  /* color:#666B85; */
   font-size:16px;
   font-weight:normal;
+  padding: 0px 0px 0px 0px;
+  margin-top: 0%;
+  margin-left: 0%;
+  margin-right: 0%;
+  margin-bottom: 0%;
 
  /* text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1); */
 
