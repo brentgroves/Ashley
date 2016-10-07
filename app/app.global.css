@@ -32,23 +32,60 @@ a:hover {
   text-decoration: none;
   cursor: pointer;
 }
+.table-hover>tbody>tr:hover>td, .table-hover>tbody>tr:hover>th {
+  background-color: #FB667A;
+  color:#eeeeee;
+}
 
-.my-header-class{
-  color:#D5DDE5;;
-  background:#1b1e24;
-  border-bottom:4px solid #9ea7af;
-  border-right: 1px solid #343a45;
-  font-size:23px;
-  font-weight: 100;
-  padding:24px;
-  text-align:left;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-  vertical-align:middle;
+/*
+.table-hover>tbody>tr:hover>td, .table-hover>tbody>tr:hover>th {
+  background-color: #FB667A;
+  color:#eeeeee;
+}
+*/
+.my-header-class {
+  border-top: 1px solid #C1C3D1;
+  border-bottom-: 1px solid #C1C3D1;
+  background: steelblue;
+  color:#2C3446;
+  font-size:20px;
+  font-weight:bolder;
+  text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
+
+  /*
+  background: steelblue;
+  height: 54px;
+  width: 25%;
+  font-weight: lighter;
+  text-shadow: 0 1px 0 #38678f;
+  color: white;
+  border: 1px solid #38678f;
+  box-shadow: inset 0px 1px 2px #568ebd;
+  transition: all 0.2s;
+*/
+}
+
+.my-body-class {
+  /*
+  background-color: #CC00FF;
+  */
+}
+
+.my-container-class {
+  /*
+  background: steelblue;
+  border: #0000FF 2.5px solid;
+  */
+}
+
+.my-table-container-class {
+  border: #FFBB73 5px solid;
 }
 
 .tr-odd-example{
   border-top: 1px solid #C1C3D1;
   border-bottom-: 1px solid #C1C3D1;
+  background-color: #2C3446;
   color:#666B85;
   font-size:16px;
   font-weight:normal;
@@ -56,8 +93,13 @@ a:hover {
 }
 
 .tr-even-example{
-    color: red;
-    background-color: yellowgreen;
+  border-top: 1px solid #C1C3D1;
+  border-bottom-: 1px solid #C1C3D1;
+  background-color: #323C50;
+  color:#666B85;
+  font-size:16px;
+  font-weight:normal;
+  text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
 }
 
 .jumbotron {

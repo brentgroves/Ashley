@@ -22,8 +22,8 @@ var m2m = {
 var crib = {
  user: 'sa',
   password: 'buschecnc1',
-//  server: '192.168.1.113', // You can use 'localhost\\instance' to connect to named instance
-  server: '10.1.2.17',//   server: 'busche-sql-1', // You can use 'localhost\\instance' to connect to named instance
+  server: '192.168.1.113', // You can use 'localhost\\instance' to connect to named instance
+//  server: '10.1.2.17',//   server: 'busche-sql-1', // You can use 'localhost\\instance' to connect to named instance
   options: {
     database: 'Cribmaster',
     port: 1433 // Use this if you're on Windows Azure
@@ -212,6 +212,7 @@ function  poCatChk(disp,cribConnection) {
         });
         console.log("Failed PO category check.");
         dispatch({ type:SET_CHECK1, chk1:'failure' });
+
         dispatch({ type:SET_STARTED, started:true });
         dispatch({ type:SET_GO_BUTTON, goButton:'error' });
         dispatch({ type: SET_NO_CAT_LIST, noCatList:cribRs });

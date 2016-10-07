@@ -8,14 +8,24 @@ export default function reducer( state = {}, action) {
     case SET_STARTED:
     {
       var newData = update(state, {started: {$set: action.started}});
-    //  return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
+    //  return {chk1:'error',chk2:'success',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
       return newData;
     }
     case SET_CHECK1:
     {
+      console.log(`set check1`);
+      var newData = update(state, 
+        { 
+          chk1: {$set: action.chk1}
+        });
+/*
     	var newData = update(state, {chk1: {$set: action.chk1}});
     //	return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
     	return newData;
+      return state;
+*/
+      return newData;
+
     }
     case SET_GO_BUTTON:
     {

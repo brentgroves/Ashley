@@ -90,7 +90,8 @@ export default class PORTChk1 extends React.Component{
         backgroundColor: 'white'
     }; 
 //      <div style={tblStyle}> style={tblStyle} striped={true}
-/*
+/*""""""""""""""""
+
           trClassName='trClassFormat'          
 
           tableHeaderClass='my-header-class'
@@ -105,11 +106,16 @@ export default class PORTChk1 extends React.Component{
     var t;
     t=1;
     return (
-<div className="container" >
       <BootstrapTable  
           data={this.props.POReqTrans.noCatList} pagination 
-          trClassName={trClassFormat} tableHeaderClass='my-header-class'
-           hover={true} bordered={true} condensed={true} 
+          trClassName={trClassFormat}          
+          tableHeaderClass='my-header-class'
+          tableBodyClass='my-body-class'
+          containerClass='my-container-class'
+          tableContainerClass='my-table-container-class'
+          headerContainerClass='my-header-container-class'
+          bodyContainerClass='my-body-container-class'
+          hover={true} bordered={true} condensed={true} 
           cellEdit={this.cellEditProp} insertRow={false}>
           <TableHeaderColumn dataField="id" isKey={true} >Row</TableHeaderColumn>
           <TableHeaderColumn dataField="PONumber" editable={false} >PO Number</TableHeaderColumn>
@@ -117,12 +123,30 @@ export default class PORTChk1 extends React.Component{
           <TableHeaderColumn dataField="ItemDescription" editable={false} >Item Description</TableHeaderColumn>
           <TableHeaderColumn dataField="type" width="275"  editable={{type:'select', options:{values:this.props.POReqTrans.catTypes}}}>Category</TableHeaderColumn>
       </BootstrapTable>
-      </div>
     );
   }
 };
 
 /* PONumber,Item,UDF_POCATEGORY
+
+      <BootstrapTable  
+          data={this.props.POReqTrans.noCatList} pagination 
+          tableHeaderClass='my-header-class'
+          tableBodyClass='my-body-class'
+          containerClass='my-container-class'
+          tableContainerClass='my-table-container-class'
+          headerContainerClass='my-header-container-class'
+          bodyContainerClass='my-body-container-class'>
+          trClassName={trClassFormat} 
+          hover={true} bordered={true} condensed={true} 
+          cellEdit={this.cellEditProp} insertRow={false}>
+          <TableHeaderColumn dataField="id" isKey={true} >Row</TableHeaderColumn>
+          <TableHeaderColumn dataField="PONumber" editable={false} >PO Number</TableHeaderColumn>
+          <TableHeaderColumn dataField="Item" editable={false} >Item Number</TableHeaderColumn>
+          <TableHeaderColumn dataField="ItemDescription" editable={false} >Item Description</TableHeaderColumn>
+          <TableHeaderColumn dataField="type" width="275"  editable={{type:'select', options:{values:this.props.POReqTrans.catTypes}}}>Category</TableHeaderColumn>
+      </BootstrapTable>
+
           <TableHeaderColumn dataField="UDF_POCATEGORY" isKey={false}>Category</TableHeaderColumn>
 
       <BootstrapTable data={this.props.POReqTrans.noCatList} cellEdit={cellEditProp} insertRow={true}>

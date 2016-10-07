@@ -178,6 +178,7 @@ if(true!=this.props.POReqTrans.started)
       </Row>
       <Row>
         <Col xs={12}><PORTChk1 /></Col>
+
       </Row>
     </div>;
   }
