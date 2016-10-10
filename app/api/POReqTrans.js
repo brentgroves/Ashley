@@ -1,7 +1,8 @@
 
 var sql = require('mssql');
 const {dialog} = require('electron').remote;
-import {INIT_PORT,SET_STARTED,SET_CHECK1,SET_CHECK2,SET_PO_CATEGORIES,SET_PO_CAT_RECORDS,SET_NO_CAT_LIST,SET_NO_CRIB_VEN,SET_GO_BUTTON} from '../actions/POReqTrans';
+import * as PORTACTION from "../actions/PORTActionConst.js"
+import * as PORTSTATE from "../actions/PORTState.js"
 
 var m2m = {
   user: 'sa',
@@ -118,7 +119,7 @@ export default function POReqTrans(dispatch) {
   var disp = dispatch;
 
  // linuxSQLPrime();
-  dispatch({ type:INIT_PORT});
+  //dispatch({ type:PORTACTION.INIT_PORT});
 
   var cribConnection = new sql.Connection(crib,function(err){
     // error checks
@@ -161,8 +162,8 @@ function  getAllCats(disp,cribConnection) {
         allCats.push(pocat.descr);
         catRecs.push({UDF_POCATEGORY:pocat.UDF_POCATEGORY, descr:pocat.descr});
       });
-      dispatch({ type:SET_PO_CATEGORIES, catTypes:allCats });
-      dispatch({ type:SET_PO_CAT_RECORDS, catRecs:catRecs });
+      dispatch({ type:PORTACTION.SET_PO_CATEGORIES, catTypes:allCats });
+      dispatch({ type:PORTACTION.SET_PO_CAT_RECORDS, catRecs:catRecs });
       poCatChk(dispatch,cribConnection);
 
     }
@@ -212,10 +213,9 @@ function  poCatChk(disp,cribConnection) {
           }
         });
         console.log("Failed PO category check.");
-        dispatch({ type:SET_CHECK1, chk1:'failure' });
-        dispatch({ type:SET_STARTED, started:true });
-        dispatch({ type:SET_GO_BUTTON, goButton:'error' });
-        dispatch({ type: SET_NO_CAT_LIST, noCatList:cribRs });
+        dispatch({ type:PORTACTION.SET_CHECK1, chk1:'failure' });
+//        dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:'error' });
+        dispatch({ type:PORTACTION.SET_NO_CAT_LIST, noCatList:cribRs });
 
   //       let page = 1
   //       that.setState({
@@ -226,12 +226,11 @@ function  poCatChk(disp,cribConnection) {
   //         })
           //        that.props.setCheck1('failure');
       }else {
-        dispatch({ type: SET_CHECK1, chk1:'success' });
-        dispatch({ type:SET_STARTED, started:true });
+        dispatch({ type:PORTACTION.SET_CHECK1, chk1:'success' });
         // crib connection gets closed if check1 failed prev
         portCheck2(dispatch);
       }
-
+      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.IN_PROGRESS });
     });
   }
 
@@ -301,10 +300,10 @@ function  portChk2(disp,cribConnection) {
           }
         });
         console.log("portCheck2 query had records.");
-        dispatch({ type:SET_CHECK2, chk2:'failure' });
+        dispatch({ type:PORTACTION.SET_CHECK2, chk2:'failure' });
 
-        dispatch({ type:SET_GO_BUTTON, goButton:'error' });
-        dispatch({ type: SET_NO_CRIB_VEN, noCribVen:cribRs });
+        dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:'error' });
+        dispatch({ type: PORTACTION.SET_NO_CRIB_VEN, noCribVen:cribRs });
 
   //       let page = 1
   //       that.setState({
@@ -315,7 +314,9 @@ function  portChk2(disp,cribConnection) {
   //         })
           //        that.props.setCheck1('failure');
       }else {
-        dispatch({ type: SET_CHECK2, chk2:'success' });
+        dispatch({ type: PORTACTION.SET_CHECK2, chk2:'success' });
+        dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:'success' });
+        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
       }
     });
   }

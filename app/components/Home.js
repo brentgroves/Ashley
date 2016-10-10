@@ -76,7 +76,7 @@ export default class Home extends Component {
   </Navbar>
 
     <div className="intro-header">
-      <p>Busche Production Software</p>
+      <h1>Busche Production Software</h1>
       <br/>
        <p>
         <LinkContainer to="/POReqTrans">

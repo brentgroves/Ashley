@@ -6,20 +6,21 @@ import { syncHistoryWithStore } from 'react-router-redux';
 import routes from './routes';
 import configureStore from './store/configureStore';
 import './app.global.css';
+import * as PORTSTATE from "./actions/PORTState.js"
 
 
 const initialState = {
 	POReqTrans:{ 
-		started:false,
-		goButton:'', 
+		catRecs:[{}],
+		catTypes:['cat1','cat2','cat3'],
 		chk1:'unknown',
 		chk2:'unknown',
 		chk3:'unknown',
 		chk4:'unknown',
+		goButton:'', 
 		noCatList:[{}],
-		catTypes:['cat1','cat2','cat3'],
-		catRecs:[{}],
-		noCribVen:[{}]	
+		noCribVen:[{}],	
+		state:PORTSTATE.NOT_STARTED
 	}
 
 //	noVenPoList:[{PONumber:1,Vendor:2,Address1:'1633 S US HWY 33'}]

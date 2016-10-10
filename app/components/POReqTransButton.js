@@ -28,7 +28,8 @@ const POReqTransButton = React.createClass({
 
     return (
       <div>
-        <ProgressButton onClick={this.handleClick} state={this.props.POReqTrans.goButton}>
+        <ProgressButton onClick={this.handleClick} 
+        state={this.props.POReqTrans.goButton}>
           Go!
         </ProgressButton>
       </div>
@@ -39,10 +40,7 @@ const POReqTransButton = React.createClass({
     console.log('handleClick');
 
 //    this.setState({buttonState: 'loading'});
-//    this.props.getPOCategories();
     this.props.startPORT();
-     // POReqTrans.call(this);
-//        <ProgressButton onClick={this.handleClick} state={this.state.buttonState}>
 
    // make asynchronous call
   //   setTimeout(function() {

@@ -1,11 +1,11 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import NoCatGriddle from '../components/NoCatGriddle';
+import PORTGrid from '../components/PORTGrid';
 import * as POReqTrans from '../actions/POReqTrans';
 
 function mapStateToProps(state) {
   return {
-    noCatList: state.NoCatList
+	POReqTrans: state.POReqTrans
   };
 }
 
@@ -13,4 +13,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(POReqTrans, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(NoCatGriddle);
+export default connect(mapStateToProps, mapDispatchToProps)(PORTGrid);
