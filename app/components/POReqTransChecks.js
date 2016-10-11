@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 import { Grid, Row, Glyphicon, Col, Button} from 'react-bootstrap';
+import * as PORTSTATE from "../actions/PORTState.js"
+import * as PORTCHK from "../actions/PORTChkConst.js"
 
 
 export default class POReqTransChecks extends Component {
@@ -31,53 +33,53 @@ export default class POReqTransChecks extends Component {
   const  chk1 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   };
 
   var check1Button,check2Button;
- switch (this.props.POReqTrans.chk1) {
-     case "success":
+  switch (this.props.POReqTrans.chk1) {
+    case PORTCHK.SUCCESS:
+      check1Button = 
+        <Row style={chk} >
+          <Col  xs={10}>PO Category Check</Col>
+          <Col  xs={2}><Button bsStyle="success"><Glyphicon glyph="ok" /></Button></Col>
+        </Row>
+      break; 
+    case PORTCHK.FAILURE:
         check1Button = 
-                  <Row style={chk} >
-                    <Col  xs={10}>PO Category Check</Col>
-                    <Col  xs={2}><Button bsStyle="success"><Glyphicon glyph="ok" /></Button></Col>
-                  </Row>
-          break; 
-      case "error":
-        check1Button = 
-                  <Row style={chk} >
-                    <Col  xs={10}>PO Category Check</Col>
-                    <Col  xs={2}><Button bsStyle="danger"><Glyphicon glyph="remove" /></Button></Col>
-                  </Row>;
+          <Row style={chk} >
+            <Col  xs={10}>PO Category Check</Col>
+            <Col  xs={2}><Button bsStyle="danger"><Glyphicon glyph="remove" /></Button></Col>
+          </Row>;
         break;
       default: 
         check1Button = 
-                  <Row style={chk} >
-                    <Col  xs={10}>PO Category Check</Col>
-                    <Col  xs={2}><Button bsStyle="info"><Glyphicon glyph="time" /></Button></Col>
-                  </Row>;
+          <Row style={chk} >
+            <Col  xs={10}>PO Category Check</Col>
+            <Col  xs={2}><Button bsStyle="info"><Glyphicon glyph="time" /></Button></Col>
+          </Row>;
         break;
 
   }
 
- switch (this.props.POReqTrans.chk2) {
-     case "success":
+  switch (this.props.POReqTrans.chk2) {
+    case PORTCHK.SUCCESS:
         check2Button = 
-                  <Row style={chk} >
-                    <Col  xs={10}>CribMaster Vendor Check</Col>
-                    <Col  xs={2}><Button bsStyle="success"><Glyphicon glyph="ok" /></Button></Col>
-                  </Row>
+          <Row style={chk} >
+            <Col  xs={10}>CribMaster Vendor Check</Col>
+            <Col  xs={2}><Button bsStyle="success"><Glyphicon glyph="ok" /></Button></Col>
+          </Row>
           break; 
-      case "error":
-        check2Button = 
-                  <Row style={chk} >
-                    <Col  xs={10}>CribMaster Vendor Check</Col>
-                    <Col  xs={2}><Button bsStyle="danger"><Glyphicon glyph="remove" /></Button></Col>
-                  </Row>;
+    case PORTCHK.FAILURE:
+      check2Button = 
+        <Row style={chk} >
+          <Col  xs={10}>CribMaster Vendor Check</Col>
+          <Col  xs={2}><Button bsStyle="danger"><Glyphicon glyph="remove" /></Button></Col>
+        </Row>
         break;
-      default: 
-        check2Button = 
-                  <Row style={chk} >
-                    <Col  xs={10}>CribMaster Vendor Check</Col>
-                    <Col  xs={2}><Button bsStyle="info"><Glyphicon glyph="time" /></Button></Col>
-                  </Row>;
-        break;
+    default: 
+      check2Button = 
+        <Row style={chk} >
+          <Col  xs={10}>CribMaster Vendor Check</Col>
+          <Col  xs={2}><Button bsStyle="info"><Glyphicon glyph="time" /></Button></Col>
+        </Row>;
+      break;
 
   }
 

@@ -269,10 +269,17 @@ margin-top: 50px;
   width: 100%;
 }
 .pb-container .pb-button {
+  /*
   background: transparent;
   border: 2px solid currentColor;
-  border-radius: 27px;
   color: currentColor;
+  */
+
+  border-radius: 27px;
+  border: 2px solid #2C3446;
+  background-color: #323C50;;
+
+  color: black;
   cursor: pointer;
   padding: 0.7em 1em;
   text-decoration: none;
@@ -322,6 +329,13 @@ margin-top: 50px;
   border-color: #ddd;
   cursor: wait;
   background-color: transparent;
+  /*
+  background-color: #323C50;;
+  color: black;
+  */
+/*
+  background-color: transparent;
+  */
   padding: 0;
 }
 .pb-container.loading .pb-button span {

@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import * as PORTSTATE from "../actions/PORTState.js"
 
 
 var catRecs = [{}];
@@ -78,43 +79,46 @@ export default class PORTGrid extends React.Component{
   render(){
 
     var whichTable;
-    if("failure"==this.props.POReqTrans.chk1){
-      whichTable = 
-     <BootstrapTable  
-          data={this.props.POReqTrans.noCatList} pagination 
-          trClassName={trClassFormat}          
-          tableHeaderClass='my-header-class'
-          tableBodyClass='my-body-class'
-          containerClass='my-container-class'
-          tableContainerClass='my-table-container-class'
-          headerContainerClass='my-header-container-class'
-          bodyContainerClass='my-body-container-class'
-          hover={true} bordered={true} condensed={true} 
-          cellEdit={this.cellEditProp} insertRow={false}>
-          <TableHeaderColumn dataField="id" isKey={true} columnClassName='td-first-column' >Row</TableHeaderColumn>
-          <TableHeaderColumn dataField="PONumber" editable={false} >PO Number</TableHeaderColumn>
-          <TableHeaderColumn dataField="Item" editable={false} >Item Number</TableHeaderColumn>
-          <TableHeaderColumn dataField="ItemDescription" editable={false} >Item Description</TableHeaderColumn>
-          <TableHeaderColumn dataField="type" width="275" columnClassName={columnClassNameFormat} editable={{type:'select', options:{values:this.props.POReqTrans.catTypes}}}>Category</TableHeaderColumn>
-      </BootstrapTable>;
-    } else if("failure"==this.props.POReqTrans.chk2){
-      whichTable = 
-     <BootstrapTable  
-          data={this.props.POReqTrans.noCribVen} pagination 
-          trClassName={trClassFormat}          
-          tableHeaderClass='my-header-class'
-          tableBodyClass='my-body-class'
-          containerClass='my-container-class'
-          tableContainerClass='my-table-container-class'
-          headerContainerClass='my-header-container-class'
-          bodyContainerClass='my-body-container-class'
-          hover={true} bordered={true} condensed={true} 
-          cellEdit={this.cellEditProp} insertRow={false}>
-          <TableHeaderColumn dataField="id" isKey={true} columnClassName='td-first-column' >Row</TableHeaderColumn>
-          <TableHeaderColumn dataField="PONumber" editable={false} >PO Number</TableHeaderColumn>
-          <TableHeaderColumn dataField="Address1" editable={false} >Address1</TableHeaderColumn>
-      </BootstrapTable>;
-
+    switch (this.props.POReqTrans.state) {
+      case PORTSTATE.STEP_10_FAIL:
+        whichTable = 
+         <BootstrapTable  
+            data={this.props.POReqTrans.noCatList} pagination 
+            trClassName={trClassFormat}          
+            tableHeaderClass='my-header-class'
+            tableBodyClass='my-body-class'
+            containerClass='my-container-class'
+            tableContainerClass='my-table-container-class'
+            headerContainerClass='my-header-container-class'
+            bodyContainerClass='my-body-container-class'
+            hover={true} bordered={true} condensed={true} 
+            cellEdit={this.cellEditProp} insertRow={false}>
+            <TableHeaderColumn dataField="id" isKey={true} columnClassName='td-first-column' >Row</TableHeaderColumn>
+            <TableHeaderColumn dataField="PONumber" editable={false} >PO Number</TableHeaderColumn>
+            <TableHeaderColumn dataField="Item" editable={false} >Item Number</TableHeaderColumn>
+            <TableHeaderColumn dataField="ItemDescription" editable={false} >Item Description</TableHeaderColumn>
+            <TableHeaderColumn dataField="type" width="275" columnClassName={columnClassNameFormat} 
+            editable={{type:'select', options:{values:this.props.POReqTrans.catTypes}}}>Category</TableHeaderColumn>
+          </BootstrapTable>;
+          break;
+      case PORTSTATE.STEP_20_FAIL:
+        whichTable = 
+         <BootstrapTable  
+              data={this.props.POReqTrans.noCribVen} pagination 
+              trClassName={trClassFormat}          
+              tableHeaderClass='my-header-class'
+              tableBodyClass='my-body-class'
+              containerClass='my-container-class'
+              tableContainerClass='my-table-container-class'
+              headerContainerClass='my-header-container-class'
+              bodyContainerClass='my-body-container-class'
+              hover={true} bordered={true} condensed={true} 
+              cellEdit={this.cellEditProp} insertRow={false}>
+              <TableHeaderColumn dataField="id" isKey={true} columnClassName='td-first-column' >Row</TableHeaderColumn>
+              <TableHeaderColumn dataField="PONumber" editable={false} >PO Number</TableHeaderColumn>
+              <TableHeaderColumn dataField="Address1" editable={false} >Address1</TableHeaderColumn>
+          </BootstrapTable>;
+          break;
     }
     return ( <div>{whichTable}</div> );
   }

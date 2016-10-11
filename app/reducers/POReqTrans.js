@@ -5,12 +5,6 @@ import update from 'react-addons-update';
 
 export default function reducer( state = {}, action) {
   switch (action.type) {
-    case PORTACTION.SET_STATE:
-    {
-      var newData = update(state, {state: {$set: action.state}});
-    //  return {chk1:'error',chk2:'success',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
-      return newData;
-    }
     case PORTACTION.SET_CHECK1:
     {
       console.log(`set check1`);
@@ -37,6 +31,43 @@ export default function reducer( state = {}, action) {
     //  return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
       return newData;
     }
+    case PORTACTION.INIT_PORT:
+    {
+      console.log('INIT_PORT');
+      var newData = update(state, 
+        { 
+          catRecs:{$set: [{}]},  
+          catTypes:{$set: ['cat1','cat2','cat3']},
+          chk1: {$set: 'unknown'},
+          chk2: {$set: 'unknown'},
+          chk3: {$set: 'unknown'},
+          chk4: {$set: 'unknown'},
+          goButton:{$set:''},
+          noCatList:{$set: [{}]},
+          noCribVen:{$set: [{}]},  
+          state:{$set: PORTSTATE.NOT_PRIMED},
+          reason:{$set:''}
+        });
+      return newData;
+    }
+    case PORTACTION.SET_NO_CAT_LIST:
+    {
+      console.log('update noCatList');
+      var newData = update(state, 
+        { 
+          noCatList: {$set: action.noCatList}
+        });
+      return newData;
+    }
+    case PORTACTION.SET_NO_CRIB_VEN:
+    {
+      console.log('updating noCribVen');
+      var newData = update(state, 
+        { 
+          noCribVen: {$set: action.noCribVen}
+        });
+      return newData;
+    }
     case PORTACTION.SET_PO_CATEGORIES:
     {
       console.log('update PO Categories list');
@@ -52,61 +83,27 @@ export default function reducer( state = {}, action) {
       var newData = update(state, 
         { catRecs: {$set: action.catRecs}
         });
-    //  return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
       return newData;
     }
-    case PORTACTION.SET_NO_CAT_LIST:
+    case PORTACTION.SET_PRIMED:
     {
-      console.log('update noCatList');
+      console.log(`set primed`);
       var newData = update(state, 
         { 
-          noCatList: {$set: action.noCatList}
+          primed: {$set: action.primed}
         });
-/*
-     var newData = update(state, 
-        { 
-          btnState:{$set:'error'},
-          chk1: {$set: 'failure'},
-          noCatList: {$set: action.noCatList}
-        });
-        */
-    //  return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
+      return newData;
+
+    }
+    case PORTACTION.SET_REASON:
+    {
+      console.dir(action.reason);
+      var newData = update(state, {reason: {$set: action.state}});
       return newData;
     }
-    case PORTACTION.SET_NO_CRIB_VEN:
+    case PORTACTION.SET_STATE:
     {
-      console.log('updating noCribVen');
-      var newData = update(state, 
-        { 
-          noCribVen: {$set: action.noCribVen}
-        });
-/*
-     var newData = update(state, 
-        { 
-          btnState:{$set:'error'},
-          chk1: {$set: 'failure'},
-          noCatList: {$set: action.noCatList}
-        });
-        */
-    //  return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
-      return newData;
-    }
-    case PORTACTION.INIT_PORT:
-    {
-      console.log('INIT_PORT');
-      var newData = update(state, 
-        { 
-          catRecs:{$set: [{}]},  
-          catTypes:{$set: ['cat1','cat2','cat3']},
-          chk1: {$set: 'unknown'},
-          chk2: {$set: 'unknown'},
-          chk3: {$set: 'unknown'},
-          chk4: {$set: 'unknown'},
-          goButton:{$set:''},
-          noCatList:{$set: [{}]},
-          noCribVen:[{}],  
-          state:{$set: PORTSTATE.NOT_STARTED}
-        });
+      var newData = update(state, {state: {$set: action.state}});
       return newData;
     }
     default:

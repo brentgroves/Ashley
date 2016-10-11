@@ -7,20 +7,22 @@ import routes from './routes';
 import configureStore from './store/configureStore';
 import './app.global.css';
 import * as PORTSTATE from "./actions/PORTState.js"
-
+import * as PORTCHK from "./actions/PORTChkConst.js"
 
 const initialState = {
 	POReqTrans:{ 
 		catRecs:[{}],
 		catTypes:['cat1','cat2','cat3'],
-		chk1:'unknown',
-		chk2:'unknown',
-		chk3:'unknown',
-		chk4:'unknown',
+		chk1:PORTCHK.UNKNOWN,
+		chk2:PORTCHK.UNKNOWN,
+		chk3:PORTCHK.UNKNOWN,
+		chk4:PORTCHK.UNKNOWN,
 		goButton:'', 
 		noCatList:[{}],
 		noCribVen:[{}],	
-		state:PORTSTATE.NOT_STARTED
+		primed:false,
+		state:PORTSTATE.NOT_PRIMED,
+		reason:''
 	}
 
 //	noVenPoList:[{PONumber:1,Vendor:2,Address1:'1633 S US HWY 33'}]
