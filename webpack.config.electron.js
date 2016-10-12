@@ -60,7 +60,6 @@ export default validate(merge(baseConfig, {
   externals: [
     'font-awesome',
     'bootstrap',
-    'react-bootstrap-table',
     'source-map-support'
   ]
 }));

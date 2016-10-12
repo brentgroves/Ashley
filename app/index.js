@@ -22,7 +22,9 @@ const initialState = {
 		noCribVen:[{}],	
 		primed:false,
 		state:PORTSTATE.NOT_PRIMED,
-		reason:''
+		reason:'',
+		vendors:[{}],
+		vendorSelect:[{}]
 	}
 
 //	noVenPoList:[{PONumber:1,Vendor:2,Address1:'1633 S US HWY 33'}]

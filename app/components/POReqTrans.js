@@ -164,8 +164,7 @@ export default class POReqTrans extends Component {
       (PORTSTATE.PRIMED==this.props.POReqTrans.state) ||
       (PORTSTATE.STARTED==this.props.POReqTrans.state) ||  
       (PORTSTATE.STEP_10_SUCCESS==this.props.POReqTrans.state) ||  
-      (PORTSTATE.STEP_20_SUCCESS==this.props.POReqTrans.state) || 
-      (PORTSTATE.STEP_20_FAIL==this.props.POReqTrans.state)  
+      (PORTSTATE.STEP_20_SUCCESS==this.props.POReqTrans.state)  
     )
   {
     goButton = 

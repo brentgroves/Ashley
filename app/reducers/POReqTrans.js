@@ -5,6 +5,27 @@ import update from 'react-addons-update';
 
 export default function reducer( state = {}, action) {
   switch (action.type) {
+    case PORTACTION.INIT_PORT:
+    {
+      console.log('INIT_PORT');
+      var newData = update(state, 
+        { 
+          catRecs:{$set: [{}]},  
+          catTypes:{$set: ['cat1','cat2','cat3']},
+          chk1: {$set: 'unknown'},
+          chk2: {$set: 'unknown'},
+          chk3: {$set: 'unknown'},
+          chk4: {$set: 'unknown'},
+          goButton:{$set:''},
+          noCatList:{$set: [{}]},
+          noCribVen:{$set: [{}]},  
+          state:{$set: PORTSTATE.NOT_PRIMED},
+          reason:{$set:''},
+          vendors:{$set:[{}]},
+          vendorSelect:{$set:[{}]}
+        });
+      return newData;
+    }
     case PORTACTION.SET_CHECK1:
     {
       console.log(`set check1`);
@@ -29,25 +50,6 @@ export default function reducer( state = {}, action) {
     {
       var newData = update(state, {goButton: {$set: action.goButton}});
     //  return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
-      return newData;
-    }
-    case PORTACTION.INIT_PORT:
-    {
-      console.log('INIT_PORT');
-      var newData = update(state, 
-        { 
-          catRecs:{$set: [{}]},  
-          catTypes:{$set: ['cat1','cat2','cat3']},
-          chk1: {$set: 'unknown'},
-          chk2: {$set: 'unknown'},
-          chk3: {$set: 'unknown'},
-          chk4: {$set: 'unknown'},
-          goButton:{$set:''},
-          noCatList:{$set: [{}]},
-          noCribVen:{$set: [{}]},  
-          state:{$set: PORTSTATE.NOT_PRIMED},
-          reason:{$set:''}
-        });
       return newData;
     }
     case PORTACTION.SET_NO_CAT_LIST:
@@ -104,6 +106,16 @@ export default function reducer( state = {}, action) {
     case PORTACTION.SET_STATE:
     {
       var newData = update(state, {state: {$set: action.state}});
+      return newData;
+    }
+    case PORTACTION.SET_VENDORS:
+    {
+      var newData = update(state, {vendors: {$set: action.vendors}});
+      return newData;
+    }
+    case PORTACTION.SET_VENDOR_SELECT:
+    {
+      var newData = update(state, {vendorSelect: {$set: action.vendorSelect}});
       return newData;
     }
     default:

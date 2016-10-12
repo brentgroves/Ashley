@@ -90,6 +90,20 @@ export function setState(state) {
   };
 }
 
+export function setVendors(vendors) {
+  return {
+    type: PORTACTION.SET_VENDORS,
+    vendors: vendors
+  };
+}
+
+export function setVendorSelect(vendorSelect) {
+  return {
+    type: PORTACTION.SET_VENDOR_SELECT,
+    vendorSelect: vendorSelect
+  };
+}
+
 export function startPORT() {
  return (dispatch,getState) => {
     var disp = dispatch;

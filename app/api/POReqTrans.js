@@ -240,6 +240,8 @@ function getPOCategories(disp) {
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
 }
+
+
 /********************CHECK IF ALL PO CATEGORIES HAVE BEEN SELECTED FOR EACH PO ITEM & THE RECORDS ARE NOT LOCKED****************/
 
 function  poCatChk(disp) {
@@ -286,7 +288,7 @@ function  poCatChk(disp) {
     }else {
       dispatch({ type:PORTACTION.SET_CHECK1, chk1:PORTCHK.SUCCESS });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_10_PASS });
-      portCheck2(dispatch);
+      getVendors(dispatch);
     }
   }).catch(function(err) {
     console.log(`POReqTran NO PO category query err:  ${err.message}` );
@@ -295,23 +297,71 @@ function  poCatChk(disp) {
   });
 }
 
-/*function portCheck2(disp) {
-  var dispatch = disp;
+function getVendors(disp) {
+  var dispatch=disp;
+  let qryCrib = `
+    select VendorNumber,
+    rtrim(VendorName)  +
+    case 
+      when PurchaseCity is null then 'unknown' 
+      else ' - ' + rtrim(PurchaseCity)
+    end + ' - ' + 
+    rtrim(VendorNumber) 
 
- // linuxSQLPrime();
-  console.log("portCheck2 stated")
+    as Description
 
-  var cribConnection = new sql.Connection(crib,function(err){
-    // error checks
-    console.log("portCheck2 Connection made")
-    portChk2(disp,cribConnection);
+    from vendor 
+    where VendorName is not NULL
+    order by VendorName
+  `;
+
+  // Vendor query
+  new sql.Request()
+  .query(qryCrib).then(function(recordset) {
+      dispatch({ type:PORTACTION.SET_VENDORS, vendors:recordset });
+      getVendorSelect(dispatch);
+  }).catch(function(err) {
+    console.log(`POReqTran Vendor query err:  ${err.message}` );
+    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
-  cribConnection.on('error', function(err) {
-    console.log(`portCheck2 Connection err:  ${err}` );
-    // ... error handler
+}
+
+function getVendorSelect(disp) {
+  var dispatch=disp;
+  let qryCrib = `
+    select 
+    rtrim(VendorName)  +
+    case 
+      when PurchaseCity is null then 'unknown' 
+      else ' - ' + rtrim(PurchaseCity)
+    end + ' - ' + 
+    rtrim(VendorNumber) 
+    as Description
+    from vendor 
+    where VendorName is not NULL
+    order by VendorName
+  `;
+
+  // Vendor query
+  new sql.Request()
+  .query(qryCrib).then(function(recordset) {
+    if(recordset.length!==0){
+      console.log("VendorSelect retrieved.");
+      var vendorSelect=[];
+      recordset.forEach(function(vendor,i,arr){
+        vendorSelect.push(vendor.Description);
+      });
+      dispatch({ type:PORTACTION.SET_VENDOR_SELECT, vendorSelect:vendorSelect });
+      portCheck2(dispatch);
+    }
+  }).catch(function(err) {
+    console.log(`POReqTran Vendor Select query err:  ${err.message}` );
+    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
-} // poUpdate
-*/
+}
+
 /*******************CHECK IF PO HAS A VALID VENDOR IN CRIBMASTER****************/
 
 function  portCheck2(disp) {
