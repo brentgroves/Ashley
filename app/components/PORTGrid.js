@@ -40,13 +40,13 @@ export default class PORTGrid extends React.Component{
 
   }
 
-  cellEditProp = {
+  chk1CellEditProp = {
     mode: "click",
     blurToSave: true,
-    afterSaveCell: this.onAfterSaveCell
+    afterSaveCell: this.onAfterSaveCellChk1
   };
 
-  onAfterSaveCell(row, cellName, cellValue){
+  onAfterSaveCellChk1(row, cellName, cellValue){
     console.log("Save cell '"+cellName+"' with value '"+cellValue+"'");
     console.log("Thw whole row :");
     console.log(row);
@@ -73,6 +73,17 @@ export default class PORTGrid extends React.Component{
     }
   }
 
+  chk2CellEditProp = {
+    mode: "click",
+    blurToSave: true,
+    afterSaveCell: this.onAfterSaveCellChk2
+  };
+
+  onAfterSaveCellChk2(row, cellName, cellValue){
+    console.log("Save cell '"+cellName+"' with value '"+cellValue+"'");
+    console.log("Thw whole row :");
+    console.log(row);
+  }
 
 
 //table-striped table-bordered table-condensed
@@ -92,7 +103,7 @@ export default class PORTGrid extends React.Component{
             headerContainerClass='my-header-container-class'
             bodyContainerClass='my-body-container-class'
             hover={true} bordered={true} condensed={true} 
-            cellEdit={this.cellEditProp} insertRow={false}>
+            cellEdit={this.cellEditPropChk1} insertRow={false}>
             <TableHeaderColumn dataField="id" isKey={true} columnClassName='td-first-column' >Row</TableHeaderColumn>
             <TableHeaderColumn dataField="PONumber" editable={false} >PO Number</TableHeaderColumn>
             <TableHeaderColumn dataField="Item" editable={false} >Item Number</TableHeaderColumn>
@@ -113,10 +124,12 @@ export default class PORTGrid extends React.Component{
               headerContainerClass='my-header-container-class'
               bodyContainerClass='my-body-container-class'
               hover={true} bordered={true} condensed={true} 
-              cellEdit={this.cellEditProp} insertRow={false}>
+              cellEdit={this.cellEditPropChk2} insertRow={false}>
               <TableHeaderColumn dataField="id" isKey={true} columnClassName='td-first-column' >Row</TableHeaderColumn>
               <TableHeaderColumn dataField="PONumber" editable={false} >PO Number</TableHeaderColumn>
               <TableHeaderColumn dataField="Address1" editable={false} >Address1</TableHeaderColumn>
+              <TableHeaderColumn dataField="type" width="275" columnClassName={columnClassNameFormat} 
+              editable={{type:'select', options:{values:this.props.POReqTrans.vendorSelect}}}>Vendor</TableHeaderColumn>
           </BootstrapTable>;
           break;
     }
