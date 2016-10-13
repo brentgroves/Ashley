@@ -4,7 +4,7 @@ import * as PORTACTION from "./PORTActionConst.js"
 
 import { push } from 'react-router-redux';
 
-import POReqTrans,{updateCheck1,updateCheck2,primeDB} from '../api/POReqTrans';
+import POReqTrans,{updateCheck1,updateCheck2,primeDB,startCheck3} from '../api/POReqTrans';
 
 export function cancelApp() {
  return (dispatch,getState) => {
@@ -47,10 +47,31 @@ export function setCheck2(setMe) {
   };
 }
 
+export function setCheck3(setMe) {
+  return {
+    type: PORTACTION.SET_CHECK3,
+    chk3: setMe
+  };
+}
+
 export function setGoButton(setMe) {
   return {
     type: PORTACTION.SET_GO_BUTTON,
     goButton: setMe
+  };
+}
+
+export function setM2MVendors(m2mVendors) {
+  return {
+    type: PORTACTION.SET_M2M_VENDORS,
+    m2mVendors: m2mVendors
+  };
+}
+
+export function setM2mVendorSelect(m2mVendorSelect) {
+  return {
+    type: PORTACTION.SET_M2M_VENDOR_SELECT,
+    m2mVendorSelect: m2mVendorSelect
   };
 }
 
@@ -68,6 +89,12 @@ export function setNoCribVen(noCribVen) {
   };
 }
 
+export function setNoM2mVen(noM2mVen) {
+  return {
+    type: PORTACTION.SET_NO_M2M_VEN,
+    noM2mVen: noM2mVen
+  };
+}
 
 export function setPOCategories(catTypes) {
   return {
@@ -102,6 +129,13 @@ export function setVendorSelect(vendorSelect) {
     type: PORTACTION.SET_VENDOR_SELECT,
     vendorSelect: vendorSelect
   };
+}
+
+export function startChk3() {
+ return (dispatch,getState) => {
+      var disp = dispatch;
+      startCheck3(disp);
+ };
 }
 
 export function startPORT() {

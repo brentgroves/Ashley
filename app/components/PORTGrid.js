@@ -3,7 +3,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import * as PORTSTATE from "../actions/PORTState.js"
 
 
-var catRecs = [{}],vendors=[{}];
+var catRecs = [{}],vendors=[{}],m2mVendors=[{}];
 // can't find a way for onAfterSaveCell() to access this.props??
 var updateChk1,updateChk2;
 
@@ -149,6 +149,26 @@ export default class PORTGrid extends React.Component{
               bodyContainerClass='my-body-container-class'
               hover={true} bordered={true} condensed={true} 
               cellEdit={this.cellEditPropChk2} insertRow={false}>
+              <TableHeaderColumn dataField="id" hidden={true} isKey={true}>Row</TableHeaderColumn>
+              <TableHeaderColumn dataField="PONumber" columnClassName='td-first-column' isKey={false} editable={false} >PO Number</TableHeaderColumn>
+              <TableHeaderColumn dataField="Address1" editable={false} >Vendor</TableHeaderColumn>
+              <TableHeaderColumn dataField="vendor" width="275" columnClassName={columnClassNameFormat} 
+              editable={{type:'select', options:{values:this.props.POReqTrans.vendorSelect}}}>Select Vendor</TableHeaderColumn>
+          </BootstrapTable>;
+          break;
+      case PORTSTATE.STEP_30_FAIL:
+        whichTable = 
+         <BootstrapTable  
+              data={this.props.POReqTrans.noM2mVen} pagination 
+              trClassName={trClassFormat}          
+              tableHeaderClass='my-header-class'
+              tableBodyClass='my-body-class'
+              containerClass='my-container-class'
+              tableContainerClass='my-table-container-class'
+              headerContainerClass='my-header-container-class'
+              bodyContainerClass='my-body-container-class'
+              hover={true} bordered={true} condensed={true} 
+              cellEdit={this.cellEditPropChk3} insertRow={false}>
               <TableHeaderColumn dataField="id" hidden={true} isKey={true}>Row</TableHeaderColumn>
               <TableHeaderColumn dataField="PONumber" columnClassName='td-first-column' isKey={false} editable={false} >PO Number</TableHeaderColumn>
               <TableHeaderColumn dataField="Address1" editable={false} >Vendor</TableHeaderColumn>

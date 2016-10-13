@@ -17,8 +17,11 @@ export default function reducer( state = {}, action) {
           chk3: {$set: 'unknown'},
           chk4: {$set: 'unknown'},
           goButton:{$set:''},
+          m2mVendors:{$set:[{}]},
+          m2mVendorSelect:{$set:[{}]},
           noCatList:{$set: [{}]},
           noCribVen:{$set: [{}]},  
+          noM2mVen:{$set: [{}]},  
           state:{$set: PORTSTATE.NOT_PRIMED},
           reason:{$set:''},
           vendors:{$set:[{}]},
@@ -46,10 +49,30 @@ export default function reducer( state = {}, action) {
       return newData;
 
     }
+    case PORTACTION.SET_CHECK3:
+    {
+      console.log(`set check3`);
+      var newData = update(state, 
+        { 
+          chk3: {$set: action.chk3}
+        });
+      return newData;
+
+    }
     case PORTACTION.SET_GO_BUTTON:
     {
       var newData = update(state, {goButton: {$set: action.goButton}});
     //  return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
+      return newData;
+    }
+    case PORTACTION.SET_M2M_VENDORS: 
+    {
+      var newData = update(state, {m2mVendors: {$set: action.m2mVendors}});
+      return newData;
+    }
+    case PORTACTION.SET_M2M_VENDOR_SELECT:
+    {
+      var newData = update(state, {m2mVendorSelect: {$set: action.m2mVendorSelect}});
       return newData;
     }
     case PORTACTION.SET_NO_CAT_LIST:
@@ -67,6 +90,15 @@ export default function reducer( state = {}, action) {
       var newData = update(state, 
         { 
           noCribVen: {$set: action.noCribVen}
+        });
+      return newData;
+    }
+    case PORTACTION.SET_NO_M2M_VEN:
+    {
+      console.log('updating noM2mVen');
+      var newData = update(state, 
+        { 
+          noM2mVen: {$set: action.noM2mVen}
         });
       return newData;
     }

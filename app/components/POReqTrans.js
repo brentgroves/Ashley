@@ -123,9 +123,24 @@ export default class POReqTrans extends Component {
            <h1 style={{textAlign: 'center'}}>Check PO Vendor</h1>
             <p style={{padding: '0px'}}>The following PO record(s) have a problem with their vendor.
             {"     "}
-            <strong>Verify the PO vendor number is valid in CribMaster.</strong>
+            <strong>Select a valid PO vendor number for each item.</strong>
             {"     "}
-            Once all PO records have a valid Vendor number click the Resume button to continue</p>
+            Once all PO records have a valid Vendor number the PO Request Transfer will continue</p>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(PORTSTATE.STEP_30_FAIL==this.props.POReqTrans.state){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron  >
+           <h1 style={{textAlign: 'center'}}>Check Made2Manage Vendor</h1>
+            <p style={{padding: '0px'}}>The following PO record(s) have a problem with their vendor.
+            {"     "}
+            <strong>Select a valid Made2Manage vendor number for each item.</strong>
+            {"     "}
+            Once all PO records have a valid Vendor number the PO Request Transfer will continue</p>
           </Jumbotron>
         </Col>
       </Row>
@@ -164,7 +179,8 @@ export default class POReqTrans extends Component {
       (PORTSTATE.PRIMED==this.props.POReqTrans.state) ||
       (PORTSTATE.STARTED==this.props.POReqTrans.state) ||  
       (PORTSTATE.STEP_10_SUCCESS==this.props.POReqTrans.state) ||  
-      (PORTSTATE.STEP_20_SUCCESS==this.props.POReqTrans.state)  
+      (PORTSTATE.STEP_20_SUCCESS==this.props.POReqTrans.state) || 
+      (PORTSTATE.STEP_30_SUCCESS==this.props.POReqTrans.state)  
     )
   {
     goButton = 
@@ -186,6 +202,7 @@ export default class POReqTrans extends Component {
   if(
       (PORTSTATE.STEP_10_SUCCESS==this.props.POReqTrans.state) ||  
       (PORTSTATE.STEP_20_SUCCESS==this.props.POReqTrans.state) || 
+      (PORTSTATE.STEP_30_SUCCESS==this.props.POReqTrans.state) || 
       (PORTSTATE.FAILURE==this.props.POReqTrans.state)  
     )
   {
@@ -207,7 +224,8 @@ export default class POReqTrans extends Component {
 
   if(
       (PORTSTATE.STEP_10_FAIL==this.props.POReqTrans.state) ||  
-      (PORTSTATE.STEP_20_FAIL==this.props.POReqTrans.state)  
+      (PORTSTATE.STEP_20_FAIL==this.props.POReqTrans.state) || 
+      (PORTSTATE.STEP_30_FAIL==this.props.POReqTrans.state)  
     )
   {
     portGrid = 
@@ -226,6 +244,8 @@ export default class POReqTrans extends Component {
       (PORTSTATE.STEP_10_FAIL==this.props.POReqTrans.state) ||  
       (PORTSTATE.STEP_20_SUCCESS==this.props.POReqTrans.state) ||  
       (PORTSTATE.STEP_20_FAIL==this.props.POReqTrans.state) || 
+      (PORTSTATE.STEP_30_SUCCESS==this.props.POReqTrans.state) ||  
+      (PORTSTATE.STEP_30_FAIL==this.props.POReqTrans.state) || 
       (PORTSTATE.FAILURE==this.props.POReqTrans.state) 
     )
   {

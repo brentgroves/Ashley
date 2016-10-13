@@ -20,11 +20,14 @@ const initialState = {
 		goButton:'', 
 		noCatList:[{}],
 		noCribVen:[{}],	
+		noM2mVen:[{}],	
 		primed:false,
 		state:PORTSTATE.NOT_PRIMED,
 		reason:'',
 		vendors:[{}],
-		vendorSelect:[{}]
+		vendorSelect:[{}],
+		m2mVendors:[{}],
+		m2mVendorSelect:[{}]
 	}
 
 //	noVenPoList:[{PONumber:1,Vendor:2,Address1:'1633 S US HWY 33'}]
