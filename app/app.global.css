@@ -96,7 +96,7 @@ a:hover {
 }
 */
 .my-header-class {
-  border: purple 5px solid;
+/*  border: purple 5px solid; */
   border-top: 1px solid #C1C3D1;
   border-bottom-: 1px solid #C1C3D1;
   background: steelblue;
@@ -124,7 +124,7 @@ a:hover {
 }
 
 .my-body-class {
-  border: yellow 5px solid;
+/*  border: yellow 5px solid; */
   padding: 0px 0px 0px 0px;
   margin-top: 0%;
   margin-left: 0%;

@@ -3,9 +3,9 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import * as PORTSTATE from "../actions/PORTState.js"
 
 
-var catRecs = [{}];
+var catRecs = [{}],vendors=[{}];
 // can't find a way for onAfterSaveCell() to access this.props??
-var updateChk1;
+var updateChk1,updateChk2;
 
 
 function columnClassNameFormat(fieldValue, row, rowIdx, colIdx) {
@@ -31,16 +31,19 @@ export default class PORTGrid extends React.Component{
   constructor(props) {
     super(props);
     // this bind has no affect??
-    this.onAfterSaveCell = this.onAfterSaveCell.bind(this);
+    this.onAfterSaveCellChk1 = this.onAfterSaveCellChk1.bind(this);
+    this.onAfterSaveCellChk2 = this.onAfterSaveCellChk2.bind(this);
     updateChk1=this.props.updateChk1;
+    updateChk2=this.props.updateChk2;
     catRecs=this.props.POReqTrans.catRecs;
+    vendors=this.props.POReqTrans.vendors;
     this.state = {
  //     loading: false PONumber,Item,UDF_POCATEGORY
     };
 
   }
 
-  chk1CellEditProp = {
+  cellEditPropChk1 = {
     mode: "click",
     blurToSave: true,
     afterSaveCell: this.onAfterSaveCellChk1
@@ -73,7 +76,7 @@ export default class PORTGrid extends React.Component{
     }
   }
 
-  chk2CellEditProp = {
+  cellEditPropChk2 = {
     mode: "click",
     blurToSave: true,
     afterSaveCell: this.onAfterSaveCellChk2
@@ -82,7 +85,28 @@ export default class PORTGrid extends React.Component{
   onAfterSaveCellChk2(row, cellName, cellValue){
     console.log("Save cell '"+cellName+"' with value '"+cellValue+"'");
     console.log("Thw whole row :");
-    console.log(row);
+    console.dir(row);
+    var found=false;
+    var newVendor;
+    vendors.every(function(vendor,i,arr){
+      console.log(vendor.Description);
+      if(vendor.Description==cellValue){
+        console.log(vendor.Description + "==" + cellValue);
+        console.log(vendor.VendorNumber);
+        newVendor=vendor.VendorNumber;
+        found=true;
+      // false breaks loop
+        return false;
+      }else{
+//        console.log(catRec.descr + "!=" + cellValue);
+        return true;
+
+      }
+    });
+    if(found){
+      updateChk2(row.PONumber,newVendor);
+    }
+
   }
 
 
@@ -104,12 +128,12 @@ export default class PORTGrid extends React.Component{
             bodyContainerClass='my-body-container-class'
             hover={true} bordered={true} condensed={true} 
             cellEdit={this.cellEditPropChk1} insertRow={false}>
-            <TableHeaderColumn dataField="id" isKey={true} columnClassName='td-first-column' >Row</TableHeaderColumn>
-            <TableHeaderColumn dataField="PONumber" editable={false} >PO Number</TableHeaderColumn>
+            <TableHeaderColumn dataField="id" hidden={true} isKey={true}>Row</TableHeaderColumn>
+            <TableHeaderColumn dataField="PONumber" columnClassName='td-first-column' editable={false} >PO Number</TableHeaderColumn>
             <TableHeaderColumn dataField="Item" editable={false} >Item Number</TableHeaderColumn>
             <TableHeaderColumn dataField="ItemDescription" editable={false} >Item Description</TableHeaderColumn>
             <TableHeaderColumn dataField="type" width="275" columnClassName={columnClassNameFormat} 
-            editable={{type:'select', options:{values:this.props.POReqTrans.catTypes}}}>Category</TableHeaderColumn>
+            editable={{type:'select', options:{values:this.props.POReqTrans.catTypes}}}>Select Category</TableHeaderColumn>
           </BootstrapTable>;
           break;
       case PORTSTATE.STEP_20_FAIL:
@@ -125,11 +149,11 @@ export default class PORTGrid extends React.Component{
               bodyContainerClass='my-body-container-class'
               hover={true} bordered={true} condensed={true} 
               cellEdit={this.cellEditPropChk2} insertRow={false}>
-              <TableHeaderColumn dataField="id" isKey={true} columnClassName='td-first-column' >Row</TableHeaderColumn>
-              <TableHeaderColumn dataField="PONumber" editable={false} >PO Number</TableHeaderColumn>
-              <TableHeaderColumn dataField="Address1" editable={false} >Address1</TableHeaderColumn>
-              <TableHeaderColumn dataField="type" width="275" columnClassName={columnClassNameFormat} 
-              editable={{type:'select', options:{values:this.props.POReqTrans.vendorSelect}}}>Vendor</TableHeaderColumn>
+              <TableHeaderColumn dataField="id" hidden={true} isKey={true}>Row</TableHeaderColumn>
+              <TableHeaderColumn dataField="PONumber" columnClassName='td-first-column' isKey={false} editable={false} >PO Number</TableHeaderColumn>
+              <TableHeaderColumn dataField="Address1" editable={false} >Vendor</TableHeaderColumn>
+              <TableHeaderColumn dataField="vendor" width="275" columnClassName={columnClassNameFormat} 
+              editable={{type:'select', options:{values:this.props.POReqTrans.vendorSelect}}}>Select Vendor</TableHeaderColumn>
           </BootstrapTable>;
           break;
     }

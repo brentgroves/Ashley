@@ -132,61 +132,104 @@ export function primeM2mDB(disp){
     dispatch({ type:PORTACTION.SET_REASON, state:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
-/*  var cribConnection = new sql.Connection(crib,function(err){
-    // error checks
-    console.log('Connection created');
-  });
-  cribConnection.on('error', function(err) {
-    console.log(`Connection1 err:  ${err}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err });
+}
+
+export function updateCheck1(disp,poNumber,item,poCategory) {
+//  var that = this;
+  var dispatch = disp;
+
+  var connect=sql.connect(crib).then(function() {
+    updChk1(dispatch,poNumber,item,poCategory);
+  }).catch(function(err) {
+    console.log(`updateCheck1 Connect err:  ${err.message}` );
+    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
-*/}
+} // updateCheck1
 
-
-
-export function updateCheck1(dispatch,poNumber,item,poCategory) {
-//  var that = this;
-  var disp = dispatch;
-  var cribConnection = new sql.Connection(crib,function(err){
-    // error checks
-    updChk1(disp,cribConnection,poNumber,item,poCategory);
-  });
-  cribConnection.on('error', function(err) {
-    console.log(`Connection1 err:  ${err}` );
-    // ... error handler
-  });
-} // poUpdate
-
-function  updChk1(disp,cribConnection,poNumber,item,poCategory) {
+function  updChk1(disp,poNumber,item,poCategory) {
 //    var that = this;
-    var dispatch = disp;
-    let qryCrib;
-    if (prod===true) {
-      qryCrib = `
-        update PODETAIL
-        set UDF_POCATEGORY = ${poCategory}
-        where 
-        PONumber = ${poNumber} and Item = ${item}
-      `;
-    }else{
-      qryCrib = `
-        update btPODETAIL
-        set UDF_POCATEGORY = ${poCategory}
-        where 
-        PONumber = ${poNumber} and Item = ${item}
-      `;
-    }
+  var dispatch = disp;
 
-    let cribReq = new sql.Request(cribConnection);
-
-    cribReq.query(qryCrib, function(err,cribRs) {
-      // error checks
-      console.dir(err);
-      console.dir(cribRs);
-      POReqTrans(dispatch);
-    });
+  let qryCrib;
+  if (prod===true) {
+    qryCrib = `
+      update PODETAIL
+      set UDF_POCATEGORY = ${poCategory}
+      where 
+      PONumber = ${poNumber} and Item = ${item}
+    `;
+  }else{
+    qryCrib = `
+      update btPODETAIL
+      set UDF_POCATEGORY = ${poCategory}
+      where 
+      PONumber = ${poNumber} and Item = ${item}
+    `;
   }
+
+ // update PO Category query
+  new sql.Request()
+  .query(qryCrib).then(function(recordset) {
+      // error checks
+      console.dir(recordset);
+      POReqTrans(dispatch);
+  }).catch(function(err) {
+    console.log(`POReqTran update PO Category query err:  ${err.message}` );
+    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+  });
+
+}
+
+export function updateCheck2(disp,poNumber,vendorNumber) {
+//  var that = this;
+  var dispatch = disp;
+
+  var connect=sql.connect(crib).then(function() {
+    updateChk2(dispatch,poNumber,vendorNumber);
+  }).catch(function(err) {
+    console.log(`POReqTran updateCheck2 Connect err:  ${err.message}` );
+    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+  });
+
+} // updateCheck2
+
+function  updateChk2(disp,poNumber,vendorNumber) {
+//    var that = this;
+  var dispatch = disp;
+
+  let qryCrib;
+  if (prod===true) {
+    qryCrib = `
+      update PO
+      set vendor = ${vendorNumber}
+      where 
+      PONumber = ${poNumber} 
+    `;
+  }else{
+    qryCrib = `
+      update btPO
+      set vendor = ${vendorNumber}
+      where 
+      PONumber = ${poNumber} 
+    `;
+  }
+
+  // update PO Vendor query
+  new sql.Request()
+  .query(qryCrib).then(function(recordset) {
+      // error checks
+      console.dir(recordset);
+      POReqTrans(dispatch);
+  }).catch(function(err) {
+    console.log(`POReqTran update PO vendor query err:  ${err.message}` );
+    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+  });
+
+}
 
 
 
@@ -307,9 +350,7 @@ function getVendors(disp) {
       else ' - ' + rtrim(PurchaseCity)
     end + ' - ' + 
     rtrim(VendorNumber) 
-
     as Description
-
     from vendor 
     where VendorName is not NULL
     order by VendorName
@@ -400,20 +441,12 @@ function  portCheck2(disp) {
 
       // error checks
       if(recordset.length!==0){
-        let cribRsErr ="";
-        recordset.forEach(function(podetail,i,arr){
-          console.log(podetail.Item);
-          if(arr.length===i+1){
-            cribRsErr+=`PO# ${podetail.PONumber}, Item: ${podetail.Item}`;
-          }else{
-            cribRsErr+= `PO# ${podetail.PONumber}, Item: ${podetail.Item}\n`;
-          }
-        });
         console.log("portCheck2 query had records.");
         dispatch({ type:PORTACTION.SET_CHECK2, chk2:PORTCHK.FAILURE });
-        dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:'error' });
         dispatch({ type: PORTACTION.SET_NO_CRIB_VEN, noCribVen:recordset });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_20_FAIL});
+
+ //       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_20_FAIL});
       }else {
         dispatch({ type:PORTACTION.SET_CHECK2, chk2:PORTCHK.SUCCESS});
         dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:'success' });

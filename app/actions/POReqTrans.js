@@ -4,7 +4,7 @@ import * as PORTACTION from "./PORTActionConst.js"
 
 import { push } from 'react-router-redux';
 
-import POReqTrans,{updateCheck1,primeDB} from '../api/POReqTrans';
+import POReqTrans,{updateCheck1,updateCheck2,primeDB} from '../api/POReqTrans';
 
 export function cancelApp() {
  return (dispatch,getState) => {
@@ -118,6 +118,12 @@ export function updateChk1(poNumber,item,poCategory) {
   };
 }
 
+export function updateChk2(poNumber,vendorNumber) {
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    updateCheck2(disp,poNumber,vendorNumber);
+  };
+}
 
 
 

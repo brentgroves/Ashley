@@ -11,7 +11,7 @@ export const STEP_10_FAIL= 'STEP_10_FAIL';
 // state 20a - CribMaster vendor Check passed 
 export const STEP_20_PASS = 'STEP_20_PASS';
 // state 20b - CribMaster vendor Check failed 
-export const STEP_20_FAIL= 'STEP_20_FAIL';
+export const STEP_20_FAIL = 'STEP_20_FAIL';
 // state 90 - FAILED
 export const FAILURE = 'FAILURE';
 // state 100 - Completed successfully
