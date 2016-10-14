@@ -80,58 +80,183 @@ var crib = {
 */
 var prod=false;
 var errors=false;
+var m2mPrimed=false;
+var cribPrimed=false;
+var allPrimed=false;
+var primeFailed=false;
+var m2mConnectCnt=0;
+var cribConnectCnt=0;
+var primeFailed=false;
 
-function dbgPrime(){
-  console.log('start of CribMaster dbgPrime');
-  sql.connect(crib).then(function() {
-    console.log('dbgPrime CribMaster connected.');
-  }).catch(function(err) {
-    console.log(`Connection CribMaster dbgPrime err:  ${err.message}` );
-  });
 
-  console.log('start of Made2Manage dbgPrime');
-  sql.connect(m2m).then(function() {
-    console.log('dbgPrime m2m connected.');
-  }).catch(function(err) {
-    console.log(`Connection m2m dbgPrime err:  ${err.message}` );
-  });
+export async function primeDB(disp,stateUpdate){
+  var dispatch=disp;
+  var updateState=stateUpdate;
+  var cnt=0;
+  console.log(`primeDB top`);
+  initPrime();
+  cribConnect(dispatch,updateState);
+  cribConnect(dispatch,updateState);
+  cribConnect(dispatch,updateState);
+  cribConnect(dispatch,updateState);
+  m2mConnect(dispatch,updateState);
+  m2mConnect(dispatch,updateState);
+  m2mConnect(dispatch,updateState);
+  m2mConnect(dispatch,updateState);
+
+  while(!isPrimed() && !primeFailed){
+    if(++cnt>15){
+      dispatch({ type:PORTACTION.SET_REASON, reason:`primeDB(disp) Cannot Connection` });
+      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+      break;
+    }else{
+      await sleep(2000);
+    }
+  }
 
 }
 
-
-export function primeDB(disp){
-  var dispatch=disp;
-  dbgPrime();
-  primeM2mDB(dispatch);
-  primeCribDB(dispatch);
+function initPrime(){
+  m2mPrimed=false;
+  cribPrimed=false;
+  allPrimed=false;
+  primeFailed=false;
+  cribConnectCnt=0;
+  m2mConnectCnt=0;
 }
 
-function primeCribDB(disp){
+function isPrimed(){
+  if((true==m2mPrimed)&(true==cribPrimed)){
+    return true;
+  } else{
+    return false;
+  }
+}
+
+function cribConnect(disp,updateState){
   var dispatch=disp;
-  console.log('start of CribMaster primeDB');
-  sql.connect(cribCheck).then(function() {
-    console.log('CribMaster Connection primed');
-    dispatch({ type:PORTACTION.SET_PRIMED, state:true });
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.PRIMED });
-//    primeM2mDB(dispatch);
-  }).catch(function(err) {
-    console.log(`Connection CribMaster Prime err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+  console.log(`cribConnectCnt = ${cribConnectCnt}`);
+
+  var cribConnection = new sql.Connection(cribCheck, function(err) {
+    // ... error checks
+    if(null==err){
+      console.dir(cribConnection);
+      // Query
+
+      var request = new sql.Request(cribConnection); // or: var request = connection1.request();
+      request.query(
+      `
+        select * from po where ponumber = 25619
+      `, function(err, recordset) {
+          if(null==err){
+            // ... error checks
+            console.log(`crib query`);
+            console.dir(recordset);
+            cribPrimed=true;
+            if(m2mPrimed && !allPrimed){
+              allPrimed=true;
+              dispatch({ type:PORTACTION.SET_PRIMED, primed:true });
+              if(updateState){
+                dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.PRIMED });
+              }
+            }
+          }else{
+            if(++cribConnectCnt<3) {
+              console.log(`cribConnect.query:  ${err.message}` );
+              console.log(`cribConnectCnt = ${cribConnectCnt}`);
+            }else{
+              dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
+              dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+              primeFailed=true;
+            }
+          }
+        }
+      );
+    }else{
+      if(++cribConnectCnt<3) {
+        console.log(`cribConnect.Connection:  ${err.message}` );
+        console.log(`cribConnectCnt = ${cribConnectCnt}`);
+      }else{
+        dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
+        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+        primeFailed=true;
+      }
+    }
+  });
+  
+  cribConnection.on('error', function(err) {
+    if(++cribConnectCnt<3) {
+      console.log(`cribConnect.on('error', function(err):  ${err.message}` );
+      console.log(`cribConnectCnt = ${cribConnectCnt}`);
+    }else{
+      dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
+      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+      primeFailed=true;
+    }
   });
 }
 
-export function primeM2mDB(disp){
+function m2mConnect(disp,updateState){
   var dispatch=disp;
-  console.log('start of M2m primeDB');
-  sql.connect(m2mCheck).then(function() {
-    console.log('M2m Connection primed');
-    dispatch({ type:PORTACTION.SET_PRIMED, state:true });
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.PRIMED });
-  }).catch(function(err) {
-    console.log(`M2m Connection Prime err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+  console.log(`m2mConnectCnt = ${m2mConnectCnt}`);
+
+  var m2mConnection = new sql.Connection(m2mCheck, function(err) {
+    // ... error checks
+    if(null==err){
+      console.dir(m2mConnection);
+      var request = new sql.Request(m2mConnection); 
+      request.query(
+        `
+          select fvendno, fcompany
+          FROM apvend 
+          where fvendno = '002946'
+        `,function(err, recordset) {
+            // ... error checks
+            if(null==err){
+              console.log(`m2mConnect: query success`);
+              console.dir(recordset);
+              m2mPrimed=true;
+              if(cribPrimed && !allPrimed){
+                allPrimed=true;
+                dispatch({ type:PORTACTION.SET_PRIMED, primed:true });
+                if(updateState){
+                  dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.PRIMED });
+                }
+              }
+            }else{
+              if(++m2mConnectCnt<3) {
+                console.log(`m2mConnect.query:  ${err.message}` );
+                console.log(`m2mConnectCnt = ${m2mConnectCnt}`);
+              }else{
+                dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+                dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+                primeFailed=true;
+              }
+            }
+          }
+      );
+    }else{
+      if(++m2mConnectCnt<3) {
+        console.log(`m2mConnect.Connection:  ${err.message}` );
+        console.log(`m2mConnectCnt = ${m2mConnectCnt}`);
+      }else{
+        dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
+        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+        primeFailed=true;
+      }
+
+    }
+  });
+  
+  m2mConnection.on('error', function(err) {
+    if(++m2mConnectCnt<3) {
+      console.log(`m2mConnect.on('error', function(err):  ${err.message}` );
+      console.log(`m2mConnectCnt = ${m2mConnectCnt}`);
+    }else{
+      dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
+      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+      primeFailed=true;
+    }
   });
 }
 
@@ -143,7 +268,7 @@ export function updateCheck1(disp,poNumber,item,poCategory) {
     updChk1(dispatch,poNumber,item,poCategory);
   }).catch(function(err) {
     console.log(`updateCheck1 Connect err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
 } // updateCheck1
@@ -177,7 +302,7 @@ function  updChk1(disp,poNumber,item,poCategory) {
       POReqTrans(dispatch);
   }).catch(function(err) {
     console.log(`POReqTran update PO Category query err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
 
@@ -191,7 +316,7 @@ export function updateCheck2(disp,poNumber,vendorNumber) {
     updateChk2(dispatch,poNumber,vendorNumber);
   }).catch(function(err) {
     console.log(`POReqTran updateCheck2 Connect err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
 
@@ -200,18 +325,6 @@ export function updateCheck2(disp,poNumber,vendorNumber) {
 function  updateChk2(disp,poNumber,vendorNumber) {
 //    var that = this;
   var dispatch = disp;
-
-/*DECLARE @RC int
-DECLARE @poNumber int
-DECLARE @vendor varchar(12)
-set @poNumber = 25617
-set @vendor = '157'
--- TODO: Set parameter values here.
-
-EXECUTE @RC = [dbo].[bpDevPOVendorUpdate] 
-   @poNumber
-  ,@vendor
-*/
   // update PO Vendor query
   new sql.Request()
   .input('poNumber', sql.Int, poNumber)
@@ -221,37 +334,55 @@ EXECUTE @RC = [dbo].[bpDevPOVendorUpdate]
       POReqTrans(dispatch);
   }).catch(function(err) {
     console.log(`POReqTran update PO vendor query err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
 
 }
 
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-
-export default function POReqTrans(disp) {
+/*async function demo() {
+  console.log('Taking a break...');
+  await sleep(2000);
+  console.log('Two second later');
+}
+*/
+export default async function POReqTrans(disp) {
 //  var that = this;
   var dispatch = disp;
+  var cnt=0;
+  initPrime();
+  primeDB(dispatch,false);
+
+  while(!isPrimed() && !primeFailed){
+    if(++cnt>15){
+      break;
+    }else{
+      await sleep(2000);
+    }
+  }
+
+  if(!isPrimed()){
+    // Exit if Not Primed
+    return;
+  }
+
 
   dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STARTED });
 
   var cribConnect=sql.connect(crib).then(function() {
-    getPOCategories(dispatch);
+    getPOCategories(dispatch,cribConnect);
 
   }).catch(function(err) {
     console.log(`cribConnect err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
 
-  var m2mConnect=sql.connect(m2m).then(function() {
-    getM2mVendors(dispatch);
-  }).catch(function(err) {
-    console.log(`cribConnect err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-  });
 
 
 /*  var cribConnect=sql.connect(crib).then(function() {
@@ -259,21 +390,27 @@ export default function POReqTrans(disp) {
 
   }).catch(function(err) {
     console.log(`POReqTran Connect err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
 */
 
 } // poUpdate
 
-function getPOCategories(disp) {
+
+
+
+function getPOCategories(disp,cribConnection) {
   var dispatch=disp;
+  var cribConnect=cribConnection;
   let qryCrib = `
     select UDF_POCATEGORY,RTrim(UDF_POCATEGORYDescription) descr from UDT_POCATEGORY
   `;
 
   // PO Categories query
-  new sql.Request()
+  console.log(`getPOCategories()`);
+  console.dir(cribConnect);
+  new sql.Request(cribConnect)
   .query(qryCrib).then(function(recordset) {
     if(recordset.length!==0){
       console.log("PO category retrieved.");
@@ -292,11 +429,12 @@ function getPOCategories(disp) {
       });
       dispatch({ type:PORTACTION.SET_PO_CATEGORIES, catTypes:allCats });
       dispatch({ type:PORTACTION.SET_PO_CAT_RECORDS, catRecs:catRecs });
-      poCatChk(dispatch);
+      poCatChk(dispatch,cribConnect);
     }
+
   }).catch(function(err) {
     console.log(`POReqTran PO Category query err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
 }
@@ -304,7 +442,8 @@ function getPOCategories(disp) {
 
 /********************CHECK IF ALL PO CATEGORIES HAVE BEEN SELECTED FOR EACH PO ITEM & THE RECORDS ARE NOT LOCKED****************/
 
-function  poCatChk(disp) {
+function  poCatChk(disp,cribConnection) {
+  var cribConnect=cribConnection;
   var dispatch=disp;
   let qryChk1;
   if (prod===true) {
@@ -329,7 +468,7 @@ function  poCatChk(disp) {
     `;
   }
 
-  new sql.Request()
+  new sql.Request(cribConnect)
   .query(qryChk1).then(function(recordset) {
     if(recordset.length!==0){
       let cribRsErr ="";
@@ -348,17 +487,18 @@ function  poCatChk(disp) {
     }else {
       dispatch({ type:PORTACTION.SET_CHECK1, chk1:PORTCHK.SUCCESS });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_10_PASS });
-      getVendors(dispatch);
+      getVendors(dispatch,cribConnect);
     }
   }).catch(function(err) {
     console.log(`POReqTran NO PO category query err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
 }
 
-function getVendors(disp) {
+function getVendors(disp,cribConnection) {
   var dispatch=disp;
+  var cribConnect=cribConnection;
   let qryCrib = `
     select VendorNumber,
     rtrim(VendorName)  +
@@ -374,19 +514,20 @@ function getVendors(disp) {
   `;
 
   // Vendor query
-  new sql.Request()
+  new sql.Request(cribConnect)
   .query(qryCrib).then(function(recordset) {
       dispatch({ type:PORTACTION.SET_VENDORS, vendors:recordset });
-      getVendorSelect(dispatch);
+      getVendorSelect(dispatch,cribConnect);
   }).catch(function(err) {
     console.log(`POReqTran Vendor query err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
 }
 
-function getVendorSelect(disp) {
+function getVendorSelect(disp,cribConnection) {
   var dispatch=disp;
+  var cribConnect=cribConnection;
   let qryCrib = `
     select 
     rtrim(VendorName)  +
@@ -402,7 +543,7 @@ function getVendorSelect(disp) {
   `;
 
   // Vendor query
-  new sql.Request()
+  new sql.Request(cribConnect)
   .query(qryCrib).then(function(recordset) {
     if(recordset.length!==0){
       console.log("VendorSelect retrieved.");
@@ -411,20 +552,21 @@ function getVendorSelect(disp) {
         vendorSelect.push(vendor.Description);
       });
       dispatch({ type:PORTACTION.SET_VENDOR_SELECT, vendorSelect:vendorSelect });
-      portCheck2(dispatch);
+      portCheck2(dispatch,cribConnect);
     }
   }).catch(function(err) {
     console.log(`POReqTran Vendor Select query err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
 }
 
 /*******************CHECK IF PO HAS A VALID VENDOR IN CRIBMASTER****************/
 
-function  portCheck2(disp) {
+function  portCheck2(disp,cribConnection) {
 //    var that = this;
   var dispatch = disp;
+  var cribConnect=cribConnection;
   let qryChk2;
   if (prod===true) {
     qryChk2 = `
@@ -452,76 +594,44 @@ function  portCheck2(disp) {
     `;
   }
 
-  new sql.Request()
+  new sql.Request(cribConnect)
   .query(qryChk2).then(function(recordset) {
       console.log("portCheck2 query done");
-
       // error checks
       if(recordset.length!==0){
         console.log("portCheck2 query had records.");
         dispatch({ type:PORTACTION.SET_CHECK2, chk2:PORTCHK.FAILURE });
         dispatch({ type: PORTACTION.SET_NO_CRIB_VEN, noCribVen:recordset });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_20_FAIL});
-
- //       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_20_FAIL});
       }else {
         dispatch({ type:PORTACTION.SET_CHECK2, chk2:PORTCHK.SUCCESS});
-/*        dispatch((dispatch,getState) => {
-                      var disp = dispatch;
-                      startCheck3(disp);
-                 });
-*///        startCheck3(dispatch);
+        startCheck3(dispatch);
       }
   }).catch(function(err) {
     console.log(`portCheck2 query err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
 }
 
 
 
-/*export function startCheck3(disp) {
+function startCheck3(disp) {
 //  var that = this;
   var dispatch = disp;
   console.log("startCheck3 top");
-  var connectChk3=sql.connect(m2m).then(function() {
-    console.log("startCheck3 connected");
-    getM2mVendors(dispatch);
+  var m2mConnect=sql.connect(m2m).then(function() {
+    getM2mVendors(dispatch,m2mConnect);
   }).catch(function(err) {
-    console.log(`startCheck3 Connect err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    console.log(`m2mConnect err:  ${err.message}` );
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
+} 
 
-} // poUpdate
-*/
-
-/*        select fvendno, fcompany
-        FROM apvend 
-        where fvendno = '002946'
-*/
-
-/*    select av.fvendno, av.fcompany
-    from
-    (
-      SELECT max(fvendno) fvendno, fcompany
-      from
-      (
-        select fvendno, fcompany
-        FROM apvend av
-        inner join syaddr sa
-        on av.fvendno = sa.fcaliaskey
-        where fcalias = 'APVEND'
-      ) lv1
-      group by fcompany
-    ) lv2
-    inner join
-    apvend av
-    on lv2.fvendno=av.fvendno
-*/
-function getM2mVendors(disp) {
+function getM2mVendors(disp,m2mConnection) {
   var dispatch=disp;
+  var m2mConnect=m2mConnection;
   let qryM2m = `
     select av.fvendno, av.fcompany
     from
@@ -545,20 +655,21 @@ function getM2mVendors(disp) {
   console.log("getM2mVendors top");
 
   // Vendor query
-  new sql.Request()
+  new sql.Request(m2mConnect)
   .query(qryM2m).then(function(recordset) {
       console.log("getM2mVendors query success");
       dispatch({ type:PORTACTION.SET_M2M_VENDORS, m2mVendors:recordset });
-      getM2mVendorSelect(dispatch);
+      getM2mVendorSelect(dispatch,m2mConnect);
   }).catch(function(err) {
     console.log(`getM2mVendor query err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
 }
 
-function getM2mVendorSelect(disp) {
+function getM2mVendorSelect(disp,m2mConnection){
   var dispatch=disp;
+  var m2mConnect=m2mConnection;
   let qryM2m = `
     select 
         rtrim(av.fcompany)  + ' - ' + av.fvendno
@@ -582,7 +693,7 @@ function getM2mVendorSelect(disp) {
   `;
 
   // Vendor query
-  new sql.Request()
+  new sql.Request(m2mConnect)
   .query(qryM2m).then(function(recordset) {
     if(recordset.length!==0){
       console.log("getM2mVendorSelect query success");
@@ -595,66 +706,90 @@ function getM2mVendorSelect(disp) {
     }
   }).catch(function(err) {
     console.log(`getM2mVendorSelect query err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
 }
 
 /*******************CHECK IF PO HAS A VALID VENDOR IN M2M****************/
 
-function  portCheck3(disp) {
+async function  portCheck3(disp) {
 //    var that = this;
   var dispatch = disp;
-  let qryM2m;
-  if (prod===true) {
-    qryM2m = `
-      select ROW_NUMBER() OVER(ORDER BY PONumber) id, po.PONumber, po.Address1
-      from
-      (
-          SELECT PONumber,Vendor,Address1 FROM [PO]  WHERE [PO].POSTATUSNO = 3 and [PO].SITEID <> '90'
-      ) po
-      left outer join
-      vendor
-      on po.vendor = Vendor.VendorNumber
-      where Vendor.VendorNumber is null
-    `;
-  }else{
-    qryM2m = `
-      select ROW_NUMBER() OVER(ORDER BY PONumber) id,po.PONumber, po.Address1
-      from
-      (
-          SELECT PONumber,Vendor,Address1 FROM [btPO]  WHERE [btPO].POSTATUSNO = 3 and [btPO].SITEID <> '90'
-      ) po
-      left outer join
-      vendor
-      on po.vendor = Vendor.VendorNumber
-      where Vendor.VendorNumber is null
-    `;
+  var cnt=0;
+  initPrime();
+  primeDB(dispatch,false);
+
+  while(!isPrimed() && !primeFailed){
+    if(++cnt>15){
+      break;
+    }else{
+      await sleep(2000);
+    }
   }
 
-  new sql.Request()
-  .query(qryM2m).then(function(recordset) {
-      console.log("portCheck3 query done");
+  if(!isPrimed()){
+    console.log(`cribConnect err:  ${err.message}` );
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
 
-      // error checks
-      if(recordset.length!==0){
-        console.log("portCheck3 query had records.");
-        dispatch({ type:PORTACTION.SET_CHECK3, chk3:PORTCHK.FAILURE });
-        dispatch({ type: PORTACTION.SET_NO_M2M_VEN, noM2mVen:recordset });
-        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_30_FAIL});
+    // Exit if Not Primed
+    return;
+  }
 
- //       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_20_FAIL});
-      }else {
-        dispatch({ type:PORTACTION.SET_CHECK3, chk3:PORTCHK.SUCCESS});
-        dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:'success' });
-        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
-      }
+  var cribConnect=sql.connect(crib).then(function() {
+    let qryCrib;
+    if (prod===true) {
+      qryCrib = `
+        select ROW_NUMBER() OVER(ORDER BY PONumber) id, po.PONumber, po.Address1
+        from
+        (
+            SELECT PONumber,Vendor,Address1 FROM [PO]  WHERE [PO].POSTATUSNO = 3 and [PO].SITEID <> '90'
+        ) po
+        left outer join
+        vendor
+        on po.vendor = Vendor.VendorNumber
+        where Vendor.VendorNumber is null
+      `;
+    }else{
+      qryCrib = `
+        select ROW_NUMBER() OVER(ORDER BY PONumber) id,po.PONumber, po.Address1
+        from
+        (
+            SELECT PONumber,Vendor,Address1 FROM [btPO]  WHERE [btPO].POSTATUSNO = 3 and [btPO].SITEID <> '90'
+        ) po
+        left outer join
+        vendor
+        on po.vendor = Vendor.VendorNumber
+        where Vendor.VendorNumber is null
+      `;
+    }
+
+    new sql.Request(cribConnect)
+    .query(qryCrib).then(function(recordset) {
+        console.log("portCheck3 query done");
+        // error checks
+        if(recordset.length!==0){
+          console.log("portCheck3 query had records.");
+          dispatch({ type:PORTACTION.SET_CHECK3, chk3:PORTCHK.FAILURE });
+          dispatch({ type: PORTACTION.SET_NO_M2M_VEN, noM2mVen:recordset });
+          dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_30_FAIL});
+        }else {
+          dispatch({ type:PORTACTION.SET_CHECK3, chk3:PORTCHK.SUCCESS});
+          dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:'success' });
+          dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+        }
+    }).catch(function(err) {
+      console.log(`portCheck3 query err:  ${err.message}` );
+      dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
+      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+    });
   }).catch(function(err) {
-    console.log(`portCheck3 query err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, state:err.message });
+    console.log(`cribConnect err:  ${err.message}` );
+    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
-}
+} 
 
 
 //export default POReqTrans;

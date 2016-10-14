@@ -132,7 +132,7 @@ export default function reducer( state = {}, action) {
     case PORTACTION.SET_REASON:
     {
       console.dir(action.reason);
-      var newData = update(state, {reason: {$set: action.state}});
+      var newData = update(state, {reason: {$set: action.reason}});
       return newData;
     }
     case PORTACTION.SET_STATE:

@@ -26,11 +26,18 @@ export function initPORT() {
   };
 }
 
-export function primePORT() {
- return (dispatch,getState) => {
-    var disp = dispatch;
-    primeDB(disp);
-  };
+export function primePORT(updateState) {
+  if(updateState){
+   return (dispatch,getState) => {
+      var disp = dispatch;
+      primeDB(disp,true);
+    };
+  }else{
+   return (dispatch,getState) => {
+      var disp = dispatch;
+      primeDB(disp,false);
+    };
+  }
 }
 
 export function setCheck1(setMe) {

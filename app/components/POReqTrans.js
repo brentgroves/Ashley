@@ -25,7 +25,7 @@ export default class POReqTrans extends Component {
 
   constructor(props) {
     super(props);
-    this.props.primePORT();
+    this.props.primePORT(true);
     this.state = {
       loading: false
     };
