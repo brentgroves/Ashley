@@ -4,6 +4,7 @@ import * as PORTACTION from "../actions/PORTActionConst.js"
 import * as PORTSTATE from "../actions/PORTState.js"
 import * as PORTCHK from "../actions/PORTChkConst.js"
 import * as CONNECT from "./PORTSQLConst.js"
+import * as M2M from "./PORTSQLM2M.js"
 import * as MISC from "./Misc.js"
 
 var prod=false;
@@ -121,6 +122,8 @@ function portChk(disp){
             if(recordset.length!==0){
               console.log("portChk3.query had records.");
               contChecks=true;
+              console.dir(M2M.m2mVendors);  
+      
 
 /*              dispatch({ type:PORTACTION.SET_CHECK2, chk2:PORTCHK.FAILURE });
               dispatch({ type: PORTACTION.SET_PO_REQ, poReq:recordset });

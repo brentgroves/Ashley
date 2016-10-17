@@ -12,6 +12,7 @@ var portQuery1Cnt=0;
 var portQuery2Done=false;
 var portQuery2Cnt=0;
 var portQueriesFailed=false;
+export var m2mVendors;
 
 export async function portM2mQueries(disp){
   var dispatch=disp;
@@ -100,6 +101,7 @@ function portQuery1(disp){
             // ... error checks
             console.log(`portQuery1(disp) Query Sucess`);
             console.dir(recordset);
+            m2mVendors=recordset;
             portQuery1Done=true;
           }else{
             if(++portQuery1Cnt<3) {
