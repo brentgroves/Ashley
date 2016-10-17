@@ -4,6 +4,12 @@ const {dialog} = require('electron').remote;
 import * as PORTACTION from "../actions/PORTActionConst.js"
 import * as PORTSTATE from "../actions/PORTState.js"
 import * as PORTCHK from "../actions/PORTChkConst.js"
+import * as CM from "./PORTSQLCM.js"
+import * as M2M from "./PORTSQLM2M.js"
+import * as CHECK1 from "./PORTSQLCheck1.js"
+import * as CHECK2 from "./PORTSQLCheck2.js"
+import * as CHECK3 from "./PORTSQLCheck3.js"
+import * as MISC from "./Misc.js"
 
 var m2m = {
   user: 'sa',
@@ -87,7 +93,7 @@ var primeFailed=false;
 var m2mConnectCnt=0;
 var cribConnectCnt=0;
 var primeFailed=false;
-
+var cmConnect;
 
 export async function primeDB(disp,stateUpdate){
   var dispatch=disp;
@@ -96,12 +102,12 @@ export async function primeDB(disp,stateUpdate){
   console.log(`primeDB top`);
   initPrime();
   cribConnect(dispatch,updateState);
-  cribConnect(dispatch,updateState);
-  cribConnect(dispatch,updateState);
+  m2mConnect(dispatch,updateState);
   cribConnect(dispatch,updateState);
   m2mConnect(dispatch,updateState);
+  cribConnect(dispatch,updateState);
   m2mConnect(dispatch,updateState);
-  m2mConnect(dispatch,updateState);
+  cribConnect(dispatch,updateState);
   m2mConnect(dispatch,updateState);
 
   while(!isPrimed() && !primeFailed){
@@ -110,7 +116,7 @@ export async function primeDB(disp,stateUpdate){
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
       break;
     }else{
-      await sleep(2000);
+      await MISC.sleep(2000);
     }
   }
 
@@ -341,9 +347,6 @@ function  updateChk2(disp,poNumber,vendorNumber) {
 }
 
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 /*async function demo() {
   console.log('Taking a break...');
@@ -354,6 +357,7 @@ function sleep(ms) {
 export default async function POReqTrans(disp) {
 //  var that = this;
   var dispatch = disp;
+  var continueChecks=true;
   var cnt=0;
   initPrime();
   primeDB(dispatch,false);
@@ -362,7 +366,7 @@ export default async function POReqTrans(disp) {
     if(++cnt>15){
       break;
     }else{
-      await sleep(2000);
+      await MISC.sleep(2000);
     }
   }
 
@@ -374,70 +378,66 @@ export default async function POReqTrans(disp) {
 
   dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STARTED });
 
-  var cribConnect=sql.connect(crib).then(function() {
-    getPOCategories(dispatch,cribConnect);
+  CM.portCribQueries(dispatch);
+  M2M.portM2mQueries(dispatch);
 
-  }).catch(function(err) {
-    console.log(`cribConnect err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-  });
+  cnt=0;
+
+  while(!CM.arePortQueriesDone() || !M2M.arePortQueriesDone())
+  {
+    if(++cnt>15 || CM.didPortQueriesFail() || M2M.didPortQueriesFail()){
+      continueChecks=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
 
 
+  if(continueChecks){
+    console.log(`Async Crib & M2m queries are complete.`);
+    CHECK1.portCheck1(dispatch)
+  }else{
+    console.log(`Async Crib & M2m queries FAILED.`);
+  }
 
-/*  var cribConnect=sql.connect(crib).then(function() {
-    getPOCategories(dispatch);
+// CHECK#1
+  cnt=0;
 
-  }).catch(function(err) {
-    console.log(`POReqTran Connect err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-  });
-*/
+  while(continueChecks && !CHECK1.isPortCheck1Done()){
+    if(++cnt>15 || CHECK1.didCheckFail()){
+      continueChecks=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueChecks && CHECK1.continueChecks()){
+    console.log(`portCheck1 complete continue Checks.`);
+    CHECK2.portCheck2(dispatch)
+  }
+
+// CHECK#2
+  cnt=0;
+
+  while(continueChecks && !CHECK2.isPortCheck2Done()){
+    if(++cnt>15 || CHECK2.didCheckFail()){
+      continueChecks=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueChecks && CHECK1.continueChecks() && CHECK2.continueChecks()){
+    console.log(`portCheck2 complete continue Checks.`);
+    CHECK3.portCheck(dispatch)
+  }
 
 } // poUpdate
 
 
-
-
-function getPOCategories(disp,cribConnection) {
-  var dispatch=disp;
-  var cribConnect=cribConnection;
-  let qryCrib = `
-    select UDF_POCATEGORY,RTrim(UDF_POCATEGORYDescription) descr from UDT_POCATEGORY
-  `;
-
-  // PO Categories query
-  console.log(`getPOCategories()`);
-  console.dir(cribConnect);
-  new sql.Request(cribConnect)
-  .query(qryCrib).then(function(recordset) {
-    if(recordset.length!==0){
-      console.log("PO category retrieved.");
-      var allCats=[];
-      var catRecs=[];
-      var cribRsLog;
-      recordset.forEach(function(pocat,i,arr){
-        console.log(pocat.descr);
-        if(arr.length===i+1){
-          cribRsLog+=`UDF_POCATEGORY# ${pocat.UDF_POCATEGORY}, descr: ${pocat.descr}`;
-        }else{
-          cribRsLog+=`UDF_POCATEGORY# ${pocat.UDF_POCATEGORY}, descr: ${pocat.descr}\n`;
-        }
-        allCats.push(pocat.descr);
-        catRecs.push({UDF_POCATEGORY:pocat.UDF_POCATEGORY, descr:pocat.descr});
-      });
-      dispatch({ type:PORTACTION.SET_PO_CATEGORIES, catTypes:allCats });
-      dispatch({ type:PORTACTION.SET_PO_CAT_RECORDS, catRecs:catRecs });
-      poCatChk(dispatch,cribConnect);
-    }
-
-  }).catch(function(err) {
-    console.log(`POReqTran PO Category query err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-  });
-}
 
 
 /********************CHECK IF ALL PO CATEGORIES HAVE BEEN SELECTED FOR EACH PO ITEM & THE RECORDS ARE NOT LOCKED****************/
@@ -717,7 +717,7 @@ async function  portCheck3(disp) {
 //    var that = this;
   var dispatch = disp;
   var cnt=0;
-  initPrime();
+/*  initPrime();
   primeDB(dispatch,false);
 
   while(!isPrimed() && !primeFailed){
@@ -736,56 +736,50 @@ async function  portCheck3(disp) {
     // Exit if Not Primed
     return;
   }
-
-  var cribConnect=sql.connect(crib).then(function() {
-    let qryCrib;
-    if (prod===true) {
-      qryCrib = `
-        select ROW_NUMBER() OVER(ORDER BY PONumber) id, po.PONumber, po.Address1
-        from
-        (
-            SELECT PONumber,Vendor,Address1 FROM [PO]  WHERE [PO].POSTATUSNO = 3 and [PO].SITEID <> '90'
-        ) po
-        left outer join
-        vendor
-        on po.vendor = Vendor.VendorNumber
-        where Vendor.VendorNumber is null
-      `;
-    }else{
-      qryCrib = `
-        select ROW_NUMBER() OVER(ORDER BY PONumber) id,po.PONumber, po.Address1
-        from
-        (
-            SELECT PONumber,Vendor,Address1 FROM [btPO]  WHERE [btPO].POSTATUSNO = 3 and [btPO].SITEID <> '90'
-        ) po
-        left outer join
-        vendor
-        on po.vendor = Vendor.VendorNumber
-        where Vendor.VendorNumber is null
-      `;
-    }
-
-    new sql.Request(cribConnect)
-    .query(qryCrib).then(function(recordset) {
-        console.log("portCheck3 query done");
-        // error checks
-        if(recordset.length!==0){
-          console.log("portCheck3 query had records.");
-          dispatch({ type:PORTACTION.SET_CHECK3, chk3:PORTCHK.FAILURE });
-          dispatch({ type: PORTACTION.SET_NO_M2M_VEN, noM2mVen:recordset });
-          dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_30_FAIL});
-        }else {
-          dispatch({ type:PORTACTION.SET_CHECK3, chk3:PORTCHK.SUCCESS});
-          dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:'success' });
-          dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
-        }
-    }).catch(function(err) {
-      console.log(`portCheck3 query err:  ${err.message}` );
-      dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-    });
+*/
+  let qryCrib;
+  if (prod===true) {
+    qryCrib = `
+      select ROW_NUMBER() OVER(ORDER BY PONumber) id, po.PONumber, po.Address1
+      from
+      (
+          SELECT PONumber,Vendor,Address1 FROM [PO]  WHERE [PO].POSTATUSNO = 3 and [PO].SITEID <> '90'
+      ) po
+      left outer join
+      vendor
+      on po.vendor = Vendor.VendorNumber
+      where Vendor.VendorNumber is null
+    `;
+  }else{
+    qryCrib = `
+      select ROW_NUMBER() OVER(ORDER BY PONumber) id,po.PONumber, po.Address1
+      from
+      (
+          SELECT PONumber,Vendor,Address1 FROM [btPO]  WHERE [btPO].POSTATUSNO = 3 and [btPO].SITEID <> '90'
+      ) po
+      left outer join
+      vendor
+      on po.vendor = Vendor.VendorNumber
+      where Vendor.VendorNumber is null
+    `;
+  }
+  console.dir(cmConnect);
+  new sql.Request(cmConnect)
+  .query(qryCrib).then(function(recordset) {
+      console.log("portCheck3 query done");
+      // error checks
+      if(recordset.length!==0){
+        console.log("portCheck3 query had records.");
+        dispatch({ type:PORTACTION.SET_CHECK3, chk3:PORTCHK.FAILURE });
+        dispatch({ type: PORTACTION.SET_NO_M2M_VEN, noM2mVen:recordset });
+        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_30_FAIL});
+      }else {
+        dispatch({ type:PORTACTION.SET_CHECK3, chk3:PORTCHK.SUCCESS});
+        dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:'success' });
+        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+      }
   }).catch(function(err) {
-    console.log(`cribConnect err:  ${err.message}` );
+    console.log(`portCheck3 query err:  ${err.message}` );
     dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
   });
