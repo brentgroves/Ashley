@@ -9,8 +9,6 @@ var prod=false;
 
 var portQuery1Done=false;
 var portQuery1Cnt=0;
-var portQuery2Done=false;
-var portQuery2Cnt=0;
 var portQueriesFailed=false;
 export var m2mVendors;
 
@@ -19,7 +17,6 @@ export async function portM2mQueries(disp){
   var cnt=0;
   portQueriesInit();
   portQuery1(dispatch);
-  portQuery2(dispatch);
 
   while(!arePortQueriesDone() && !portQueriesFailed){
     if(++cnt>15){
@@ -40,15 +37,12 @@ export async function portM2mQueries(disp){
 export function portQueriesInit(){
   portQuery1Done=false;
   portQuery1Cnt=0;
-  portQuery2Done=false;
-  portQuery2Cnt=0;
   portQueriesFailed=false;
 }
 
 export function arePortQueriesDone(){
   if(
-    (true==portQuery1Done) &&
-    (true==portQuery2Done)
+    (true==portQuery1Done) 
     )
   {
     return true;
@@ -79,29 +73,18 @@ function portQuery1(disp){
       var request = new sql.Request(m2mConnection); // or: var request = connection1.request();
       request.query(
       `
-        select av.fvendno, av.fcompany
-        from
-        (
-          SELECT max(fvendno) fvendno, fcompany
-          from
-          (
-            select fvendno, fcompany
-            FROM apvend av
-            inner join syaddr sa
-            on av.fvendno = sa.fcaliaskey
-            where fcalias = 'APVEND'
-          ) lv1
-          group by fcompany
-        ) lv2
-        inner join
-        apvend av
-        on lv2.fvendno=av.fvendno
+        select fvendno, fcompany
+        FROM apvend av
+        inner join syaddr sa
+        on av.fvendno = sa.fcaliaskey
+        where fcalias = 'APVEND' 
       `, function(err, recordset) {
           if(null==err){
             // ... error checks
             console.log(`portQuery1(disp) Query Sucess`);
             console.dir(recordset);
-            m2mVendors=recordset;
+            dispatch({ type:PORTACTION.SET_M2M_VENDORS, m2mVendors:recordset });
+            //m2mVendors=recordset;
             portQuery1Done=true;
           }else{
             if(++portQuery1Cnt<3) {
@@ -177,6 +160,7 @@ function portQuery2(disp){
             // ... error checks
             console.log(`portQuery2(disp) Query Sucess`);
             console.dir(recordset);
+            dispatch({ type:PORTACTION.SET_M2M_VENDOR_SELECT, m2mVendorSelect:recordset });
             portQuery2Done=true;
           }else{
             if(++portQuery2Cnt<3) {

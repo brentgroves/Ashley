@@ -9,6 +9,8 @@ import * as M2M from "./PORTSQLM2M.js"
 import * as CHECK1 from "./PORTSQLCheck1.js"
 import * as CHECK2 from "./PORTSQLCheck2.js"
 import * as CHECK3 from "./PORTSQLCheck3.js"
+import * as UPDATE1 from "./PORTSQLUpdate1.js"
+import * as UPDATE2 from "./PORTSQLUpdate2.js"
 import * as MISC from "./Misc.js"
 
 var m2m = {
@@ -86,14 +88,10 @@ var crib = {
 */
 var prod=false;
 var errors=false;
-var m2mPrimed=false;
-var cribPrimed=false;
-var allPrimed=false;
+var primed=false;
 var primeFailed=false;
 var m2mConnectCnt=0;
 var cribConnectCnt=0;
-var primeFailed=false;
-var cmConnect;
 
 export async function primeDB(disp,stateUpdate){
   var dispatch=disp;
@@ -101,13 +99,11 @@ export async function primeDB(disp,stateUpdate){
   var cnt=0;
   console.log(`primeDB top`);
   initPrime();
+  // FIRST CONNECT ALWAYS FAILS IN DEVELOPER MODE
   cribConnect(dispatch,updateState);
   m2mConnect(dispatch,updateState);
-  cribConnect(dispatch,updateState);
   m2mConnect(dispatch,updateState);
-  cribConnect(dispatch,updateState);
   m2mConnect(dispatch,updateState);
-  cribConnect(dispatch,updateState);
   m2mConnect(dispatch,updateState);
 
   while(!isPrimed() && !primeFailed){
@@ -120,25 +116,38 @@ export async function primeDB(disp,stateUpdate){
     }
   }
 
+  if(isPrimed()){
+    dispatch({ type:PORTACTION.SET_PRIMED, primed:true });
+    if(updateState){
+      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.PRIMED });
+    }
+  }
+
 }
 
 function initPrime(){
-  m2mPrimed=false;
-  cribPrimed=false;
-  allPrimed=false;
+  primed=false;
   primeFailed=false;
-  cribConnectCnt=0;
   m2mConnectCnt=0;
+  cribConnectCnt=0;
 }
 
 function isPrimed(){
-  if((true==m2mPrimed)&(true==cribPrimed)){
+  if(true==primed){
     return true;
   } else{
     return false;
   }
 }
 
+/*function isPrimed(){
+  if((true==m2mPrimed)&(true==cribPrimed)){
+    return true;
+  } else{
+    return false;
+  }
+}
+*/
 function cribConnect(disp,updateState){
   var dispatch=disp;
   console.log(`cribConnectCnt = ${cribConnectCnt}`);
@@ -158,14 +167,7 @@ function cribConnect(disp,updateState){
             // ... error checks
             console.log(`crib query`);
             console.dir(recordset);
-            cribPrimed=true;
-            if(m2mPrimed && !allPrimed){
-              allPrimed=true;
-              dispatch({ type:PORTACTION.SET_PRIMED, primed:true });
-              if(updateState){
-                dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.PRIMED });
-              }
-            }
+            primed=true;
           }else{
             if(++cribConnectCnt<3) {
               console.log(`cribConnect.query:  ${err.message}` );
@@ -221,14 +223,7 @@ function m2mConnect(disp,updateState){
             if(null==err){
               console.log(`m2mConnect: query success`);
               console.dir(recordset);
-              m2mPrimed=true;
-              if(cribPrimed && !allPrimed){
-                allPrimed=true;
-                dispatch({ type:PORTACTION.SET_PRIMED, primed:true });
-                if(updateState){
-                  dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.PRIMED });
-                }
-              }
+              primed=true;
             }else{
               if(++m2mConnectCnt<3) {
                 console.log(`m2mConnect.query:  ${err.message}` );
@@ -266,101 +261,88 @@ function m2mConnect(disp,updateState){
   });
 }
 
-export function updateCheck1(disp,poNumber,item,poCategory) {
+export async function updateCheck1(disp,getSt,poNumber,item,poCategory,startPort) {
 //  var that = this;
   var dispatch = disp;
+  var getState = getSt;
+  var portState = getState(); 
+  var cnt=0;
+  console.log(`updateCheck1(disp,getSt,poNumber,item,poCategory): top`);
+  console.dir(portState);
+  console.dir(startPort);
 
-  var connect=sql.connect(crib).then(function() {
-    updChk1(dispatch,poNumber,item,poCategory);
-  }).catch(function(err) {
-    console.log(`updateCheck1 Connect err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-  });
-} // updateCheck1
+  UPDATE1.sql1(dispatch,getState,poNumber,item,poCategory);
 
-function  updChk1(disp,poNumber,item,poCategory) {
-//    var that = this;
-  var dispatch = disp;
+  cnt=0;
 
-  let qryCrib;
-  if (prod===true) {
-    qryCrib = `
-      update PODETAIL
-      set UDF_POCATEGORY = ${poCategory}
-      where 
-      PONumber = ${poNumber} and Item = ${item}
-    `;
-  }else{
-    qryCrib = `
-      update btPODETAIL
-      set UDF_POCATEGORY = ${poCategory}
-      where 
-      PONumber = ${poNumber} and Item = ${item}
-    `;
+  while(!UPDATE1.isDone())
+  {
+    if(++cnt>15 || UPDATE1.didFail()){
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
   }
 
- // update PO Category query
-  new sql.Request()
-  .query(qryCrib).then(function(recordset) {
-      // error checks
-      console.dir(recordset);
-      POReqTrans(dispatch);
-  }).catch(function(err) {
-    console.log(`POReqTran update PO Category query err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-  });
+  if(UPDATE1.isDone() && !UPDATE1.didFail()){
+    startPort();
+/*    dispatch((dispatch,getState) => {
+        var disp = dispatch;
+        var getSt = getState;
+        POReqTrans(disp,getSt);
+      }
+    );
+*/  }
+} // updateCheck1
 
-}
-
-export function updateCheck2(disp,poNumber,vendorNumber) {
+export async function updateCheck2(disp,getSt,poNumber,vendorNumber,startPort) {
 //  var that = this;
   var dispatch = disp;
+  var getState = getSt;
+  var portState = getState(); 
+  var cnt=0;
+  console.log(`updateCheck2(): top`);
+  console.dir(portState);
+  console.dir(startPort);
 
-  var connect=sql.connect(crib).then(function() {
-    updateChk2(dispatch,poNumber,vendorNumber);
-  }).catch(function(err) {
-    console.log(`POReqTran updateCheck2 Connect err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-  });
+  UPDATE2.sql1(dispatch,getState,poNumber,vendorNumber);
 
+  cnt=0;
+
+  while(!UPDATE2.isDone())
+  {
+    if(++cnt>15 || UPDATE2.didFail()){
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(UPDATE2.isDone() && !UPDATE2.didFail()){
+    startPort();
+/*    dispatch((dispatch,getState) => {
+        var disp = dispatch;
+        var getSt = getState;
+        POReqTrans(disp,getSt);
+      }
+    );
+*/  }
 } // updateCheck2
 
-function  updateChk2(disp,poNumber,vendorNumber) {
-//    var that = this;
-  var dispatch = disp;
-  // update PO Vendor query
-  new sql.Request()
-  .input('poNumber', sql.Int, poNumber)
-  .input('vendor', sql.VarChar(12), vendorNumber)
-  .execute('bpDevPOVendorUpdate').then(function(recordsets) {
-      console.dir(recordsets);
-      POReqTrans(dispatch);
-  }).catch(function(err) {
-    console.log(`POReqTran update PO vendor query err:  ${err.message}` );
-    dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-  });
-
-}
 
 
-
-/*async function demo() {
-  console.log('Taking a break...');
-  await sleep(2000);
-  console.log('Two second later');
-}
-*/
-export default async function POReqTrans(disp) {
+export default async function POReqTrans(disp,getSt) {
 //  var that = this;
   var dispatch = disp;
+  var getState = getSt;
+  var portState = getState(); 
+
   var continueChecks=true;
   var cnt=0;
   initPrime();
   primeDB(dispatch,false);
+
+  console.dir(portState);
 
   while(!isPrimed() && !primeFailed){
     if(++cnt>15){
@@ -430,11 +412,31 @@ export default async function POReqTrans(disp) {
     }
   }
 
+
   if(continueChecks && CHECK1.continueChecks() && CHECK2.continueChecks()){
     console.log(`portCheck2 complete continue Checks.`);
-    CHECK3.portCheck(dispatch)
+    CHECK3.portCheck(dispatch,getState)
   }
 
+
+// CHECK#3
+  cnt=0;
+
+  while(continueChecks && !CHECK3.isPortCheckDone()){
+    if(++cnt>15 || CHECK3.didCheckFail()){
+      continueChecks=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueChecks && CHECK1.continueChecks() && CHECK2.continueChecks() && CHECK3.continueChecks()){
+    console.log(`portCheck3 complete continue Checks.`);
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+ }
+
+ 
 } // poUpdate
 
 

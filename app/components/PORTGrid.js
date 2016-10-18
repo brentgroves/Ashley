@@ -30,15 +30,12 @@ export default class PORTGrid extends React.Component{
 
   constructor(props) {
     super(props);
-    // this bind has no affect??
-    this.onAfterSaveCellChk1 = this.onAfterSaveCellChk1.bind(this);
-    this.onAfterSaveCellChk2 = this.onAfterSaveCellChk2.bind(this);
     updateChk1=this.props.updateChk1;
     updateChk2=this.props.updateChk2;
     catRecs=this.props.POReqTrans.catRecs;
     vendors=this.props.POReqTrans.vendors;
     this.state = {
- //     loading: false PONumber,Item,UDF_POCATEGORY
+//      updateChk1:this.props.updateChk1
     };
 
   }
@@ -46,13 +43,15 @@ export default class PORTGrid extends React.Component{
   cellEditPropChk1 = {
     mode: "click",
     blurToSave: true,
-    afterSaveCell: this.onAfterSaveCellChk1
+    afterSaveCell: this.onAfterSaveCellChk1.bind(this)
   };
 
   onAfterSaveCellChk1(row, cellName, cellValue){
     console.log("Save cell '"+cellName+"' with value '"+cellValue+"'");
     console.log("Thw whole row :");
     console.log(row);
+    console.log(`this = `);
+    console.dir(this);
     var found=false;
     var newPOCategory;
     catRecs.every(function(catRec,i,arr){
@@ -72,14 +71,15 @@ export default class PORTGrid extends React.Component{
       //return catRec.descr!=cellValue
     });
     if(found){
-      updateChk1(row.PONumber,row.Item,newPOCategory);
+      this.props.updateChk1(row.PONumber,row.Item,newPOCategory,this.props.startPORT);
+//      this.props.startPORT();
     }
   }
 
   cellEditPropChk2 = {
     mode: "click",
     blurToSave: true,
-    afterSaveCell: this.onAfterSaveCellChk2
+    afterSaveCell: this.onAfterSaveCellChk2.bind(this)
   };
 
   onAfterSaveCellChk2(row, cellName, cellValue){
@@ -104,11 +104,43 @@ export default class PORTGrid extends React.Component{
       }
     });
     if(found){
-      updateChk2(row.PONumber,newVendor);
+      this.props.updateChk2(row.PONumber,newVendor,this.props.startPORT);
     }
 
   }
 
+  cellEditPropChk3 = {
+    mode: "click",
+    blurToSave: true,
+    afterSaveCell: this.onAfterSaveCellChk3.bind(this)
+  };
+
+  onAfterSaveCellChk3(row, cellName, cellValue){
+    console.log("Save cell '"+cellName+"' with value '"+cellValue+"'");
+    console.log("Thw whole row :");
+    console.dir(row);
+    var found=false;
+    var newVendor;
+    vendors.every(function(vendor,i,arr){
+      console.log(vendor.Description);
+      if(vendor.Description==cellValue){
+        console.log(vendor.Description + "==" + cellValue);
+        console.log(vendor.VendorNumber);
+        newVendor=vendor.VendorNumber;
+        found=true;
+      // false breaks loop
+        return false;
+      }else{
+//        console.log(catRec.descr + "!=" + cellValue);
+        return true;
+
+      }
+    });
+    if(found){
+      this.props.updateChk2(row.PONumber,newVendor,this.props.startPORT);
+    }
+
+  }
 
 //table-striped table-bordered table-condensed
   render(){

@@ -1,5 +1,3 @@
-
-
 import * as PORTACTION from "./PORTActionConst.js"
 
 import { push } from 'react-router-redux';
@@ -148,21 +146,24 @@ export function startChk3() {
 export function startPORT() {
  return (dispatch,getState) => {
     var disp = dispatch;
-    POReqTrans(disp);
+    var getSt = getState;
+    POReqTrans(disp,getSt);
   };
 }
 
-export function updateChk1(poNumber,item,poCategory) {
+export function updateChk1(poNumber,item,poCategory,startPORT) {
  return (dispatch,getState) => {
     var disp = dispatch;
-    updateCheck1(disp,poNumber,item,poCategory);
+    var getSt = getState;
+    updateCheck1(disp,getSt,poNumber,item,poCategory,startPORT);
   };
 }
 
-export function updateChk2(poNumber,vendorNumber) {
+export function updateChk2(poNumber,vendorNumber,startPORT) {
  return (dispatch,getState) => {
     var disp = dispatch;
-    updateCheck2(disp,poNumber,vendorNumber);
+    var getSt = getState;
+    updateCheck2(disp,getSt,poNumber,vendorNumber,startPORT);
   };
 }
 

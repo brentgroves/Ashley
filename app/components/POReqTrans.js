@@ -62,8 +62,8 @@ export default class POReqTrans extends Component {
         <Col xs={1}>&nbsp;</Col>
         <Col >
           <Jumbotron  >
-             <h1 style={{textAlign: 'center'}}>Connecting to CribMaster</h1>
-            <p><strong>Description:{" "}</strong>Attempting to connect to CribMaster</p>
+             <h1 style={{textAlign: 'center'}}>Connecting to Databases</h1>
+            <p><strong>Description:{" "}</strong>Attempting to connect to CribMaster and Made2Manage</p>
             <p><strong>Please wait...</strong></p> 
             <br/>
           </Jumbotron>
@@ -84,7 +84,8 @@ export default class POReqTrans extends Component {
   } else if(
             (PORTSTATE.STARTED==this.props.POReqTrans.state) ||
             (PORTSTATE.STEP_10_SUCCESS==this.props.POReqTrans.state) ||
-            (PORTSTATE.STEP_20_SUCCESS==this.props.POReqTrans.state)
+            (PORTSTATE.STEP_20_SUCCESS==this.props.POReqTrans.state) ||
+            (PORTSTATE.STEP_30_SUCCESS==this.props.POReqTrans.state)
             ){
     jumboTronTxt=
       <Row >
@@ -138,9 +139,11 @@ export default class POReqTrans extends Component {
            <h1 style={{textAlign: 'center'}}>Check Made2Manage Vendor</h1>
             <p style={{padding: '0px'}}>The following PO record(s) have a problem with their vendor.
             {"     "}
-            <strong>Select a valid Made2Manage vendor number for each item.</strong>
+            <strong>Select another vendor number for each item.</strong> If a valid vendor
+            is shown then go to Cribmaster and verify the UDFM2MVENDORNUMBER is a valid vendor number in Made2Manage.
             {"     "}
-            Once all PO records have a valid Vendor number the PO Request Transfer will continue</p>
+            If you select another Vendor number the PO Request Transfer will continue, but if you had to update
+            Cribmaster's vendor record with another UDFM2MVENDORNUMBER then click the cancel button and try again.</p>
           </Jumbotron>
         </Col>
       </Row>
