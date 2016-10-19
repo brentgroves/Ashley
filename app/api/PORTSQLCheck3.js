@@ -40,7 +40,7 @@ export async function portCheck(disp,getSt){
   }
 
   if(isPortCheckDone()){
-    console.log(`portCheck3() Sucess`)
+    console.log(`portCheck3() Done`)
   }
 
 }
@@ -102,7 +102,7 @@ function portChk(disp,getSt){
       let qry;
       if (prod===true) {
         qry = `
-          select ROW_NUMBER() OVER(ORDER BY PONumber) id, po.PONumber, po.Address1, vendor.UDFM2MVENDORNUMBER
+          select ROW_NUMBER() OVER(ORDER BY PONumber) id, po.PONumber, po.Address1, vendor.VendorNumber, vendor.UDFM2MVENDORNUMBER
           from
           (
               SELECT PONumber,Vendor,Address1 FROM [PO]  WHERE [PO].POSTATUSNO = 3 and [PO].SITEID <> '90'
@@ -113,14 +113,14 @@ function portChk(disp,getSt){
         `;
       }else{
         qry = `
-          select ROW_NUMBER() OVER(ORDER BY PONumber) id,po.PONumber, po.Address1, vendor.UDFM2MVENDORNUMBER
+          select ROW_NUMBER() OVER(ORDER BY PONumber) id,po.PONumber, po.Address1, vn.VendorNumber, vn.UDFM2MVENDORNUMBER
           from
           (
               SELECT PONumber,Vendor,Address1 FROM [btPO]  WHERE [btPO].POSTATUSNO = 3 and [btPO].SITEID <> '90'
           ) po
           left outer join
-          vendor
-          on po.vendor = Vendor.VendorNumber
+          btVendor vn
+          on po.vendor = vn.VendorNumber
         `;
       }
 
@@ -134,7 +134,6 @@ function portChk(disp,getSt){
           portCheckDone=true;
           if(recordset.length!==0){
             console.log("portChk3.query had records.");
-            contChecks=true;
             console.dir(state.POReqTrans.m2mVendors);
             let noM2mVen=[];
             recordset.forEach(function(po,i,arr){
@@ -142,14 +141,18 @@ function portChk(disp,getSt){
               if(found){
                 console.log(`Vendor.UDFM2MVENDORNUMBER=${po.UDFM2MVENDORNUMBER} found in M2M`);
               }else{
-                noM2mVen.push(po);
-                console.log(`Vendor.UDFM2MVENDORNUMBER=${po.UDFM2MVENDORNUMBER} NOT found in M2M`);
+                let found=noM2mVen.find((m2mVendor)=>{return po.UDFM2MVENDORNUMBER==m2mVendor.UDFM2MVENDORNUMBER});
+                if(!found){
+                  noM2mVen.push(po);
+                  console.log(`Vendor.UDFM2MVENDORNUMBER=${po.UDFM2MVENDORNUMBER} NOT found in M2M`);
+                }  
               }
             });
             if(0!=noM2mVen.length){
               dispatch({ type:PORTACTION.SET_CHECK3, chk3:PORTCHK.FAILURE });
               dispatch({ type:PORTACTION.SET_NO_M2M_VEN, noM2mVen: noM2mVen });
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_30_FAIL});
+              portCheckFailed=true;
             }else{
               contChecks=true;
               dispatch({ type:PORTACTION.SET_CHECK3, chk3:PORTCHK.SUCCESS});

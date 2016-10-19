@@ -11,6 +11,7 @@ import * as CHECK2 from "./PORTSQLCheck2.js"
 import * as CHECK3 from "./PORTSQLCheck3.js"
 import * as UPDATE1 from "./PORTSQLUpdate1.js"
 import * as UPDATE2 from "./PORTSQLUpdate2.js"
+import * as UPDATE3 from "./PORTSQLUpdate3.js"
 import * as MISC from "./Misc.js"
 
 var m2m = {
@@ -97,7 +98,9 @@ export async function primeDB(disp,stateUpdate){
   var dispatch=disp;
   var updateState=stateUpdate;
   var cnt=0;
-  console.log(`primeDB top`);
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`primeDB top`);
+  }
   initPrime();
   // FIRST CONNECT ALWAYS FAILS IN DEVELOPER MODE
   cribConnect(dispatch,updateState);
@@ -295,7 +298,7 @@ export async function updateCheck1(disp,getSt,poNumber,item,poCategory,startPort
 */  }
 } // updateCheck1
 
-export async function updateCheck2(disp,getSt,poNumber,vendorNumber,startPort) {
+export async function updateCheck2(disp,getSt,poNumber,vendorNumber,Address1,Address2,Address3,Address4,startPort) {
 //  var that = this;
   var dispatch = disp;
   var getState = getSt;
@@ -305,7 +308,24 @@ export async function updateCheck2(disp,getSt,poNumber,vendorNumber,startPort) {
   console.dir(portState);
   console.dir(startPort);
 
-  UPDATE2.sql1(dispatch,getState,poNumber,vendorNumber);
+  var cnt=0;
+  initPrime();
+  primeDB(dispatch,false);
+
+  while(!isPrimed() && !primeFailed){
+    if(++cnt>15){
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(!isPrimed()){
+    // Exit if Not Primed
+    return;
+  }
+
+  UPDATE2.sql1(dispatch,getState,poNumber,vendorNumber,Address1,Address2,Address3,Address4);
 
   cnt=0;
 
@@ -329,6 +349,33 @@ export async function updateCheck2(disp,getSt,poNumber,vendorNumber,startPort) {
 */  }
 } // updateCheck2
 
+export async function updateCheck3(disp,getSt,vendorNumber,newM2mVendor,startPort) {
+//  var that = this;
+  var dispatch = disp;
+  var getState = getSt;
+  var portState = getState(); 
+  var cnt=0;
+  console.log(`updateCheck3(): top`);
+  console.dir(portState);
+  console.dir(startPort);
+
+  UPDATE3.sql1(dispatch,getState,vendorNumber,newM2mVendor);
+
+  cnt=0;
+
+  while(!UPDATE3.isDone())
+  {
+    if(++cnt>15 || UPDATE3.didFail()){
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(UPDATE3.isDone() && !UPDATE3.didFail()){
+    startPort();
+  }
+} // updateCheck3
 
 
 export default async function POReqTrans(disp,getSt) {

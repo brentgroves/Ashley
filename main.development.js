@@ -66,8 +66,9 @@ app.on('ready', async () => {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
-//  if (true) {
-  if (process.env.NODE_ENV === 'development') {
+  if (true) {
+
+//  if (process.env.NODE_ENV === 'development') {
     mainWindow.openDevTools();
     mainWindow.webContents.on('context-menu', (e, props) => {
       const { x, y } = props;

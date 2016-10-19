@@ -31,7 +31,7 @@ export async function portCheck2(disp){
   }
 
   if(isPortCheck2Done()){
-    console.log(`portCheck2() Sucess`)
+    console.log(`portCheck2() Done`)
   }
 
 }

@@ -2,7 +2,7 @@ import * as PORTACTION from "./PORTActionConst.js"
 
 import { push } from 'react-router-redux';
 
-import POReqTrans,{updateCheck1,updateCheck2,primeDB,startCheck3} from '../api/POReqTrans';
+import POReqTrans,{updateCheck1,updateCheck2,updateCheck3,primeDB,startCheck3} from '../api/POReqTrans';
 
 export function cancelApp() {
  return (dispatch,getState) => {
@@ -159,14 +159,21 @@ export function updateChk1(poNumber,item,poCategory,startPORT) {
   };
 }
 
-export function updateChk2(poNumber,vendorNumber,startPORT) {
+export function updateChk2(poNumber,vendorNumber,Address1,Address2,Address3,Address4,startPORT) {
  return (dispatch,getState) => {
     var disp = dispatch;
     var getSt = getState;
-    updateCheck2(disp,getSt,poNumber,vendorNumber,startPORT);
+    updateCheck2(disp,getSt,poNumber,vendorNumber,Address1,Address2,Address3,Address4,startPORT);
   };
 }
 
+export function updateChk3(vendorNumber,newM2mVendor,startPORT) {
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    updateCheck3(disp,getSt,vendorNumber,newM2mVendor,startPORT);
+  };
+}
 
 
 

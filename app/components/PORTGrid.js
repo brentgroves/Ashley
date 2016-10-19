@@ -33,7 +33,8 @@ export default class PORTGrid extends React.Component{
     updateChk1=this.props.updateChk1;
     updateChk2=this.props.updateChk2;
     catRecs=this.props.POReqTrans.catRecs;
-    vendors=this.props.POReqTrans.vendors;
+ //   vendors=this.props.POReqTrans.vendors;
+  //  m2mVendors=this.props.POReqTrans.m2mVendors;
     this.state = {
 //      updateChk1:this.props.updateChk1
     };
@@ -87,13 +88,49 @@ export default class PORTGrid extends React.Component{
     console.log("Thw whole row :");
     console.dir(row);
     var found=false;
-    var newVendor;
-    vendors.every(function(vendor,i,arr){
+    var newVendor,
+    Address1='',
+    Address2='',
+    Address3='',
+    Address4='';
+    this.props.POReqTrans.vendors.every(function(vendor,i,arr){
       console.log(vendor.Description);
       if(vendor.Description==cellValue){
         console.log(vendor.Description + "==" + cellValue);
         console.log(vendor.VendorNumber);
         newVendor=vendor.VendorNumber;
+        Address1=vendor.VendorName;
+        if(vendor.PurchaseAddress1){
+          Address2=vendor.PurchaseAddress1;
+          if(vendor.PurchaseAddress2){
+            Address3=vendor.PurchaseAddress2;
+            if(vendor.PurchaseCity && vendor.PurchaseState && vendor.PurchaseZip){
+              Address4=vendor.PurchaseCity + ',' + vendor.PurchaseState + ' ' + vendor.PurchaseZip;
+            }else if(vendor.PurchaseCity && vendor.PurchaseState){ 
+              Address4=vendor.PurchaseCity + ',' + vendor.PurchaseState;
+            }else if(vendor.PurchaseCity){ 
+              Address4=vendor.PurchaseCity;
+            }
+          }else{
+            if(vendor.PurchaseCity && vendor.PurchaseState && vendor.PurchaseZip){
+              Address3=vendor.PurchaseCity + ',' + vendor.PurchaseState + ' ' + vendor.PurchaseZip;
+            }else if(vendor.PurchaseCity && vendor.PurchaseState){ 
+              Address3=vendor.PurchaseCity + ',' + vendor.PurchaseState;
+            }else if(vendor.PurchaseCity){ 
+              Address3=vendor.PurchaseCity;
+            }
+          }
+        }else{
+          if(vendor.PurchaseCity && vendor.PurchaseState && vendor.PurchaseZip){
+            Address2=vendor.PurchaseCity + ',' + vendor.PurchaseState + ' ' + vendor.PurchaseZip;
+          }else if(vendor.PurchaseCity && vendor.PurchaseState){ 
+            Address2=vendor.PurchaseCity + ',' + vendor.PurchaseState;
+          }else if(vendor.PurchaseCity){ 
+            Address2=vendor.PurchaseCity;
+          }
+        }
+        //VendorName,PurchaseAddress1,PurchaseAddress2,PurchaseCity,PurchaseState,PurchaseZip
+
         found=true;
       // false breaks loop
         return false;
@@ -104,7 +141,8 @@ export default class PORTGrid extends React.Component{
       }
     });
     if(found){
-      this.props.updateChk2(row.PONumber,newVendor,this.props.startPORT);
+      console.log(`PORTGrid.updateChk2 => ${row.PONumber},${newVendor},${Address1},${Address2},${Address3},${Address4}`);
+      this.props.updateChk2(row.PONumber,newVendor,Address1,Address2,Address3,Address4,this.props.startPORT);
     }
 
   }
@@ -120,24 +158,22 @@ export default class PORTGrid extends React.Component{
     console.log("Thw whole row :");
     console.dir(row);
     var found=false;
-    var newVendor;
-    vendors.every(function(vendor,i,arr){
-      console.log(vendor.Description);
-      if(vendor.Description==cellValue){
-        console.log(vendor.Description + "==" + cellValue);
-        console.log(vendor.VendorNumber);
-        newVendor=vendor.VendorNumber;
+    var newM2mVendor;
+    this.props.POReqTrans.m2mVendors.every(function(m2mVendor,i,arr){
+      console.log(m2mVendor.vendorSelect);
+      if(m2mVendor.vendorSelect==cellValue){
+        console.log(m2mVendor.vendorSelect + "==" + cellValue);
+        newM2mVendor=m2mVendor.VendorNumber;
         found=true;
       // false breaks loop
         return false;
       }else{
-//        console.log(catRec.descr + "!=" + cellValue);
         return true;
 
       }
     });
     if(found){
-      this.props.updateChk2(row.PONumber,newVendor,this.props.startPORT);
+      this.props.updateChk3(row.VendorNumber,newM2mVendor,this.props.startPORT);
     }
 
   }
@@ -184,7 +220,7 @@ export default class PORTGrid extends React.Component{
               <TableHeaderColumn dataField="id" hidden={true} isKey={true}>Row</TableHeaderColumn>
               <TableHeaderColumn dataField="PONumber" columnClassName='td-first-column' isKey={false} editable={false} >PO Number</TableHeaderColumn>
               <TableHeaderColumn dataField="Address1" editable={false} >Vendor</TableHeaderColumn>
-              <TableHeaderColumn dataField="vendor" width="275" columnClassName={columnClassNameFormat} 
+              <TableHeaderColumn dataField="m2mVendor" width="275" columnClassName={columnClassNameFormat} 
               editable={{type:'select', options:{values:this.props.POReqTrans.vendorSelect}}}>Select Vendor</TableHeaderColumn>
           </BootstrapTable>;
           break;
@@ -204,8 +240,9 @@ export default class PORTGrid extends React.Component{
               <TableHeaderColumn dataField="id" hidden={true} isKey={true}>Row</TableHeaderColumn>
               <TableHeaderColumn dataField="PONumber" columnClassName='td-first-column' isKey={false} editable={false} >PO Number</TableHeaderColumn>
               <TableHeaderColumn dataField="Address1" editable={false} >Vendor</TableHeaderColumn>
+              <TableHeaderColumn dataField="VendorNumber" editable={false} >Crib Vendor</TableHeaderColumn>
               <TableHeaderColumn dataField="vendor" width="275" columnClassName={columnClassNameFormat} 
-              editable={{type:'select', options:{values:this.props.POReqTrans.vendorSelect}}}>Select Vendor</TableHeaderColumn>
+              editable={{type:'select', options:{values:this.props.POReqTrans.m2mVendorSelect}}}>Select M2M Vendor</TableHeaderColumn>
           </BootstrapTable>;
           break;
     }

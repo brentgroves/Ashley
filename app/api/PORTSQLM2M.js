@@ -29,7 +29,9 @@ export async function portM2mQueries(disp){
   }
 
   if(arePortQueriesDone()){
-    console.log(`portM2mQueries() Sucess`)
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`portM2mQueries() Sucess`)
+    }
   }
 
 }
@@ -61,35 +63,52 @@ export function didPortQueriesFail(){
 }
 
 function portQuery1(disp){
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`portQuery1(disp) top=>${portQuery1Cnt}`);
+  }
   var dispatch=disp;
-  console.log(`portQuery1(disp) top=>${portQuery1Cnt}`);
 
   var m2mConnection = new sql.Connection(CONNECT.m2mDefTO, function(err) {
     // ... error checks
     if(null==err){
-      console.log(`portQuery1(disp) Connection Sucess`);
-      // Query
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`portQuery1(disp) Connection Sucess`);
+      }
 
-      var request = new sql.Request(m2mConnection); // or: var request = connection1.request();
+      // Query
+      var request = new sql.Request(m2mConnection); 
       request.query(
+      // Remove duplicate records but a fcompany may still be in here twice.
       `
-        select fvendno, fcompany
-        FROM apvend av
-        inner join syaddr sa
-        on av.fvendno = sa.fcaliaskey
-        where fcalias = 'APVEND' 
+          select distinct fvendno,
+                rtrim(av.fcompany)  + ' - ' + av.fvendno
+                as vendorSelect
+          FROM apvend av
+          inner join syaddr sa
+          on av.fvendno = sa.fcaliaskey
+          where fcalias = 'APVEND' 
+          order by vendorSelect
       `, function(err, recordset) {
           if(null==err){
             // ... error checks
-            console.log(`portQuery1(disp) Query Sucess`);
-            console.dir(recordset);
+            var vendorSelect=[];
+            recordset.forEach(function(vendor,i,arr){
+              vendorSelect.push(vendor.vendorSelect);
+            });
+            if ('development'==process.env.NODE_ENV) {
+              console.log(`portQuery1(disp) Query Sucess`);
+              console.dir(recordset);
+            }
+            dispatch({ type:PORTACTION.SET_M2M_VENDOR_SELECT, m2mVendorSelect:vendorSelect });
             dispatch({ type:PORTACTION.SET_M2M_VENDORS, m2mVendors:recordset });
             //m2mVendors=recordset;
             portQuery1Done=true;
           }else{
             if(++portQuery1Cnt<3) {
-              console.log(`portQuery1.query:  ${err.message}` );
-              console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
+              if ('development'==process.env.NODE_ENV) {
+                console.log(`portQuery1.query:  ${err.message}` );
+                console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
+              }
             }else{
               dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
@@ -100,8 +119,10 @@ function portQuery1(disp){
       );
     }else{
       if(++portQuery1Cnt<3) {
-        console.log(`portQuery1.Connection:  ${err.message}` );
-        console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
+        if ('development'==process.env.NODE_ENV) {
+          console.log(`portQuery1.Connection:  ${err.message}` );
+          console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
+        }
       }else{
         dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
@@ -112,84 +133,10 @@ function portQuery1(disp){
   
   m2mConnection.on('error', function(err) {
     if(++portQuery1Cnt<3) {
-      console.log(`portQuery1.on('error', function(err):  ${err.message}` );
-      console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
-    }else{
-      dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-      portQueriesFailed=true;
-    }
-  });
-}
-
-
-function portQuery2(disp){
-  var dispatch=disp;
-  console.log(`portQuery2(disp) top=>${portQuery2Cnt}`);
-
-  var m2mConnection = new sql.Connection(CONNECT.m2mDefTO, function(err) {
-    // ... error checks
-    if(null==err){
-      console.log(`portQuery2(disp) Connection Sucess`);
-      // Query
-
-      var request = new sql.Request(m2mConnection); // or: var request = connection1.request();
-      request.query(`
-        select 
-            rtrim(av.fcompany)  + ' - ' + av.fvendno
-            as vendorSelect
-        from
-        (
-          SELECT max(fvendno) fvendno, fcompany
-          from
-          (
-            select fvendno, fcompany
-            FROM apvend av
-            inner join syaddr sa
-            on av.fvendno = sa.fcaliaskey
-            where fcalias = 'APVEND'
-          ) lv1
-          group by fcompany
-        ) lv2
-        inner join
-        apvend av
-        on lv2.fvendno=av.fvendno
-        `,
-        function(err, recordset) {
-          if(null==err){
-            // ... error checks
-            console.log(`portQuery2(disp) Query Sucess`);
-            console.dir(recordset);
-            dispatch({ type:PORTACTION.SET_M2M_VENDOR_SELECT, m2mVendorSelect:recordset });
-            portQuery2Done=true;
-          }else{
-            if(++portQuery2Cnt<3) {
-              console.log(`portQuery2.query:  ${err.message}` );
-              console.log(`portQuery2Cnt = ${portQuery2Cnt}`);
-            }else{
-              dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-              dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-              portQueriesFailed=true;
-            }
-          }
-        }
-      );
-    }else{
-      if(++portQuery2Cnt<3) {
-        console.log(`portQuery2.Connection:  ${err.message}` );
-        console.log(`portQuery2Cnt = ${portQuery2Cnt}`);
-      }else{
-        dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-        portQueriesFailed=true;
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`m2mConnection.on('error', function(err):  ${err.message}` );
+        console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
       }
-    }
-  });
-  
-  m2mConnection.on('error', function(err) {
-    if(++portQuery2Cnt<3) {
-      console.log(`portQuery2.on('error', function(err):  ${err.message}` );
-      console.log(`portQuery2Cnt = ${portQuery2Cnt}`);
     }else{
       dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
@@ -197,4 +144,6 @@ function portQuery2(disp){
     }
   });
 }
+
+
 

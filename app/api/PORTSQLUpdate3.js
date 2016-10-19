@@ -15,7 +15,7 @@ const ATTEMPTS=1;
 
 
 
-export async function sql1(disp,getSt,poNumber,vendorNumber,Address1,Address2,Address3,Address4){
+export async function sql1(disp,getSt,vendorNumber,newM2mVendor){
 //  var that = this;
   var dispatch = disp;
   var getState = getSt;
@@ -24,11 +24,11 @@ export async function sql1(disp,getSt,poNumber,vendorNumber,Address1,Address2,Ad
 
   var cnt=0;
   init();
-  execSQL1(dispatch,poNumber,vendorNumber,Address1,Address2,Address3,Address4);
+  execSQL1(dispatch,vendorNumber,newM2mVendor);
 
   while(!isDone() && !didFail()){
     if(++cnt>15){
-      dispatch({ type:PORTACTION.SET_REASON, reason:`PORTSQLUpdate2.sql1() Timed Out or Failed.` });
+      dispatch({ type:PORTACTION.SET_REASON, reason:`PORTSQLUpdate3.sql1() Timed Out or Failed.` });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
       break;
     }else{
@@ -37,15 +37,15 @@ export async function sql1(disp,getSt,poNumber,vendorNumber,Address1,Address2,Ad
   }
 
   if(isDone()){
-    console.log(`PORTSQLUpdate2.sql1(): Completed`)
+    console.log(`PORTSQLUpdate3.sql1(): Completed`)
   }else{
-    console.log(`PORTSQLUpdate2.sql1(): Did NOT Complete`)
+    console.log(`PORTSQLUpdate3.sql1(): Did NOT Complete`)
   }
 
   if(didFail()){
-    console.log(`PORTSQLUpdate2.sql1(): Failed`)
+    console.log(`PORTSQLUpdate3.sql1(): Failed`)
   }else{
-    console.log(`PORTSQLUpdate2.sql1(): Suceeded`)
+    console.log(`PORTSQLUpdate3.sql1(): Suceeded`)
   }
 
 }
@@ -79,43 +79,40 @@ export function didFail(){
 }
 
 
-function execSQL1(disp,poNumber,vendorNumber,Address1,Address2,Address3,Address4){
+function execSQL1(disp,vendorNumber,newM2mVendor){
   var dispatch = disp;
-  console.log(`PORTSQLUpdate2.execSQL1() top=>${sql1Cnt}`);
+  console.log(`PORTSQLUpdate3.execSQL1() top=>${sql1Cnt}`);
 
   var connection = new sql.Connection(CONNECT.cribDefTO, function(err) {
     // ... error checks
     if(null==err){
-      console.log(`PORTSQLUpdate2.execSQL1(poNumber,vendorNumber) Connection Sucess`);
+      console.log(`PORTSQLUpdate3.execSQL1() Connection Sucess`);
       
       let procedure_name;
+
       if (prod===true) {
-        procedure_name = `bpPOVendorUpdate`;
+        procedure_name = `bpVendorUpdate`;
       }else{
-        procedure_name = `bpDevPOVendorUpdate`;
+        procedure_name = `bpDevVendorUpdate`;
       }
 
+
       var request = new sql.Request(connection); 
-      request.input('poNumber', sql.Int, poNumber);
-      request.input('vendor', sql.VarChar(12), vendorNumber);
-      request.input('Address1', sql.VarChar(50), Address1);
-      request.input('Address2', sql.VarChar(50), Address2);
-      request.input('Address3', sql.VarChar(50), Address3);
-      request.input('Address4', sql.VarChar(50), Address4);
+      request.input('vendorNumber', sql.VarChar(12), vendorNumber)
+      request.input('newM2mVendor', sql.VarChar(6), newM2mVendor)
       request.execute(procedure_name, function(err, recordsets, returnValue) {
         // ... error checks
         if(null==err){
           // ... error checks
-          console.log(`PORTSQLUpdate2.execSQL1() =>${poNumber},${vendorNumber},${Address1},${Address2},${Address3},${Address4}`);
-          console.log(`PORTSQLUpdate2.execSQL1() Sucess`);
+          console.log(`PORTSQLUpdate3.execSQL1() Sucess`);
          // console.dir(recordset);
           sql1Done=true;
         }else {
           if(++sql1Cnt<ATTEMPTS) {
-            console.log(`PORTSQLUpdate2.execSQL1().query:  ${err.message}` );
+            console.log(`PORTSQLUpdate3.execSQL1().query:  ${err.message}` );
             console.log(`sql1Cnt = ${sql1Cnt}`);
           }else{
-            console.log(`PORTSQLUpdate2.execSQL1() err:  ${err.message}` );
+            console.log(`PORTSQLUpdate3.execSQL1() err:  ${err.message}` );
             dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
             dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
             sql1Failed=true;
@@ -124,10 +121,10 @@ function execSQL1(disp,poNumber,vendorNumber,Address1,Address2,Address3,Address4
       });
     }else{
       if(++sql1Cnt<ATTEMPTS) {
-        console.log(`PORTSQLUpdate2.Connection: ${err.message}` );
+        console.log(`PORTSQLUpdate3.Connection: ${err.message}` );
         console.log(`sql1Cnt = ${sql1Cnt}`);
       }else{
-        console.log(`PORTSQLUpdate2.Connection: ${err.message}` );
+        console.log(`PORTSQLUpdate3.Connection: ${err.message}` );
         dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
         sql1Failed=true;
@@ -137,10 +134,10 @@ function execSQL1(disp,poNumber,vendorNumber,Address1,Address2,Address3,Address4
   
   connection.on('error', function(err) {
     if(++sql1Cnt<ATTEMPTS) {
-      console.log(`PORTSQLUpdate2.connection.on(error): ${err.message}` );
+      console.log(`PORTSQLUpdate3.connection.on(error): ${err.message}` );
       console.log(`sql1Cnt = ${sql1Cnt}`);
     }else{
-      console.log(`PORTSQLUpdate2.connection.on(error): ${err.message}` );
+      console.log(`PORTSQLUpdate3.connection.on(error): ${err.message}` );
       dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
       sql1Failed=true;

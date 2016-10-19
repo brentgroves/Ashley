@@ -136,14 +136,12 @@ export default class POReqTrans extends Component {
         <Col xs={1}>&nbsp;</Col>
         <Col >
           <Jumbotron  >
-           <h1 style={{textAlign: 'center'}}>Check Made2Manage Vendor</h1>
-            <p style={{padding: '0px'}}>The following PO record(s) have a problem with their vendor.
-            {"     "}
-            <strong>Select another vendor number for each item.</strong> If a valid vendor
-            is shown then go to Cribmaster and verify the UDFM2MVENDORNUMBER is a valid vendor number in Made2Manage.
-            {"     "}
-            If you select another Vendor number the PO Request Transfer will continue, but if you had to update
-            Cribmaster's vendor record with another UDFM2MVENDORNUMBER then click the cancel button and try again.</p>
+           <h1 style={{textAlign: 'center'}}>Update Made2Manage Vendor</h1>
+            <p style={{padding: '0px'}}>The following Cribmaster vendor(s) have an invalid Made2Manage vendor.
+            {"      "}
+            <strong>Select another Made2Manage vendor for each item listed.</strong> 
+            {"      "}
+            Once all Made2Manage vendors have been selected the PO Request Transfer process will continue.</p>
           </Jumbotron>
         </Col>
       </Row>
