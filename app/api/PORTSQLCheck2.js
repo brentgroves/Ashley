@@ -31,7 +31,10 @@ export async function portCheck2(disp){
   }
 
   if(isPortCheck2Done()){
-    console.log(`portCheck2() Done`)
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`portCheck2() Done`)
+    }
+
   }
 
 }
@@ -78,12 +81,18 @@ export function continueChecks(){
 
 function portChk2(disp){
   var dispatch=disp;
-  console.log(`portChk2(disp) top=>${portCheck2Cnt}`);
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`portChk2(disp) top=>${portCheck2Cnt}`);
+  }
+
 
   var cribConnection = new sql.Connection(CONNECT.cribDefTO, function(err) {
     // ... error checks
     if(null==err){
-      console.log(`portChk2(disp) Connection Sucess`);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`portChk2(disp) Connection Sucess`);
+      }
+
       // Query
       let qry;
       if (prod===true) {
@@ -118,11 +127,17 @@ function portChk2(disp){
       qry, function(err, recordset) {
           if(null==err){
             // ... error checks
-            console.log(`portChk2(disp) Query Sucess`);
-            console.dir(recordset);
+            if ('development'==process.env.NODE_ENV) {
+              console.log(`portChk2(disp) Query Sucess`);
+              console.dir(recordset);
+            }
+
             portCheck2Done=true;
             if(recordset.length!==0){
-              console.log("portCheck2 query had records.");
+              if ('development'==process.env.NODE_ENV) {
+                console.log("portCheck2 query had records.");
+              }
+
               dispatch({ type:PORTACTION.SET_CHECK2, chk2:PORTCHK.FAILURE });
               dispatch({ type: PORTACTION.SET_NO_CRIB_VEN, noCribVen:recordset });
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_20_FAIL});
@@ -133,8 +148,11 @@ function portChk2(disp){
             }
           }else{
             if(++portCheck2Cnt<3) {
-              console.log(`portChk2.query:  ${err.message}` );
-              console.log(`portCheck2Cnt = ${portCheck2Cnt}`);
+              if ('development'==process.env.NODE_ENV) {
+                console.log(`portChk2.query:  ${err.message}` );
+                console.log(`portCheck2Cnt = ${portCheck2Cnt}`);
+              }
+
             }else{
               dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
@@ -145,8 +163,11 @@ function portChk2(disp){
       );
     }else{
       if(++portCheck2Cnt<3) {
-        console.log(`portChk2.Connection:  ${err.message}` );
-        console.log(`portCheck2Cnt = ${portCheck2Cnt}`);
+        if ('development'==process.env.NODE_ENV) {
+          console.log(`portChk2.Connection:  ${err.message}` );
+          console.log(`portCheck2Cnt = ${portCheck2Cnt}`);
+        }
+
       }else{
         dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
@@ -157,8 +178,10 @@ function portChk2(disp){
   
   cribConnection.on('error', function(err) {
     if(++portCheck2Cnt<3) {
-      console.log(`portChk2.on('error', function(err):  ${err.message}` );
-      console.log(`portCheck2Cnt = ${portCheck2Cnt}`);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`portChk2.on('error', function(err):  ${err.message}` );
+        console.log(`portCheck2Cnt = ${portCheck2Cnt}`);
+      }
     }else{
       dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });

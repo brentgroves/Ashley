@@ -10,21 +10,10 @@ const POReqTransButton = React.createClass({
   },
 
   render () {
-    console.log('button render =' + this.props.POReqTrans.goButton);
-    /*
-    var btnState;
-    switch (this.props.POReqTrans.chk1) {
-        case "success":
-            btnState = 'success';
-            break; 
-        case "failure":
-            btnState = 'error';
-            break; 
-        default: 
-            btnState = '';
-            break; 
+    if ('development'==process.env.NODE_ENV) {
+      console.log('button render =' + this.props.POReqTrans.goButton);
     }
-    */
+
 
     return (
       <div>
@@ -37,10 +26,12 @@ const POReqTransButton = React.createClass({
   },
 
   handleClick () {
-    console.log('handleClick');
+    if ('development'==process.env.NODE_ENV) {
+      console.log('handleClick');
+    }
 
-//    this.setState({buttonState: 'loading'});
-    this.props.startPORT();
+
+    this.props.startPORT(true);
 
    // make asynchronous call
   //   setTimeout(function() {

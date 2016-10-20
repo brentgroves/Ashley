@@ -4,6 +4,7 @@ export const PRIME_DB = 'PRIME_DB';
 export const SET_CHECK1 = 'SET_CHECK1';
 export const SET_CHECK2 = 'SET_CHECK2';
 export const SET_CHECK3 = 'SET_CHECK3';
+export const SET_CURRENT_PO = 'SET_CURRENT_PO';
 export const SET_GO_BUTTON = 'SET_GO_BUTTON';
 export const SET_M2M_VENDORS = 'SET_M2M_VENDORS';
 export const SET_M2M_VENDOR_SELECT = 'SET_M2M_VENDOR_SELECT';

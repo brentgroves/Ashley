@@ -20,7 +20,10 @@ export async function sql1(disp,getSt,poNumber,vendorNumber,Address1,Address2,Ad
   var dispatch = disp;
   var getState = getSt;
   var state = getState(); 
-  console.dir(state);
+  if ('development'==process.env.NODE_ENV) {
+    console.dir(state);
+  }
+
 
   var cnt=0;
   init();
@@ -37,15 +40,24 @@ export async function sql1(disp,getSt,poNumber,vendorNumber,Address1,Address2,Ad
   }
 
   if(isDone()){
-    console.log(`PORTSQLUpdate2.sql1(): Completed`)
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLUpdate2.sql1(): Completed`)
+    }
+
   }else{
-    console.log(`PORTSQLUpdate2.sql1(): Did NOT Complete`)
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLUpdate2.sql1(): Did NOT Complete`)
+    }
   }
 
   if(didFail()){
-    console.log(`PORTSQLUpdate2.sql1(): Failed`)
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLUpdate2.sql1(): Failed`)
+    }
   }else{
-    console.log(`PORTSQLUpdate2.sql1(): Suceeded`)
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLUpdate2.sql1(): Suceeded`)
+    }
   }
 
 }
@@ -81,12 +93,18 @@ export function didFail(){
 
 function execSQL1(disp,poNumber,vendorNumber,Address1,Address2,Address3,Address4){
   var dispatch = disp;
-  console.log(`PORTSQLUpdate2.execSQL1() top=>${sql1Cnt}`);
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`PORTSQLUpdate2.execSQL1() top=>${sql1Cnt}`);
+  }
+
 
   var connection = new sql.Connection(CONNECT.cribDefTO, function(err) {
     // ... error checks
     if(null==err){
-      console.log(`PORTSQLUpdate2.execSQL1(poNumber,vendorNumber) Connection Sucess`);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`PORTSQLUpdate2.execSQL1(poNumber,vendorNumber) Connection Sucess`);
+      }
+
       
       let procedure_name;
       if (prod===true) {
@@ -106,16 +124,23 @@ function execSQL1(disp,poNumber,vendorNumber,Address1,Address2,Address3,Address4
         // ... error checks
         if(null==err){
           // ... error checks
-          console.log(`PORTSQLUpdate2.execSQL1() =>${poNumber},${vendorNumber},${Address1},${Address2},${Address3},${Address4}`);
-          console.log(`PORTSQLUpdate2.execSQL1() Sucess`);
+          if ('development'==process.env.NODE_ENV) {
+            console.log(`PORTSQLUpdate2.execSQL1() =>${poNumber},${vendorNumber},${Address1},${Address2},${Address3},${Address4}`);
+            console.log(`PORTSQLUpdate2.execSQL1() Sucess`);
+          }
          // console.dir(recordset);
           sql1Done=true;
         }else {
           if(++sql1Cnt<ATTEMPTS) {
-            console.log(`PORTSQLUpdate2.execSQL1().query:  ${err.message}` );
-            console.log(`sql1Cnt = ${sql1Cnt}`);
+            if ('development'==process.env.NODE_ENV) {
+              console.log(`PORTSQLUpdate2.execSQL1().query:  ${err.message}` );
+              console.log(`sql1Cnt = ${sql1Cnt}`);
+            }
+
           }else{
-            console.log(`PORTSQLUpdate2.execSQL1() err:  ${err.message}` );
+            if ('development'==process.env.NODE_ENV) {
+              console.log(`PORTSQLUpdate2.execSQL1() err:  ${err.message}` );
+            }
             dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
             dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
             sql1Failed=true;
@@ -124,10 +149,16 @@ function execSQL1(disp,poNumber,vendorNumber,Address1,Address2,Address3,Address4
       });
     }else{
       if(++sql1Cnt<ATTEMPTS) {
-        console.log(`PORTSQLUpdate2.Connection: ${err.message}` );
-        console.log(`sql1Cnt = ${sql1Cnt}`);
+        if ('development'==process.env.NODE_ENV) {
+          console.log(`PORTSQLUpdate2.Connection: ${err.message}` );
+          console.log(`sql1Cnt = ${sql1Cnt}`);
+        }
+
       }else{
-        console.log(`PORTSQLUpdate2.Connection: ${err.message}` );
+        if ('development'==process.env.NODE_ENV) {
+          console.log(`PORTSQLUpdate2.Connection: ${err.message}` );
+        }
+
         dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
         sql1Failed=true;
@@ -137,10 +168,16 @@ function execSQL1(disp,poNumber,vendorNumber,Address1,Address2,Address3,Address4
   
   connection.on('error', function(err) {
     if(++sql1Cnt<ATTEMPTS) {
-      console.log(`PORTSQLUpdate2.connection.on(error): ${err.message}` );
-      console.log(`sql1Cnt = ${sql1Cnt}`);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`PORTSQLUpdate2.connection.on(error): ${err.message}` );
+        console.log(`sql1Cnt = ${sql1Cnt}`);
+      }
+
     }else{
-      console.log(`PORTSQLUpdate2.connection.on(error): ${err.message}` );
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`PORTSQLUpdate2.connection.on(error): ${err.message}` );
+      }
+
       dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
       sql1Failed=true;

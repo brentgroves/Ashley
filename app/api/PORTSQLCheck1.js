@@ -30,7 +30,10 @@ export async function portCheck1(disp){
   }
 
   if(isPortCheck1Done()){
-    console.log(`portCheck1() Sucess`)
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`portCheck1() Done`)
+    }
+
   }
 
 }
@@ -77,12 +80,18 @@ export function continueChecks(){
 
 function portChk1(disp){
   var dispatch=disp;
-  console.log(`portChk1(disp) top=>${portCheck1Cnt}`);
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`portChk1(disp) top=>${portCheck1Cnt}`);
+  }
+
 
   var cribConnection = new sql.Connection(CONNECT.cribDefTO, function(err) {
     // ... error checks
     if(null==err){
-      console.log(`portChk1(disp) Connection Sucess`);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`portChk1(disp) Connection Sucess`);
+      }
+
       // Query
       let qry;
       if (prod===true) {
@@ -113,20 +122,28 @@ function portChk1(disp){
       qry, function(err, recordset) {
           if(null==err){
             // ... error checks
-            console.log(`portChk1(disp) Query Sucess`);
-            console.dir(recordset);
+            if ('development'==process.env.NODE_ENV) {
+              console.log(`portChk1(disp) Query Sucess`);
+              console.dir(recordset);
+            }
             portCheck1Done=true;
             if(recordset.length!==0){
               let cribRsErr ="";
               recordset.forEach(function(podetail,i,arr){
-                console.log(podetail.Item);
+                if ('development'==process.env.NODE_ENV) {
+                  console.log(podetail.Item);
+                }
+
                 if(arr.length===i+1){
                   cribRsErr+=`PO# ${podetail.PONumber}, Item: ${podetail.Item}`;
                 }else{
                   cribRsErr+= `PO# ${podetail.PONumber}, Item: ${podetail.Item}\n`;
                 }
               });
-              console.log("Failed PO category check.");
+              if ('development'==process.env.NODE_ENV) {
+                console.log("Failed PO category check.");
+              }
+
               dispatch({ type:PORTACTION.SET_NO_CAT_LIST, noCatList:recordset });
               dispatch({ type:PORTACTION.SET_CHECK1, chk1:PORTCHK.FAILURE });
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_10_FAIL });
@@ -137,8 +154,10 @@ function portChk1(disp){
             }
           }else{
             if(++portCheck1Cnt<3) {
-              console.log(`portChk1.query:  ${err.message}` );
-              console.log(`portCheck1Cnt = ${portCheck1Cnt}`);
+              if ('development'==process.env.NODE_ENV) {
+                console.log(`portChk1.query:  ${err.message}` );
+                console.log(`portCheck1Cnt = ${portCheck1Cnt}`);
+              }
             }else{
               dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
@@ -149,8 +168,10 @@ function portChk1(disp){
       );
     }else{
       if(++portCheck1Cnt<3) {
-        console.log(`portChk1.Connection:  ${err.message}` );
-        console.log(`portCheck1Cnt = ${portCheck1Cnt}`);
+        if ('development'==process.env.NODE_ENV) {
+          console.log(`portChk1.Connection:  ${err.message}` );
+          console.log(`portCheck1Cnt = ${portCheck1Cnt}`);
+        }
       }else{
         dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
@@ -161,8 +182,10 @@ function portChk1(disp){
   
   cribConnection.on('error', function(err) {
     if(++portCheck1Cnt<3) {
-      console.log(`portChk1.on('error', function(err):  ${err.message}` );
-      console.log(`portCheck1Cnt = ${portCheck1Cnt}`);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`portChk1.on('error', function(err):  ${err.message}` );
+        console.log(`portCheck1Cnt = ${portCheck1Cnt}`);
+      }
     }else{
       dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });

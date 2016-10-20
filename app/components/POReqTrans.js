@@ -83,9 +83,9 @@ export default class POReqTrans extends Component {
       </Row>
   } else if(
             (PORTSTATE.STARTED==this.props.POReqTrans.state) ||
-            (PORTSTATE.STEP_10_SUCCESS==this.props.POReqTrans.state) ||
-            (PORTSTATE.STEP_20_SUCCESS==this.props.POReqTrans.state) ||
-            (PORTSTATE.STEP_30_SUCCESS==this.props.POReqTrans.state)
+            (PORTSTATE.STEP_10_PASS==this.props.POReqTrans.state) ||
+            (PORTSTATE.STEP_20_PASS==this.props.POReqTrans.state) ||
+            (PORTSTATE.STEP_30_PASS==this.props.POReqTrans.state)
             ){
     jumboTronTxt=
       <Row >
@@ -93,10 +93,10 @@ export default class POReqTrans extends Component {
         <Col >
           <Jumbotron  >
             <h1 style={{textAlign: 'center'}}>PO Validation in Progress</h1>
-            <h3 style={{padding: '0px'}}>The PO Request Transfer program is in the process of 
+            <p style={{padding: '0px'}}>The PO Request Transfer program is in the process of 
             performing database checks to determine if the requested POs are ready to be 
-            transfered to Made2Manage.</h3>
-            {"     "}
+            transfered to Made2Manage.</p>
+           
           </Jumbotron>
         </Col>
       </Row>
@@ -107,7 +107,7 @@ export default class POReqTrans extends Component {
         <Col >
           <Jumbotron  >
             <h1 style={{textAlign: 'center'}}>Need PO Category</h1>
-            <p style={{padding: '0px'}}>The following PO record(s) have not been assigned a category. 
+            <p style={{padding: '0px'}}>The following PO(s) have not been assigned a category. 
             {"     "}
             <strong>Select a category for each one by clicking on it.</strong>
             {"     "}
@@ -121,12 +121,12 @@ export default class POReqTrans extends Component {
         <Col xs={1}>&nbsp;</Col>
         <Col >
           <Jumbotron  >
-           <h1 style={{textAlign: 'center'}}>Check PO Vendor</h1>
-            <p style={{padding: '0px'}}>The following PO record(s) have a problem with their vendor.
+           <h1 style={{textAlign: 'center'}}>Check Cribmaster Vendor</h1>
+            <p style={{padding: '0px'}}>The following PO(s) have a problem with their Cribmaster vendor.
             {"     "}
-            <strong>Select a valid PO vendor number for each item.</strong>
+            <strong>Select a valid Cribmaster vendor for each PO listed.</strong>
             {"     "}
-            Once all PO records have a valid Vendor number the PO Request Transfer will continue</p>
+            Once all PO records have a valid Cribmaster Vendor the PO Request Transfer will continue</p>
           </Jumbotron>
         </Col>
       </Row>
@@ -137,7 +137,7 @@ export default class POReqTrans extends Component {
         <Col >
           <Jumbotron  >
            <h1 style={{textAlign: 'center'}}>Update Made2Manage Vendor</h1>
-            <p style={{padding: '0px'}}>The following Cribmaster vendor(s) have an invalid Made2Manage vendor.
+            <p style={{padding: '0px'}}>The following Cribmaster vendor(s) have an invalid Made2Manage vendor assigned.
             {"      "}
             <strong>Select another Made2Manage vendor for each item listed.</strong> 
             {"      "}
@@ -179,9 +179,9 @@ export default class POReqTrans extends Component {
   if(
       (PORTSTATE.PRIMED==this.props.POReqTrans.state) ||
       (PORTSTATE.STARTED==this.props.POReqTrans.state) ||  
-      (PORTSTATE.STEP_10_SUCCESS==this.props.POReqTrans.state) ||  
-      (PORTSTATE.STEP_20_SUCCESS==this.props.POReqTrans.state) || 
-      (PORTSTATE.STEP_30_SUCCESS==this.props.POReqTrans.state)  
+      (PORTSTATE.STEP_10_PASS==this.props.POReqTrans.state) ||  
+      (PORTSTATE.STEP_20_PASS==this.props.POReqTrans.state) || 
+      (PORTSTATE.STEP_30_PASS==this.props.POReqTrans.state)  
     )
   {
     goButton = 
@@ -199,12 +199,13 @@ export default class POReqTrans extends Component {
       </Row>
     </div>
   }
-
   if(
-      (PORTSTATE.STEP_10_SUCCESS==this.props.POReqTrans.state) ||  
-      (PORTSTATE.STEP_20_SUCCESS==this.props.POReqTrans.state) || 
-      (PORTSTATE.STEP_30_SUCCESS==this.props.POReqTrans.state) || 
-      (PORTSTATE.FAILURE==this.props.POReqTrans.state)  
+      (PORTSTATE.STARTED==this.props.POReqTrans.state) ||
+      (PORTSTATE.STEP_10_PASS==this.props.POReqTrans.state) ||  
+      (PORTSTATE.STEP_20_PASS==this.props.POReqTrans.state) || 
+      (PORTSTATE.STEP_30_PASS==this.props.POReqTrans.state) || 
+      (PORTSTATE.FAILURE==this.props.POReqTrans.state)  ||
+      (PORTSTATE.SUCCESS==this.props.POReqTrans.state)  
     )
   {
     checks = 
@@ -241,11 +242,8 @@ export default class POReqTrans extends Component {
   }
 
   if(
-      (PORTSTATE.STEP_10_SUCCESS==this.props.POReqTrans.state) ||  
       (PORTSTATE.STEP_10_FAIL==this.props.POReqTrans.state) ||  
-      (PORTSTATE.STEP_20_SUCCESS==this.props.POReqTrans.state) ||  
       (PORTSTATE.STEP_20_FAIL==this.props.POReqTrans.state) || 
-      (PORTSTATE.STEP_30_SUCCESS==this.props.POReqTrans.state) ||  
       (PORTSTATE.STEP_30_FAIL==this.props.POReqTrans.state) || 
       (PORTSTATE.FAILURE==this.props.POReqTrans.state) 
     )

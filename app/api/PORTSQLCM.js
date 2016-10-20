@@ -13,6 +13,8 @@ var portQuery1Cnt=0;
 var portQuery2Done=false;
 var portQuery2Cnt=0;
 var portQueriesFailed=false;
+const ATTEMPTS=1;
+
 /*var portQuery3Done=false;
 var portQuery3Cnt=0;
 */
@@ -109,7 +111,10 @@ function portQuery1(disp){
             var catRecs=[];
             var cribRsLog;
             recordset.forEach(function(pocat,i,arr){
-              console.log(pocat.descr);
+              if ('development'==process.env.NODE_ENV) {
+                console.log(pocat.descr);
+              }
+
               if(arr.length===i+1){
                 cribRsLog+=`UDF_POCATEGORY# ${pocat.UDF_POCATEGORY}, descr: ${pocat.descr}`;
               }else{
@@ -128,7 +133,7 @@ function portQuery1(disp){
               }
 */
           }else{
-            if(++portQuery1Cnt<3) {
+            if(++portQuery1Cnt<ATTEMPTS) {
               if ('development'==process.env.NODE_ENV) {
                 console.log(`portQuery1.query:  ${err.message}` );
                 console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
@@ -142,7 +147,7 @@ function portQuery1(disp){
         }
       );
     }else{
-      if(++portQuery1Cnt<3) {
+      if(++portQuery1Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
           console.log(`portQuery1.Connection:  ${err.message}` );
           console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
@@ -156,7 +161,7 @@ function portQuery1(disp){
   });
   
   cribConnection.on('error', function(err) {
-    if(++portQuery1Cnt<3) {
+    if(++portQuery1Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`portQuery1.on('error', function(err):  ${err.message}` );
         console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
@@ -229,7 +234,7 @@ function portQuery2(disp){
             dispatch({ type:PORTACTION.SET_VENDORS, vendors:recordset });
             dispatch({ type:PORTACTION.SET_VENDOR_SELECT, vendorSelect:vendorSelect });
           }else{
-            if(++portQuery2Cnt<3) {
+            if(++portQuery2Cnt<ATTEMPTS) {
               if ('development'==process.env.NODE_ENV) {
                 console.log(`portQuery2.query:  ${err.message}` );
                 console.log(`portQuery2Cnt = ${portQuery2Cnt}`);
@@ -243,7 +248,7 @@ function portQuery2(disp){
         }
       );
     }else{
-      if(++portQuery2Cnt<3) {
+      if(++portQuery2Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
           console.log(`portQuery2.Connection:  ${err.message}` );
           console.log(`portQuery2Cnt = ${portQuery2Cnt}`);
@@ -257,7 +262,7 @@ function portQuery2(disp){
   });
   
   cribConnection.on('error', function(err) {
-    if(++portQuery2Cnt<3) {
+    if(++portQuery2Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`portQuery2.on('error', function(err):  ${err.message}` );
         console.log(`portQuery2Cnt = ${portQuery2Cnt}`);

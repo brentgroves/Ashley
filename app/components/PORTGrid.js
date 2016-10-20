@@ -42,30 +42,41 @@ export default class PORTGrid extends React.Component{
   }
 
   cellEditPropChk1 = {
-    mode: "click",
+    mode: "dbclick",
     blurToSave: true,
     afterSaveCell: this.onAfterSaveCellChk1.bind(this)
   };
 
   onAfterSaveCellChk1(row, cellName, cellValue){
-    console.log("Save cell '"+cellName+"' with value '"+cellValue+"'");
-    console.log("Thw whole row :");
-    console.log(row);
-    console.log(`this = `);
-    console.dir(this);
+    if ('development'==process.env.NODE_ENV) {
+      console.log("Save cell '"+cellName+"' with value '"+cellValue+"'");
+      console.log("Thw whole row :");
+      console.log(row);
+      console.log(`this = `);
+      console.dir(this);
+    }
+
     var found=false;
     var newPOCategory;
     catRecs.every(function(catRec,i,arr){
-      console.log(catRec.descr);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(catRec.descr);
+      }
+
       if(catRec.descr==cellValue){
-        console.log(catRec.descr + "==" + cellValue);
-        console.log(catRec.UDF_POCATEGORY);
+        if ('development'==process.env.NODE_ENV) {
+          console.log(catRec.descr + "==" + cellValue);
+          console.log(catRec.UDF_POCATEGORY);
+        }
         newPOCategory=catRec.UDF_POCATEGORY;
         found=true;
       // false breaks loop
         return false;
       }else{
-        console.log(catRec.descr + "!=" + cellValue);
+        if ('development'==process.env.NODE_ENV) {
+          console.log(catRec.descr + "!=" + cellValue);
+        }
+
         return true;
 
       }
@@ -78,15 +89,18 @@ export default class PORTGrid extends React.Component{
   }
 
   cellEditPropChk2 = {
-    mode: "click",
+    mode: "dbclick",
     blurToSave: true,
     afterSaveCell: this.onAfterSaveCellChk2.bind(this)
   };
 
   onAfterSaveCellChk2(row, cellName, cellValue){
-    console.log("Save cell '"+cellName+"' with value '"+cellValue+"'");
-    console.log("Thw whole row :");
-    console.dir(row);
+    if ('development'==process.env.NODE_ENV) {
+      console.log("Save cell '"+cellName+"' with value '"+cellValue+"'");
+      console.log("Thw whole row :");
+      console.dir(row);
+    }
+
     var found=false;
     var newVendor,
     Address1='',
@@ -94,10 +108,16 @@ export default class PORTGrid extends React.Component{
     Address3='',
     Address4='';
     this.props.POReqTrans.vendors.every(function(vendor,i,arr){
-      console.log(vendor.Description);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(vendor.Description);
+      }
+
       if(vendor.Description==cellValue){
-        console.log(vendor.Description + "==" + cellValue);
-        console.log(vendor.VendorNumber);
+        if ('development'==process.env.NODE_ENV) {
+          console.log(vendor.Description + "==" + cellValue);
+          console.log(vendor.VendorNumber);
+        }
+
         newVendor=vendor.VendorNumber;
         Address1=vendor.VendorName;
         if(vendor.PurchaseAddress1){
@@ -141,29 +161,43 @@ export default class PORTGrid extends React.Component{
       }
     });
     if(found){
-      console.log(`PORTGrid.updateChk2 => ${row.PONumber},${newVendor},${Address1},${Address2},${Address3},${Address4}`);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`PORTGrid.updateChk2 => ${row.PONumber},${newVendor},${Address1},${Address2},${Address3},${Address4}`);
+      }
+
       this.props.updateChk2(row.PONumber,newVendor,Address1,Address2,Address3,Address4,this.props.startPORT);
     }
 
   }
 
   cellEditPropChk3 = {
-    mode: "click",
+    mode: "dbclick",
     blurToSave: true,
     afterSaveCell: this.onAfterSaveCellChk3.bind(this)
   };
 
   onAfterSaveCellChk3(row, cellName, cellValue){
-    console.log("Save cell '"+cellName+"' with value '"+cellValue+"'");
-    console.log("Thw whole row :");
-    console.dir(row);
+    if ('development'==process.env.NODE_ENV) {
+      console.log("Save cell '"+cellName+"' with value '"+cellValue+"'");
+      console.log("Thw whole row :");
+      console.dir(row);
+    }
+
     var found=false;
     var newM2mVendor;
     this.props.POReqTrans.m2mVendors.every(function(m2mVendor,i,arr){
-      console.log(m2mVendor.vendorSelect);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(m2mVendor.vendorSelect);
+      }
+
       if(m2mVendor.vendorSelect==cellValue){
-        console.log(m2mVendor.vendorSelect + "==" + cellValue);
-        newM2mVendor=m2mVendor.VendorNumber;
+        if ('development'==process.env.NODE_ENV) {
+          console.dir(m2mVendor);
+          console.log(`newM2mVendor = ${newM2mVendor}`);      
+        }
+
+        newM2mVendor=m2mVendor.fvendno;
+
         found=true;
       // false breaks loop
         return false;

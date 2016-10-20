@@ -17,7 +17,10 @@ const initialState = {
 		chk2:PORTCHK.UNKNOWN,
 		chk3:PORTCHK.UNKNOWN,
 		chk4:PORTCHK.UNKNOWN,
+		currentPO:'',
 		goButton:'', 
+		m2mVendors:[{}],
+		m2mVendorSelect:[{}],
 		noCatList:[{}],
 		noCribVen:[{}],	
 		noM2mVen:[{}],	
@@ -25,9 +28,7 @@ const initialState = {
 		state:PORTSTATE.NOT_PRIMED,
 		reason:'',
 		vendors:[{}],
-		vendorSelect:[{}],
-		m2mVendors:[{}],
-		m2mVendorSelect:[{}]
+		vendorSelect:[{}]
 	}
 
 //	noVenPoList:[{PONumber:1,Vendor:2,Address1:'1633 S US HWY 33'}]

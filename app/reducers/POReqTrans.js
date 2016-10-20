@@ -16,6 +16,7 @@ export default function reducer( state = {}, action) {
           chk2: {$set: 'unknown'},
           chk3: {$set: 'unknown'},
           chk4: {$set: 'unknown'},
+          currentPO:{$set:''},
           goButton:{$set:''},
           m2mVendors:{$set:[{}]},
           m2mVendorSelect:{$set:[{}]},
@@ -55,6 +56,16 @@ export default function reducer( state = {}, action) {
       var newData = update(state, 
         { 
           chk3: {$set: action.chk3}
+        });
+      return newData;
+
+    }
+    case PORTACTION.SET_CURRENT_PO:
+    {
+      console.log(`set currentPO`);
+      var newData = update(state, 
+        { 
+          currentPO: {$set: action.currentPO}
         });
       return newData;
 

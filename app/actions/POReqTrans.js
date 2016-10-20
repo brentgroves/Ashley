@@ -80,6 +80,13 @@ export function setM2mVendorSelect(m2mVendorSelect) {
   };
 }
 
+export function setCurrentPO(nextPO) {
+  return {
+    type: PORTACTION.SET_CURRENT_PO,
+    currentPO: currentPO
+  };
+}
+
 export function setNoCatList(noCatList) {
   return {
     type: PORTACTION.SET_NO_CAT_LIST,
@@ -143,11 +150,11 @@ export function startChk3() {
  };
 }
 
-export function startPORT() {
+export function startPORT(prime) {
  return (dispatch,getState) => {
     var disp = dispatch;
     var getSt = getState;
-    POReqTrans(disp,getSt);
+    POReqTrans(disp,getSt,prime);
   };
 }
 

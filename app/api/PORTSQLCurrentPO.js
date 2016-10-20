@@ -6,16 +6,16 @@ import * as PORTCHK from "../actions/PORTChkConst.js"
 import * as CONNECT from "./PORTSQLConst.js"
 import * as MISC from "./Misc.js"
 
-var prod=false;
 
 var sql1Done=false;
 var sql1Cnt=0;
 var sql1Failed=false;
+var contPORT=false;
 const ATTEMPTS=1;
 
 
 
-export async function sql1(disp,getSt,poNumber,item,poCategory){
+export async function sql1(disp,getSt){
 //  var that = this;
   var dispatch = disp;
   var getState = getSt;
@@ -27,11 +27,11 @@ export async function sql1(disp,getSt,poNumber,item,poCategory){
 
   var cnt=0;
   init();
-  execSQL1(dispatch,poNumber,item,poCategory);
+  execSQL1(dispatch);
 
   while(!isDone() && !didFail()){
     if(++cnt>15){
-      dispatch({ type:PORTACTION.SET_REASON, reason:`PORTSQLUpdate1.sql1(disp,getSt,poNumber,item,poCategory) Timed Out or Failed.` });
+      dispatch({ type:PORTACTION.SET_REASON, reason:`PORTSQLCurrentPO.sql1() Timed Out or Failed.` });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
       break;
     }else{
@@ -41,22 +41,23 @@ export async function sql1(disp,getSt,poNumber,item,poCategory){
 
   if(isDone()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQLUpdate1.sql1(disp,getSt,poNumber,item,poCategory): Completed`)
+      console.log(`PORTSQLCurrentPO.sql1(): Completed`)
     }
 
   }else{
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQLUpdate1.sql1(disp,getSt,poNumber,item,poCategory): Did NOT Complete`)
+      console.log(`PORTSQLCurrentPO.sql1(): Did NOT Complete`)
     }
   }
 
   if(didFail()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQLUpdate1.sql1(disp,getSt,poNumber,item,poCategory): Failed`)
+      console.log(`PORTSQLCurrentPO.sql1(): Failed`)
     }
+
   }else{
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQLUpdate1.sql1(disp,getSt,poNumber,item,poCategory): Suceeded`)
+      console.log(`PORTSQLCurrentPO.sql1(): Suceeded`)
     }
   }
 
@@ -66,6 +67,7 @@ function init(){
   sql1Done=false;
   sql1Cnt=0;
   sql1Failed=false;
+  contPORT=false;
 }
 
 export function isDone(){
@@ -89,62 +91,80 @@ export function didFail(){
     return false;
   }
 }
+export function continuePORT(){
+  if(true==contPORT)
+  {
+    return true;
+  } else{
+    return false;
+  }
+}
 
 
-function execSQL1(disp,poNumber,item,poCategory){
-  var dispatch=disp;
+
+function execSQL1(disp){
+  var dispatch = disp;
   if ('development'==process.env.NODE_ENV) {
-    console.log(`PORTSQLUpdate1.execSQL1(poNumber,item,poCategory) top=>${sql1Cnt}`);
+    console.log(`PORTSQLCurrentPO.execSQL1() top=>${sql1Cnt}`);
   }
 
 
-  var connection = new sql.Connection(CONNECT.cribDefTO, function(err) {
+  var connection = new sql.Connection(CONNECT.m2mDefTO, function(err) {
     // ... error checks
     if(null==err){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`PORTSQLUpdate1.execSQL1(poNumber,item,poCategory) Connection Sucess`);
+        console.log(`PORTSQLCurrentPO.execSQL1() Connection Sucess`);
       }
 
-      
-      let statement;
-      if (prod===true) {
-        statement = `
-          update PODETAIL
-          set UDF_POCATEGORY = ${poCategory}
-          where 
-          PONumber = ${poNumber} and Item = ${item}
-        `;
+      let qry;
+
+      if (MISC.PROD===true) {
+        qry = `
+          SELECT rtrim(fcnumber) fcnumber
+          FROM sysequ 
+          WHERE fcclass = 'POMAST.STD'
+          `;
       }else{
-        statement = `
-          update btPODETAIL
-          set UDF_POCATEGORY = ${poCategory}
-          where 
-          PONumber = ${poNumber} and Item = ${item}
-        `;
+        qry = `
+          SELECT rtrim(fcnumber) fcnumber
+          FROM btsysequ 
+          WHERE fcclass = 'POMAST.STD'
+          `;
       }
 
 
       var request = new sql.Request(connection); 
-      request.query(
-      statement, function(err, recordset) {
+      request.query(qry, function(err, recordset) {
+        // ... error checks
         if(null==err){
-          // ... error checks
           if ('development'==process.env.NODE_ENV) {
-            console.log(`PORTSQLUpdate1.execSQL1(poNumber,item,poCategory) Sucess`);
+            console.log(`PORTSQLCurrentPO.execSQL1() Sucess`);
           }
-
-         // console.dir(recordset);
+          if(recordset.length!==0){
+            if ('development'==process.env.NODE_ENV) {
+              console.log("PORTSQLCurrentPO.execSQL1() had records.");
+              console.dir(`${recordset[0].fcnumber}`);
+            }
+            dispatch({ type:PORTACTION.SET_CURRENT_PO, currentPO:recordset[0].fcnumber });
+            contPORT=true;
+          }else{
+            if ('development'==process.env.NODE_ENV) {
+              console.log(`PORTSQLCurrentPO.execSQL1() err: Could not retrieve fcnumber.` );
+            }
+            dispatch({ type:PORTACTION.SET_REASON, reason:'Could not retrieve fcnumber.' });
+            dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+            sql1Failed=true;
+          }
           sql1Done=true;
         }else {
           if(++sql1Cnt<ATTEMPTS) {
             if ('development'==process.env.NODE_ENV) {
-              console.log(`PORTSQLUpdate1.execSQL1(poNumber,item,poCategory).query:  ${err.message}` );
+              console.log(`PORTSQLCurrentPO.execSQL1().query:  ${err.message}` );
               console.log(`sql1Cnt = ${sql1Cnt}`);
             }
-
           }else{
             if ('development'==process.env.NODE_ENV) {
-              console.log(`PORTSQLUpdate1.execSQL1(poNumber,item,poCategory) err:  ${err.message}` );
+              console.log(`PORTSQLCurrentPO.execSQL1() err:  ${err.message}` );
             }
             dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
             dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
@@ -154,14 +174,13 @@ function execSQL1(disp,poNumber,item,poCategory){
       });
     }else{
       if(++sql1Cnt<ATTEMPTS) {
-
         if ('development'==process.env.NODE_ENV) {
-          console.log(`PORTSQLUpdate1.Connection: ${err.message}` );
+          console.log(`PORTSQLCurrentPO.Connection: ${err.message}` );
           console.log(`sql1Cnt = ${sql1Cnt}`);
         }
       }else{
         if ('development'==process.env.NODE_ENV) {
-          console.log(`PORTSQLUpdate1.Connection: ${err.message}` );
+          console.log(`PORTSQLCurrentPO.Connection: ${err.message}` );
         }
         dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
@@ -173,13 +192,13 @@ function execSQL1(disp,poNumber,item,poCategory){
   connection.on('error', function(err) {
     if(++sql1Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
-        console.log(`PORTSQLUpdate1.connection.on(error): ${err.message}` );
+        console.log(`PORTSQLCurrentPO.connection.on(error): ${err.message}` );
         console.log(`sql1Cnt = ${sql1Cnt}`);
       }
 
     }else{
       if ('development'==process.env.NODE_ENV) {
-        console.log(`PORTSQLUpdate1.connection.on(error): ${err.message}` );
+        console.log(`PORTSQLCurrentPO.connection.on(error): ${err.message}` );
       }
       dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });

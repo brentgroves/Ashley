@@ -10,7 +10,8 @@ var prod=false;
 var portQuery1Done=false;
 var portQuery1Cnt=0;
 var portQueriesFailed=false;
-export var m2mVendors;
+const ATTEMPTS=1;
+
 
 export async function portM2mQueries(disp){
   var dispatch=disp;
@@ -104,7 +105,7 @@ function portQuery1(disp){
             //m2mVendors=recordset;
             portQuery1Done=true;
           }else{
-            if(++portQuery1Cnt<3) {
+            if(++portQuery1Cnt<ATTEMPTS) {
               if ('development'==process.env.NODE_ENV) {
                 console.log(`portQuery1.query:  ${err.message}` );
                 console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
@@ -118,7 +119,7 @@ function portQuery1(disp){
         }
       );
     }else{
-      if(++portQuery1Cnt<3) {
+      if(++portQuery1Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
           console.log(`portQuery1.Connection:  ${err.message}` );
           console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
@@ -132,7 +133,7 @@ function portQuery1(disp){
   });
   
   m2mConnection.on('error', function(err) {
-    if(++portQuery1Cnt<3) {
+    if(++portQuery1Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`m2mConnection.on('error', function(err):  ${err.message}` );
         console.log(`portQuery1Cnt = ${portQuery1Cnt}`);

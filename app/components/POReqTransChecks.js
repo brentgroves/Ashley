@@ -32,7 +32,7 @@ export default class POReqTransChecks extends Component {
   const  chk ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '10px 30px 10px 10px' };
   const  chk1 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   };
 
-  var check1Button,check2Button;
+  var check1Button,check2Button,check3Button;
   switch (this.props.POReqTrans.chk1) {
     case PORTCHK.SUCCESS:
       check1Button = 
@@ -83,6 +83,31 @@ export default class POReqTransChecks extends Component {
 
   }
 
+  switch (this.props.POReqTrans.chk3) {
+    case PORTCHK.SUCCESS:
+        check3Button = 
+          <Row style={chk} >
+            <Col  xs={10}>Made2Manage Vendor Check</Col>
+            <Col  xs={2}><Button bsStyle="success"><Glyphicon glyph="ok" /></Button></Col>
+          </Row>
+          break; 
+    case PORTCHK.FAILURE:
+      check3Button = 
+        <Row style={chk} >
+          <Col  xs={10}>Made2Manage Vendor Check</Col>
+          <Col  xs={2}><Button bsStyle="danger"><Glyphicon glyph="remove" /></Button></Col>
+        </Row>
+        break;
+    default: 
+      check3Button = 
+        <Row style={chk} >
+          <Col  xs={10}>Made2Manage Vendor Check</Col>
+          <Col  xs={2}><Button bsStyle="info"><Glyphicon glyph="time" /></Button></Col>
+        </Row>;
+      break;
+
+  }
+
   const jbk ={backgroundColor: 'black' };
     return (
       <div>
@@ -94,6 +119,11 @@ export default class POReqTransChecks extends Component {
         <Row >
           <Col xs={11}>
               {check2Button}
+          </Col>
+        </Row>
+        <Row >
+          <Col xs={11}>
+              {check3Button}
           </Col>
         </Row>
       </div>
