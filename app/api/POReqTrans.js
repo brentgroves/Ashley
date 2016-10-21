@@ -15,6 +15,8 @@ import * as UPDATE1 from "./PORTSQLUpdate1.js"
 import * as UPDATE2 from "./PORTSQLUpdate2.js"
 import * as UPDATE3 from "./PORTSQLUpdate3.js"
 import * as CURRENTPO from "./PORTSQLCurrentPO.js"
+import * as PORTSQL from "./PORTSQL.js"
+
 import * as MISC from "./Misc.js"
 import * as CONNECT from "./PORTSQLConst.js"
 
@@ -423,9 +425,79 @@ export default async function POReqTrans(disp,getSt,prime) {
     return;
   }
 
+/////////////////////////////////
 
   CM.portCribQueries(dispatch);
-  M2M.portM2mQueries(dispatch);
+//  M2M.portM2mQueries(dispatch);
+
+  cnt=0;
+
+  while(!CM.arePortQueriesDone())
+  {
+    if(++cnt>15 || CM.didPortQueriesFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+
+  if(continueProcess){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`Async Crib queries are complete.`);
+    }
+
+    CURRENTPO.sql1(dispatch,getState);
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`Async Crib queries FAILED.`);
+    }
+  }
+
+
+  cnt=0;
+
+  while(continueProcess && !CURRENTPO.isDone()){
+    if(++cnt>15 || CURRENTPO.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueProcess && CURRENTPO.continuePORT()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`currentPO complete continue PORT process.`);
+    }
+    PORTSQL.sql1(dispatch,getState);
+  }
+
+// Transfer requested PO(s) to Made2Manage 
+  cnt=0;
+
+  while(continueProcess && !PORTSQL.isDone()){
+    if(++cnt>15 || PORTSQL.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueProcess && PORTSQL.continuePORT()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQL complete continue PORT process.`);
+    }
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+  }
+  dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+  return;
+  ///////////////////////////////////////////////
+
+  CM.portCribQueries(dispatch);
+ // M2M.portM2mQueries(dispatch);
 
   cnt=0;
 
@@ -451,6 +523,7 @@ export default async function POReqTrans(disp,getSt,prime) {
       console.log(`Async Crib & M2m queries FAILED.`);
     }
   }
+
 
 // CHECK#1
   cnt=0;
@@ -533,8 +606,30 @@ export default async function POReqTrans(disp,getSt,prime) {
     if ('development'==process.env.NODE_ENV) {
       console.log(`currentPO complete continue PORT process.`);
     }
+    PORTSQL.sql1(dispatch,getState);
+
+//    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+  }
+
+// Transfer requested PO(s) to Made2Manage 
+  cnt=0;
+
+  while(continueProcess && !PORTSQL.isDone()){
+    if(++cnt>15 || PORTSQL.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueProcess && PORTSQL.continuePORT()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQL complete continue PORT process.`);
+    }
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
   }
+
 } // poUpdate
 
 

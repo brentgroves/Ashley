@@ -141,11 +141,13 @@ function execSQL1(disp){
             console.log(`PORTSQLCurrentPO.execSQL1() Sucess`);
           }
           if(recordset.length!==0){
+            let currentPO=parseInt(recordset[0].fcnumber);
             if ('development'==process.env.NODE_ENV) {
               console.log("PORTSQLCurrentPO.execSQL1() had records.");
-              console.dir(`${recordset[0].fcnumber}`);
+              console.dir(recordset[0].fcnumber);
+              console.log(`currentPO=>${currentPO}`);
             }
-            dispatch({ type:PORTACTION.SET_CURRENT_PO, currentPO:recordset[0].fcnumber });
+            dispatch({ type:PORTACTION.SET_CURRENT_PO, currentPO:currentPO});
             contPORT=true;
           }else{
             if ('development'==process.env.NODE_ENV) {

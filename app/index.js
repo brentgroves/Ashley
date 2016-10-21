@@ -17,7 +17,7 @@ const initialState = {
 		chk2:PORTCHK.UNKNOWN,
 		chk3:PORTCHK.UNKNOWN,
 		chk4:PORTCHK.UNKNOWN,
-		currentPO:'',
+		currentPO:0,
 		goButton:'', 
 		m2mVendors:[{}],
 		m2mVendorSelect:[{}],

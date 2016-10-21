@@ -16,7 +16,7 @@ export default function reducer( state = {}, action) {
           chk2: {$set: 'unknown'},
           chk3: {$set: 'unknown'},
           chk4: {$set: 'unknown'},
-          currentPO:{$set:''},
+          currentPO:{$set:0},
           goButton:{$set:''},
           m2mVendors:{$set:[{}]},
           m2mVendorSelect:{$set:[{}]},

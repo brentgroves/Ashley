@@ -81,7 +81,7 @@ function portQuery1(disp){
       request.query(
       // Remove duplicate records but a fcompany may still be in here twice.
       `
-          select distinct fvendno,
+          select distinct fvendno,rtrim(av.fccompany) fccompany,
                 rtrim(av.fcompany)  + ' - ' + av.fvendno
                 as vendorSelect
           FROM apvend av
