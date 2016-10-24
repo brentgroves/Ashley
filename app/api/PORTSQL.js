@@ -243,11 +243,8 @@ INSERT INTO [dbo].[btpomast]
            ,[fmpaytype]
            ,[fmshstreet]
            ,[fmsnstreet]
-           ,[fmusrmemo1]
            ,[fpoclosing]
-           ,[freasoncng]
            ,[fndbrmod]
-           ,[flpdate])
      VALUES
            ('${po.fccompany}'
            ,'SELF'
@@ -301,11 +298,19 @@ INSERT INTO [dbo].[btpomast]
            ,'O'
            ,'1563 E. State Road 8'
            ,'${po.fmstreet}'
-           ,<fmusrmemo1, text,>
-           ,<fpoclosing, text,>
-           ,<freasoncng, text,>
-           ,<fndbrmod, int,>
-           ,<flpdate, datetime,>)
+           ,"Please reference our purchase order number on all correspondence.  " _
+   & "Notification of changes regarding quantities to be shipped and changes in the delivery schedule are required." + _
+   Chr(13) + Chr(13) + _
+   "PO APPROVALS:" + Chr(13) + Chr(13) + _
+   "Requr. _______________________________________" + Chr(13) + _
+   "Dept. Head ___________________________________" + Chr(13) + Chr(13) + _
+   "G.M. Only: All Items Over $500.00" + Chr(13) + _
+   "G.M ________________________________________" + Chr(13) + _
+   "VP/Group Controller. Only: All Assests/CER and ER Over $10,000.00" + Chr(13) + _
+   "VP/Group Controller _____________________________________" + Chr(13) + _
+   "Pres. Only: All Assets/CER/ER and/or PO’s Over $10,000.00" + Chr(13) + _
+   "President _____________________________________"
+           ,0
 `;
             console.log(`insert => ${insert}`);
 
