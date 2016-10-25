@@ -7,7 +7,9 @@ export default function reducer( state = {}, action) {
   switch (action.type) {
     case PORTACTION.INIT_PORT:
     {
-      console.log('INIT_PORT');
+      if ('development'==process.env.NODE_ENV) {
+        console.log('INIT_PORT');
+      }
       var newData = update(state, 
         { 
           catRecs:{$set: [{}]},  
@@ -20,9 +22,11 @@ export default function reducer( state = {}, action) {
           goButton:{$set:''},
           m2mVendors:{$set:[{}]},
           m2mVendorSelect:{$set:[{}]},
+          nextPO:{$set:0},
           noCatList:{$set: [{}]},
           noCribVen:{$set: [{}]},  
           noM2mVen:{$set: [{}]},  
+          poCount:{$set:0},
           state:{$set: PORTSTATE.NOT_PRIMED},
           reason:{$set:''},
           vendors:{$set:[{}]},
@@ -32,7 +36,9 @@ export default function reducer( state = {}, action) {
     }
     case PORTACTION.SET_CHECK1:
     {
-      console.log(`set check1`);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set check1`);
+      }
       var newData = update(state, 
         { 
           chk1: {$set: action.chk1}
@@ -42,7 +48,9 @@ export default function reducer( state = {}, action) {
     }
     case PORTACTION.SET_CHECK2:
     {
-      console.log(`set check2`);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set check2`);
+      }
       var newData = update(state, 
         { 
           chk2: {$set: action.chk2}
@@ -52,7 +60,9 @@ export default function reducer( state = {}, action) {
     }
     case PORTACTION.SET_CHECK3:
     {
-      console.log(`set check3`);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set check3`);
+      }
       var newData = update(state, 
         { 
           chk3: {$set: action.chk3}
@@ -60,9 +70,23 @@ export default function reducer( state = {}, action) {
       return newData;
 
     }
+    case PORTACTION.SET_CHECK4:
+    {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set check4`);
+      }
+      var newData = update(state, 
+        { 
+          chk4: {$set: action.chk4}
+        });
+      return newData;
+
+    }
     case PORTACTION.SET_CURRENT_PO:
     {
-      console.log(`set currentPO`);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set currentPO`);
+      }
       var newData = update(state, 
         { 
           currentPO: {$set: action.currentPO}
@@ -86,9 +110,23 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {m2mVendorSelect: {$set: action.m2mVendorSelect}});
       return newData;
     }
+    case PORTACTION.SET_NEXT_PO:
+    {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set nextPO`);
+      }
+      var newData = update(state, 
+        { 
+          nextPO: {$set: action.nextPO}
+        });
+      return newData;
+
+    }
     case PORTACTION.SET_NO_CAT_LIST:
     {
-      console.log('update noCatList');
+      if ('development'==process.env.NODE_ENV) {
+        console.log('update noCatList');
+      }
       var newData = update(state, 
         { 
           noCatList: {$set: action.noCatList}
@@ -97,7 +135,9 @@ export default function reducer( state = {}, action) {
     }
     case PORTACTION.SET_NO_CRIB_VEN:
     {
-      console.log('updating noCribVen');
+      if ('development'==process.env.NODE_ENV) {
+        console.log('updating noCribVen');
+      }
       var newData = update(state, 
         { 
           noCribVen: {$set: action.noCribVen}
@@ -106,7 +146,9 @@ export default function reducer( state = {}, action) {
     }
     case PORTACTION.SET_NO_M2M_VEN:
     {
-      console.log('updating noM2mVen');
+      if ('development'==process.env.NODE_ENV) {
+        console.log('updating noM2mVen');
+      }
       var newData = update(state, 
         { 
           noM2mVen: {$set: action.noM2mVen}
@@ -115,7 +157,9 @@ export default function reducer( state = {}, action) {
     }
     case PORTACTION.SET_PO_CATEGORIES:
     {
-      console.log('update PO Categories list');
+      if ('development'==process.env.NODE_ENV) {
+        console.log('update PO Categories list');
+      }
       var newData = update(state, 
         { catTypes: {$set: action.catTypes}
         });
@@ -124,15 +168,29 @@ export default function reducer( state = {}, action) {
     }
     case PORTACTION.SET_PO_CAT_RECORDS:
     {
-      console.log('update PO Cat Records list');
+      if ('development'==process.env.NODE_ENV) {
+        console.log('update PO Cat Records list');
+      }
       var newData = update(state, 
         { catRecs: {$set: action.catRecs}
         });
       return newData;
     }
+    case PORTACTION.SET_PO_COUNT:
+    {
+      console.log(`set PO Count`);
+      var newData = update(state, 
+        { 
+          poCount: {$set: action.poCount}
+        });
+      return newData;
+
+    }
     case PORTACTION.SET_PRIMED:
     {
-      console.log(`set primed`);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set primed`);
+      }
       var newData = update(state, 
         { 
           primed: {$set: action.primed}
@@ -142,7 +200,9 @@ export default function reducer( state = {}, action) {
     }
     case PORTACTION.SET_REASON:
     {
-      console.dir(action.reason);
+      if ('development'==process.env.NODE_ENV) {
+        console.dir(action.reason);
+      }
       var newData = update(state, {reason: {$set: action.reason}});
       return newData;
     }

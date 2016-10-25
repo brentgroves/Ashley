@@ -8,7 +8,7 @@ import PORTGrid from '../containers/PORTGrid';
 import {linuxSQLPrime} from '../api/POReqTrans';
 import * as PORTSTATE from "../actions/PORTState.js"
 import { Grid, Row, Col, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
-import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse } from 'react-bootstrap/lib/Navbar'
+import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse, Text as NavbarText } from 'react-bootstrap/lib/Navbar'
 /*
 .jumbotron {
     background-color:black !important; 
@@ -167,7 +167,7 @@ export default class POReqTrans extends Component {
           <Jumbotron  >
             <h1 style={{textAlign: 'center'}}>SUCCESS!</h1>
             <div style={{textAlign: 'center'}}>
-            <h3 >All of the requested PO records have been transfered 
+            <h3 >All of the requested PO(s) have been transfered 
             to Made2Manage successfully.</h3></div>
             <br/>
           </Jumbotron>
@@ -260,7 +260,7 @@ export default class POReqTrans extends Component {
       </Row>
     </div>
   }
-
+  var status = 'status';
   if(
       (PORTSTATE.PRIMED==this.props.POReqTrans.state) ||  
       (PORTSTATE.SUCCESS==this.props.POReqTrans.state)   
@@ -270,12 +270,16 @@ export default class POReqTrans extends Component {
       <Navbar inverse fixedBottom>
         <NavbarHeader>
             <NavbarBrand >
-              <IndexLink to="/" onClick={this.props.cancelApp} >
-                  <span  >Home</span>
+              <IndexLink to="/" onClick={this.props.cancelApp} >Home
               </IndexLink>
             </NavbarBrand>
+
           <NavbarToggle />
         </NavbarHeader>
+    <Nav>
+<NavbarText><span className="my-header-class">Status</span></NavbarText>
+    </Nav>
+
       </Navbar>
   }
 

@@ -18,6 +18,13 @@ export function getPOCategories() {
  };
 }
 
+export function getPOCount() {
+  return {
+    type: PORTACTION.GET_PO_COUNT
+  };
+}
+
+
 export function initPORT() {
   return {
     type: PORTACTION.INIT_PORT
@@ -38,24 +45,38 @@ export function primePORT(updateState) {
   }
 }
 
-export function setCheck1(setMe) {
+export function setCheck1(chk1) {
   return {
     type: SET_CHECK1,
-    chk1: setMe
+    chk1: chk1
   };
 }
 
-export function setCheck2(setMe) {
+export function setCheck2(chk2) {
   return {
     type: PORTACTION.SET_CHECK2,
-    chk2: setMe
+    chk2: chk2
   };
 }
 
-export function setCheck3(setMe) {
+export function setCheck3(chk3) {
   return {
     type: PORTACTION.SET_CHECK3,
-    chk3: setMe
+    chk3: chk3
+  };
+}
+
+export function setCheck4(chk4) {
+  return {
+    type: PORTACTION.SET_CHECK4,
+    chk4: chk4
+  };
+}
+
+export function setCurrentPO(currentPO) {
+  return {
+    type: PORTACTION.SET_CURRENT_PO,
+    currentPO: currentPO
   };
 }
 
@@ -80,10 +101,11 @@ export function setM2mVendorSelect(m2mVendorSelect) {
   };
 }
 
-export function setCurrentPO(nextPO) {
+
+export function setNextPO(nextPO) {
   return {
-    type: PORTACTION.SET_CURRENT_PO,
-    currentPO: currentPO
+    type: PORTACTION.SET_NEXT_PO,
+    nextPO: nextPO
   };
 }
 
@@ -112,6 +134,13 @@ export function setPOCategories(catTypes) {
   return {
     type: PORTACTION.SET_PO_CATEGORIES,
     catTypes: catTypes
+  };
+}
+
+export function setPOCount(poCount) {
+  return {
+    type: PORTACTION.SET_PO_COUNT,
+    poCount: poCount
   };
 }
 
@@ -181,7 +210,6 @@ export function updateChk3(vendorNumber,newM2mVendor,startPORT) {
     updateCheck3(disp,getSt,vendorNumber,newM2mVendor,startPORT);
   };
 }
-
 
 
 

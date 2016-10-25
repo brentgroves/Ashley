@@ -5,23 +5,27 @@ import * as PORTCHK from "../actions/PORTChkConst.js"
 import * as CONNECT from "./PORTSQLConst.js"
 import * as MISC from "./Misc.js"
 
-var prod=false;
 
-var portQuery1Done=false;
-var portQuery1Cnt=0;
-var portQueriesFailed=false;
+var sql1Done=false;
+var sql1Cnt=0;
+var sql1Failed=false;
+var contPORT=false;
 const ATTEMPTS=1;
 
 
-export async function portM2mQueries(disp){
-  var dispatch=disp;
-  var cnt=0;
-  portQueriesInit();
-  portQuery1(dispatch);
 
-  while(!arePortQueriesDone() && !portQueriesFailed){
+export async function sql1(disp,getSt){
+  var dispatch=disp;
+  var getState = getSt;
+  var state = getState(); 
+
+  var cnt=0;
+  init();
+  execSQL1(dispatch);
+
+  while(!isDone() && !didFail()){
     if(++cnt>15){
-      dispatch({ type:PORTACTION.SET_REASON, reason:`portM2mQueries(disp) Cannot Connection` });
+      dispatch({ type:PORTACTION.SET_REASON, reason:`PORTSQLM2M.sql1() Timed Out or Failed.` });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
       break;
     }else{
@@ -29,23 +33,41 @@ export async function portM2mQueries(disp){
     }
   }
 
-  if(arePortQueriesDone()){
+  if(isDone()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`portM2mQueries() Sucess`)
+      console.log(`PORTSQLM2M.sql1(): Completed`)
+    }
+
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLM2M.sql1(): Did NOT Complete`)
     }
   }
 
+  if(didFail()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLM2M.sql1(): Failed`)
+    }
+
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLM2M.sql1(): Suceeded`)
+    }
+  }
+
+
 }
 
-export function portQueriesInit(){
-  portQuery1Done=false;
-  portQuery1Cnt=0;
-  portQueriesFailed=false;
+function init(){
+  sql1Done=false; 
+  sql1Cnt=0;  
+  sql1Failed=false;
+  contPORT=false;
 }
 
-export function arePortQueriesDone(){
+export function isDone(){
   if(
-    (true==portQuery1Done) 
+    (true==sql1Done) 
     )
   {
     return true;
@@ -54,8 +76,18 @@ export function arePortQueriesDone(){
   }
 }
 
-export function didPortQueriesFail(){
-  if(true == portQueriesFailed) 
+export function didFail(){
+  if(
+    (true==sql1Failed) 
+    )
+  {
+    return true;
+  } else{
+    return false;
+  }
+}
+export function continuePORT(){
+  if(true==contPORT)
   {
     return true;
   } else{
@@ -63,9 +95,10 @@ export function didPortQueriesFail(){
   }
 }
 
-function portQuery1(disp){
+// DONE IN PORTSQLCM NOW!!!
+function execSQL1(disp){
   if ('development'==process.env.NODE_ENV) {
-    console.log(`portQuery1(disp) top=>${portQuery1Cnt}`);
+    console.log(`PORTSQLM2M.execSQL1() top=>${sql1Cnt}`);
   }
   var dispatch=disp;
 
@@ -73,13 +106,12 @@ function portQuery1(disp){
     // ... error checks
     if(null==err){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`portQuery1(disp) Connection Sucess`);
+        console.log(`PORTSQLM2M.execSQL1() Connection Sucess`);
       }
 
       // Query
       var request = new sql.Request(m2mConnection); 
       request.query(
-      // Remove duplicate records but a fcompany may still be in here twice.
       `
           select distinct fvendno,rtrim(av.fccompany) fccompany,
                 rtrim(av.fcompany)  + ' - ' + av.fvendno
@@ -97,51 +129,51 @@ function portQuery1(disp){
               vendorSelect.push(vendor.vendorSelect);
             });
             if ('development'==process.env.NODE_ENV) {
-              console.log(`portQuery1(disp) Query Sucess`);
+              console.log(`PORTSQLM2M.execSQL1() Query Sucess`);
               console.dir(recordset);
             }
             dispatch({ type:PORTACTION.SET_M2M_VENDOR_SELECT, m2mVendorSelect:vendorSelect });
             dispatch({ type:PORTACTION.SET_M2M_VENDORS, m2mVendors:recordset });
-            //m2mVendors=recordset;
-            portQuery1Done=true;
+            sql1Done=true;
+            contPORT=true;
           }else{
-            if(++portQuery1Cnt<ATTEMPTS) {
+            if(++sql1Cnt<ATTEMPTS) {
               if ('development'==process.env.NODE_ENV) {
-                console.log(`portQuery1.query:  ${err.message}` );
-                console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
+                console.log(`PORTSQLM2M.execSQL1().query:  ${err.message}` );
+                console.log(`sql1Cnt = ${sql1Cnt}`);
               }
             }else{
               dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-              portQueriesFailed=true;
+              sql1Failed=true;
             }
           }
         }
       );
     }else{
-      if(++portQuery1Cnt<ATTEMPTS) {
+      if(++sql1Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
-          console.log(`portQuery1.Connection:  ${err.message}` );
-          console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
+          console.log(`PORTSQLM2M.execSQL1().Connection:  ${err.message}` );
+          console.log(`sql1Cnt = ${sql1Cnt}`);
         }
       }else{
         dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-        portQueriesFailed=true;
+        sql1Failed=true;
       }
     }
   });
   
   m2mConnection.on('error', function(err) {
-    if(++portQuery1Cnt<ATTEMPTS) {
+    if(++sql1Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
-        console.log(`m2mConnection.on('error', function(err):  ${err.message}` );
-        console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
+        console.log(`PORTSQLM2M.execSQL1().m2mConnection.on('error', function(err):  ${err.message}` );
+        console.log(`sql1Cnt = ${sql1Cnt}`);
       }
     }else{
       dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-      portQueriesFailed=true;
+      sql1Failed=true;
     }
   });
 }

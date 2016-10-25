@@ -14,7 +14,9 @@ import * as CHECK3 from "./PORTSQLCheck3.js"
 import * as UPDATE1 from "./PORTSQLUpdate1.js"
 import * as UPDATE2 from "./PORTSQLUpdate2.js"
 import * as UPDATE3 from "./PORTSQLUpdate3.js"
-import * as CURRENTPO from "./PORTSQLCurrentPO.js"
+import * as SETCURRENTPO from "./PORTSQLSetCurrentPO.js"
+import * as PORTSQLSETPOCOUNT from "./PORTSQLSetPOCount.js"
+import * as PORTSQLSETNEXTPO from "./PORTSQLSetNextPO.js"
 import * as PORTSQL from "./PORTSQL.js"
 
 import * as MISC from "./Misc.js"
@@ -272,13 +274,7 @@ export async function updateCheck1(disp,getSt,poNumber,item,poCategory,startPort
 
   if(UPDATE1.isDone() && !UPDATE1.didFail()){
     startPort(false);
-/*    dispatch((dispatch,getState) => {
-        var disp = dispatch;
-        var getSt = getState;
-        POReqTrans(disp,getSt);
-      }
-    );
-*/  }
+  }
 } // updateCheck1
 
 export async function updateCheck2(disp,getSt,poNumber,vendorNumber,Address1,Address2,Address3,Address4,startPort) {
@@ -419,91 +415,23 @@ export default async function POReqTrans(disp,getSt,prime) {
     }
   }
 
-  if(!isPrimed()){
-    // Exit if Not Primed
-    continueProcess=false;
-    return;
-  }
-
-/////////////////////////////////
-
-  CM.portCribQueries(dispatch);
-//  M2M.portM2mQueries(dispatch);
-
-  cnt=0;
-
-  while(!CM.arePortQueriesDone())
-  {
-    if(++cnt>15 || CM.didPortQueriesFail()){
-      continueProcess=false;
-      break;
-    }else{
-      await MISC.sleep(2000);
-    }
-  }
-
-
-  if(continueProcess){
+  if(isPrimed()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`Async Crib queries are complete.`);
+      console.log(`primeDB Success continue PO Request Transfer.`);
     }
-
-    CURRENTPO.sql1(dispatch,getState);
+    CM.sql1(dispatch,getState);
   }else{
+    continueProcess=false;
     if ('development'==process.env.NODE_ENV) {
-      console.log(`Async Crib queries FAILED.`);
+      console.log(`primeDB FAILED quit PO Request Transfer.`);
     }
   }
-
 
   cnt=0;
 
-  while(continueProcess && !CURRENTPO.isDone()){
-    if(++cnt>15 || CURRENTPO.didFail()){
-      continueProcess=false;
-      break;
-    }else{
-      await MISC.sleep(2000);
-    }
-  }
-
-  if(continueProcess && CURRENTPO.continuePORT()){
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`currentPO complete continue PORT process.`);
-    }
-    PORTSQL.sql1(dispatch,getState);
-  }
-
-// Transfer requested PO(s) to Made2Manage 
-  cnt=0;
-
-  while(continueProcess && !PORTSQL.isDone()){
-    if(++cnt>15 || PORTSQL.didFail()){
-      continueProcess=false;
-      break;
-    }else{
-      await MISC.sleep(2000);
-    }
-  }
-
-  if(continueProcess && PORTSQL.continuePORT()){
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQL complete continue PORT process.`);
-    }
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
-  }
-  dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
-  return;
-  ///////////////////////////////////////////////
-
-  CM.portCribQueries(dispatch);
- // M2M.portM2mQueries(dispatch);
-
-  cnt=0;
-
-  while(!CM.arePortQueriesDone() || !M2M.arePortQueriesDone())
+  while(continueProcess&&!CM.isDone())
   {
-    if(++cnt>15 || CM.didPortQueriesFail() || M2M.didPortQueriesFail()){
+    if(++cnt>15 || CM.didFail()){
       continueProcess=false;
       break;
     }else{
@@ -512,19 +440,42 @@ export default async function POReqTrans(disp,getSt,prime) {
   }
 
 
-  if(continueProcess){
+  if(continueProcess && CM.continuePORT()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`Async Crib & M2m queries are complete.`);
+      console.log(`CM.sql1() complete continue process.`);
     }
+//    M2M.sql1(dispatch,getState);
+    CHECK1.portCheck1(dispatch)
+  }else{
+    continueProcess=false;
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`CM.sql1() timed out or FAILED DONT continue process.`);
+    }
+  }
+/*
+   cnt=0;
 
+  while(continueProcess && !M2M.isDone())
+  {
+    if(++cnt>15 || M2M.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueProcess && M2M.continuePORT()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`M2M.sql1() complete continue process.`);
+    }
     CHECK1.portCheck1(dispatch)
   }else{
     if ('development'==process.env.NODE_ENV) {
-      console.log(`Async Crib & M2m queries FAILED.`);
+      console.log(`M2m.sql1() timed out or FAILED DONT continue process.`);
     }
   }
-
-
+*/
 // CHECK#1
   cnt=0;
 
@@ -544,6 +495,9 @@ export default async function POReqTrans(disp,getSt,prime) {
     CHECK2.portCheck2(dispatch)
   }else{
     continueProcess=false;
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`portCheck1 FAILED stop Checks.`);
+    }
   }
 
 // CHECK#2
@@ -566,6 +520,9 @@ export default async function POReqTrans(disp,getSt,prime) {
     CHECK3.portCheck(dispatch,getState)
   }else{
     continueProcess=false;
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`portCheck2 FAILED stop Checks.`);
+    }
   }
 
 
@@ -585,16 +542,18 @@ export default async function POReqTrans(disp,getSt,prime) {
     if ('development'==process.env.NODE_ENV) {
       console.log(`portCheck3 complete continue Checks.`);
     }
-    CURRENTPO.sql1(dispatch,getState);
+    SETCURRENTPO.sql1(dispatch,getState);
   }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`portCheck3 FAILED stop Checks.`);
+    }
     continueProcess=false;
   }
 
-// Retrieve Current PO Number
-  cnt=0;
+ cnt=0;
 
-  while(continueProcess && !CURRENTPO.isDone()){
-    if(++cnt>15 || CURRENTPO.didFail()){
+  while(continueProcess && !SETCURRENTPO.isDone()){
+    if(++cnt>15 || SETCURRENTPO.didFail()){
       continueProcess=false;
       break;
     }else{
@@ -602,13 +561,69 @@ export default async function POReqTrans(disp,getSt,prime) {
     }
   }
 
-  if(continueProcess && CURRENTPO.continuePORT()){
+  if(continueProcess && SETCURRENTPO.continuePORT()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`currentPO complete continue PORT process.`);
+      console.log(`setCurrentPO complete continue PORT process.`);
+    }
+    PORTSQLSETPOCOUNT.sql1(dispatch,getState);
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`setCurrentPO FAILED stop PORT process.`);
+    }
+    continueProcess=false;
+  }
+
+
+  cnt=0;
+
+  while(continueProcess && !PORTSQLSETPOCOUNT.isDone()){
+    if(++cnt>15 || PORTSQLSETPOCOUNT.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueProcess && PORTSQLSETPOCOUNT.continuePORT()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`setPOCount complete continue PORT process.`);
+    }
+    // DO THIS BEFORE WRITING THE PO RECORDS!!!
+    // IF THE PO RECORD WRITES FAIL THERE MAY BE A GAP
+    // IN THE PO NUMBERS BUT IF WE WRITE THE PO RECORDS
+    // AND THE CURRENTPO IS NOT UPDATED THE SAME PO(S) WILL 
+    // BE ASSIGNED TO THE NEXT PO(S) GENERATED.
+    PORTSQLSETNEXTPO.sql1(dispatch,getState);
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`setPOCount FAILED stop PORT process.`);
+    }
+    continueProcess=false;
+  }
+
+  cnt=0;
+
+  while(continueProcess && !PORTSQLSETNEXTPO.isDone()){
+    if(++cnt>15 ||  PORTSQLSETNEXTPO.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueProcess &&  PORTSQLSETNEXTPO.continuePORT()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`setNextPO complete continue PORT process.`);
     }
     PORTSQL.sql1(dispatch,getState);
 
-//    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`setNextPO FAILED stop PORT process.`);
+    }
+    continueProcess=false;
   }
 
 // Transfer requested PO(s) to Made2Manage 
@@ -625,10 +640,17 @@ export default async function POReqTrans(disp,getSt,prime) {
 
   if(continueProcess && PORTSQL.continuePORT()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQL complete continue PORT process.`);
+      console.log(`PORTSQL complete PORT process IS DONE.`);
     }
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQL FAILED stop PORT process.`);
+    }
+    continueProcess=false;
   }
+
+  return;
 
 } // poUpdate
 

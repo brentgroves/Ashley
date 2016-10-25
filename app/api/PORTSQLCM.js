@@ -6,32 +6,37 @@ import * as PORTCHK from "../actions/PORTChkConst.js"
 import * as CONNECT from "./PORTSQLConst.js"
 import * as MISC from "./Misc.js"
 
-var prod=false;
-
-var portQuery1Done=false;
-var portQuery1Cnt=0;
-var portQuery2Done=false;
-var portQuery2Cnt=0;
-var portQuery3Done=false;
-var portQuery3Cnt=0;
-var portQueriesFailed=false;
+var sql1Done=false;
+var sql1Cnt=0;
+var sql1Failed=false;
+var sql2Done=false;
+var sql2Cnt=0;
+var sql2Failed=false;
+var sql3Done=false;
+var sql3Cnt=0;
+var sql3Failed=false;
+var contPORT=false;
 const ATTEMPTS=1;
 
-/*var portQuery3Done=false;
-var portQuery3Cnt=0;
-*/
-var portQueriesFailed=false;
 
-export async function portCribQueries(disp){
-  var dispatch=disp;
+
+export async function sql1(disp,getSt){
+  var dispatch = disp;
+  var getState = getSt;
+  var state = getState(); 
+  if ('development'==process.env.NODE_ENV) {
+    console.dir(state);
+  }
+
   var cnt=0;
-  portQueriesInit();
-  portQuery1(dispatch);
-  portQuery2(dispatch);
-  portQuery3(dispatch);
-  while(!arePortQueriesDone() && !portQueriesFailed){
+  init();
+  execSQL1(dispatch);
+  execSQL2(dispatch);
+  execSQL3(dispatch);
+
+  while(!isDone() && !didFail()){
     if(++cnt>15){
-      dispatch({ type:PORTACTION.SET_REASON, reason:`portCribQueries(disp) Cannot Connection` });
+      dispatch({ type:PORTACTION.SET_REASON, reason:`PORTSQLCM.sql1() Timed Out or Failed.` });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
       break;
     }else{
@@ -39,29 +44,49 @@ export async function portCribQueries(disp){
     }
   }
 
-  if(arePortQueriesDone()){
+  if(isDone()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`portCribQueries() Sucess`)
+      console.log(`PORTSQLCM..sql1(): Completed`)
+    }
+
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLCM..sql1(): Did NOT Complete`)
     }
   }
 
+  if(didFail()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLCM..sql1(): Failed`)
+    }
+
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLCM..sql1(): Suceeded`)
+    }
+  }
+
+
 }
 
-export function portQueriesInit(){
-  portQuery1Done=false;
-  portQuery1Cnt=0;
-  portQuery2Done=false;
-  portQuery2Cnt=0;
-  portQuery3Done=false;
-  portQuery3Cnt=0;
-  portQueriesFailed=false;
+function init(){
+  sql1Done=false; 
+  sql1Cnt=0;  
+  sql1Failed=false;
+  sql2Done=false;
+  sql2Cnt=0;
+  sql2Failed=false;
+  sql3Done=false;
+  sql3Cnt=0;
+  sql3Failed=false;
+  contPORT=false;
 }
 
-export function arePortQueriesDone(){
+export function isDone(){
   if(
-    (true==portQuery1Done) &&
-    (true==portQuery2Done) &&
-    (true==portQuery3Done)
+    (true==sql1Done) &&
+    (true==sql2Done) &&
+    (true==sql3Done) 
     )
   {
     return true;
@@ -70,8 +95,20 @@ export function arePortQueriesDone(){
   }
 }
 
-export function didPortQueriesFail(){
-  if(true == portQueriesFailed) 
+export function didFail(){
+  if(
+    (true==sql1Failed) ||
+    (true==sql2Failed) ||
+    (true==sql3Failed)
+    )
+  {
+    return true;
+  } else{
+    return false;
+  }
+}
+export function continuePORT(){
+  if(true==contPORT)
   {
     return true;
   } else{
@@ -80,17 +117,17 @@ export function didPortQueriesFail(){
 }
 
 
-function portQuery1(disp){
+function execSQL1(disp){
   var dispatch=disp;
   if ('development'==process.env.NODE_ENV) {
-    console.log(`portQuery1(disp) top=>${portQuery1Cnt}`);
+    console.log(`PORTSQLCM.execSQL1() top=>${sql1Cnt}`);
   }
 
   var cribConnection = new sql.Connection(CONNECT.cribDefTO, function(err) {
     // ... error checks
     if(null==err){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`portQuery1(disp) Connection Sucess`);
+        console.log(`PORTSQLCM.execSQL1() Connection Sucess`);
       }
       // Query
       var request = new sql.Request(cribConnection); // or: var request = connection1.request();
@@ -100,82 +137,66 @@ function portQuery1(disp){
       `, function(err, recordset) {
           if(null==err){
             if ('development'==process.env.NODE_ENV) {
-              console.log(`portQuery1(disp) Query Sucess`);
-              console.dir(recordset);
+              console.log(`PORTSQLCM.execSQL1() Query Sucess`);
             }
-            portQuery1Done=true;
-
             var allCats=[];
             var catRecs=[];
-            var cribRsLog;
             recordset.forEach(function(pocat,i,arr){
               if ('development'==process.env.NODE_ENV) {
-                console.log(pocat.descr);
-              }
-
-              if(arr.length===i+1){
-                cribRsLog+=`UDF_POCATEGORY# ${pocat.UDF_POCATEGORY}, descr: ${pocat.descr}`;
-              }else{
-                cribRsLog+=`UDF_POCATEGORY# ${pocat.UDF_POCATEGORY}, descr: ${pocat.descr}\n`;
+                console.dir(pocat.descr);
               }
               allCats.push(pocat.descr);
               catRecs.push({UDF_POCATEGORY:pocat.UDF_POCATEGORY, descr:pocat.descr});
             });
             dispatch({ type:PORTACTION.SET_PO_CATEGORIES, catTypes:allCats });
             dispatch({ type:PORTACTION.SET_PO_CAT_RECORDS, catRecs:catRecs });
-
-
-/*              dispatch({ type:PORTACTION.SET_PRIMED, primed:true });
-              if(updateState){
-                dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.PRIMED });
-              }
-*/
+            sql1Done=true;
           }else{
-            if(++portQuery1Cnt<ATTEMPTS) {
+            if(++sql1Cnt<ATTEMPTS) {
               if ('development'==process.env.NODE_ENV) {
-                console.log(`portQuery1.query:  ${err.message}` );
-                console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
+                console.log(`PORTSQLCM.execSQL1().query:  ${err.message}` );
+                console.log(`sql1Cnt = ${sql1Cnt}`);
               }
             }else{
               dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-              portQueriesFailed=true;
+              sql1Failed=true;
             }
           }
         }
       );
     }else{
-      if(++portQuery1Cnt<ATTEMPTS) {
+      if(++sql1Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
-          console.log(`portQuery1.Connection:  ${err.message}` );
-          console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
+          console.log(`PORTSQLCM.execSQL1().Connection:  ${err.message}` );
+          console.log(`sql1Cnt = ${sql1Cnt}`);
         }
       }else{
         dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-        portQueriesFailed=true;
+        sql1Failed=true;
       }
     }
   });
   
   cribConnection.on('error', function(err) {
-    if(++portQuery1Cnt<ATTEMPTS) {
+    if(++sql1Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
-        console.log(`portQuery1.on('error', function(err):  ${err.message}` );
-        console.log(`portQuery1Cnt = ${portQuery1Cnt}`);
+        console.log(`PORTSQLCM.execSQL1().cribConnection.on('error', function(err):  ${err.message}` );
+        console.log(`sql1Cnt = ${sql1Cnt}`);
       }
     }else{
       dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-      portQueriesFailed=true;
+      sql1Failed=true;
     }
   });
 }
 
-function portQuery2(disp){
+function execSQL2(disp){
   var dispatch=disp;
   if ('development'==process.env.NODE_ENV) {
-    console.log(`portQuery2(disp) top=>${portQuery2Cnt}`);
+    console.log(`PORTSQLCM.execSQL2() top=>${sql2Cnt}`);
   }
 
 
@@ -183,10 +204,10 @@ function portQuery2(disp){
     // ... error checks
     if(null==err){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`portQuery2(disp) Connection Sucess`);
+        console.log(`PORTSQLCM.execSQL2() Connection Sucess`);
       }
       let qry;
-      if (prod===true) {
+      if (MISC.PROD===true) {
         qry = `
         select VendorNumber,VendorName,PurchaseAddress1,PurchaseAddress2,PurchaseCity,PurchaseState,PurchaseZip,
         rtrim(VendorName)  +
@@ -221,63 +242,63 @@ function portQuery2(disp){
           if(null==err){
             // ... error checks
             if ('development'==process.env.NODE_ENV) {
-              console.log(`portQuery2(disp) Query Sucess`);
+              console.log(`PORTSQLCM.execSQL2() Query Sucess`);
               console.dir(recordset);
             }
-            portQuery2Done=true;
             var vendorSelect=[];
             recordset.forEach(function(vendor,i,arr){
               vendorSelect.push(vendor.Description);
             });
             dispatch({ type:PORTACTION.SET_VENDORS, vendors:recordset });
             dispatch({ type:PORTACTION.SET_VENDOR_SELECT, vendorSelect:vendorSelect });
+            sql2Done=true;
           }else{
-            if(++portQuery2Cnt<ATTEMPTS) {
+            if(++sql2Cnt<ATTEMPTS) {
               if ('development'==process.env.NODE_ENV) {
-                console.log(`portQuery2.query:  ${err.message}` );
-                console.log(`portQuery2Cnt = ${portQuery2Cnt}`);
+                console.log(`PORTSQLCM.execSQL2().query:  ${err.message}` );
+                console.log(`sql2Cnt = ${sql2Cnt}`);
               }
             }else{
               dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-              portQueriesFailed=true;
+              sql2Failed=true;
             }
           }
         }
       );
     }else{
-      if(++portQuery2Cnt<ATTEMPTS) {
+      if(++sql2Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
-          console.log(`portQuery2.Connection:  ${err.message}` );
-          console.log(`portQuery2Cnt = ${portQuery2Cnt}`);
+          console.log(`PORTSQLCM.execSQL2().Connection:  ${err.message}` );
+          console.log(`sql2Cnt = ${sql2Cnt}`);
         }
       }else{
         dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-        portQueriesFailed=true;
+        sql2Failed=true;
       }
     }
   });
   
   cribConnection.on('error', function(err) {
-    if(++portQuery2Cnt<ATTEMPTS) {
+    if(++sql2Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
-        console.log(`portQuery2.on('error', function(err):  ${err.message}` );
-        console.log(`portQuery2Cnt = ${portQuery2Cnt}`);
+        console.log(`PORTSQLCM.execSQL2().cribConnection.on('error', function(err):  ${err.message}` );
+        console.log(`sql2Cnt = ${sql2Cnt}`);
       }
     }else{
       dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-      portQueriesFailed=true;
+      sql2Failed=true;
     }
   });
 }
 
 
 
-function portQuery3(disp){
+function execSQL3(disp){
   if ('development'==process.env.NODE_ENV) {
-    console.log(`portQuery3(disp) top=>${portQuery3Cnt}`);
+    console.log(`PORTSQLCM.execSQL3() top=>${sql3Cnt}`);
   }
   var dispatch=disp;
 
@@ -285,70 +306,83 @@ function portQuery3(disp){
     // ... error checks
     if(null==err){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`portQuery3() Connection Sucess`);
+        console.log(`PORTSQLCM.execSQL3() Connection Sucess`);
+      }
+      let qry;
+      // SAME QUERY SINCE btapvend created by SSIS script
+      if (MISC.PROD===true) {
+        qry = `
+          select fvendno,fcterms,fccompany,
+          fccity,fcstate,fczip,fccountry,fcphone,fcfax,fmstreet,
+          vendorSelect
+          FROM btapvend
+          order by vendorSelect
+          `;
+      }else{
+        qry = `
+          select fvendno,fcterms,fccompany,
+          fccity,fcstate,fczip,fccountry,fcphone,fcfax,fmstreet,
+          vendorSelect
+          FROM btapvend
+          order by vendorSelect
+          `;
       }
 
       // Query
       var request = new sql.Request(cribConnection); 
-      request.query(
-      `
-          select fvendno,fcterms,fccompany,
-          fccity,fcstate,fczip,fccountry,fcphone,fcfax,fmstreet
-          vendorSelect
-          FROM btapvend
-          order by vendorSelect
-      `, function(err, recordset) {
+      request.query(qry
+      , function(err, recordset) {
           if(null==err){
             // ... error checks
+            if ('development'==process.env.NODE_ENV) {
+              console.log(`PORTSQLCM.execSQL3() Query Sucess`);
+            }
             var vendorSelect=[];
             recordset.forEach(function(vendor,i,arr){
               vendorSelect.push(vendor.vendorSelect);
             });
-            if ('development'==process.env.NODE_ENV) {
-              console.log(`portQuery3(disp) Query Sucess`);
-              console.dir(recordset);
-            }
             dispatch({ type:PORTACTION.SET_M2M_VENDOR_SELECT, m2mVendorSelect:vendorSelect });
             dispatch({ type:PORTACTION.SET_M2M_VENDORS, m2mVendors:recordset });
-            portQuery3Done=true;
+            sql3Done=true;
+            contPORT=true;
           }else{
-            if(++portQuery3Cnt<ATTEMPTS) {
+            if(++sql3Cnt<ATTEMPTS) {
               if ('development'==process.env.NODE_ENV) {
-                console.log(`portQuery3.query:  ${err.message}` );
-                console.log(`portQuery3Cnt = ${portQuery3Cnt}`);
+                console.log(`PORTSQLCM.execSQL3().query:  ${err.message}` );
+                console.log(`sql3Cnt = ${sql3Cnt}`);
               }
             }else{
               dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-              portQueriesFailed=true;
+              sql3Failed=true;
             }
           }
         }
       );
     }else{
-      if(++portQuery3Cnt<ATTEMPTS) {
+      if(++sql3Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
-          console.log(`portQuery3.Connection:  ${err.message}` );
-          console.log(`portQuery3Cnt = ${portQuery3Cnt}`);
+          console.log(`PORTSQLCM.execSQL3().Connection:  ${err.message}` );
+          console.log(`sql3Cnt = ${sql3Cnt}`);
         }
       }else{
         dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-        portQueriesFailed=true;
+        sql3Failed=true;
       }
     }
   });
   
   cribConnection.on('error', function(err) {
-    if(++portQuery3Cnt<ATTEMPTS) {
+    if(++sql3Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
-        console.log(`cribConnection.on('error', function(err):  ${err.message}` );
-        console.log(`portQuery3Cnt = ${portQuery3Cnt}`);
+        console.log(`PORTSQLCM.execSQL3().cribConnection.on():  ${err.message}` );
+        console.log(`sql3Cnt = ${sql3Cnt}`);
       }
     }else{
       dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-      portQueriesFailed=true;
+      sql3Failed=true;
     }
   });
 }
