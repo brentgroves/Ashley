@@ -29,6 +29,7 @@ const initialState = {
 		poCount:0,
 		primed:false,
 		state:PORTSTATE.NOT_PRIMED,
+		status:'',
 		reason:'',
 		vendors:[{}],
 		vendorSelect:[{}]

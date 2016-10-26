@@ -174,6 +174,7 @@ function portChk(disp,getSt){
               dispatch({ type:PORTACTION.SET_CHECK3, chk3:PORTCHK.FAILURE });
               dispatch({ type:PORTACTION.SET_NO_M2M_VEN, noM2mVen: noM2mVen });
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_30_FAIL});
+              dispatch({ type:PORTACTION.SET_STATUS, status:'Found Cribmaster vendor(s) with a missing or invalid Made2Manage vendor link...' });
               portCheckFailed=true;
             }else{
               contChecks=true;

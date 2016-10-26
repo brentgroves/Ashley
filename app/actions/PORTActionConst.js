@@ -20,6 +20,7 @@ export const SET_PO_COUNT = 'SET_PO_COUNT';
 export const SET_PRIMED = 'SET_PRIMED';
 export const SET_REASON = 'SET_REASON';
 export const SET_STATE = 'SET_STATE';
+export const SET_STATUS = 'SET_STATUS';
 export const SET_VENDORS = 'SET_VENDORS';
 export const SET_VENDOR_SELECT = 'SET_VENDOR_SELECT';
 export const START_CHECK3 = 'START_CHECK3';

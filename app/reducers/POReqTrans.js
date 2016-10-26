@@ -28,6 +28,7 @@ export default function reducer( state = {}, action) {
           noM2mVen:{$set: [{}]},  
           poCount:{$set:0},
           state:{$set: PORTSTATE.NOT_PRIMED},
+          status:{$set: ''},
           reason:{$set:''},
           vendors:{$set:[{}]},
           vendorSelect:{$set:[{}]}
@@ -209,6 +210,11 @@ export default function reducer( state = {}, action) {
     case PORTACTION.SET_STATE:
     {
       var newData = update(state, {state: {$set: action.state}});
+      return newData;
+    }
+    case PORTACTION.SET_STATUS:
+    {
+      var newData = update(state, {status: {$set: action.status}});
       return newData;
     }
     case PORTACTION.SET_VENDORS:

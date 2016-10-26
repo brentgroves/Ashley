@@ -36,6 +36,7 @@ export async function primeDB(disp,stateUpdate){
   if ('development'==process.env.NODE_ENV) {
     console.log(`primeDB top`);
   }
+
   initPrime();
   // FIRST CONNECT ALWAYS FAILS IN DEVELOPER MODE
   cribConnect(dispatch,updateState);
@@ -46,7 +47,7 @@ export async function primeDB(disp,stateUpdate){
 
   while(!isPrimed() && !primeFailed){
     if(++cnt>15){
-      dispatch({ type:PORTACTION.SET_REASON, reason:`primeDB(disp) Cannot Connection` });
+      dispatch({ type:PORTACTION.SET_REASON, reason:`primeDB(disp) Cannot Connect to Cribmaster or Made2Manage.` });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
       break;
     }else{
@@ -59,6 +60,9 @@ export async function primeDB(disp,stateUpdate){
     if(updateState){
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.PRIMED });
     }
+  }else{
+     dispatch({ type:PORTACTION.SET_STATUS, status:'Cannot connect to Cribmaster or Made2Manage....' });
+
   }
 
 }
@@ -235,6 +239,7 @@ export async function updateCheck1(disp,getSt,poNumber,item,poCategory,startPort
 
   dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STARTED });
   dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.LOADING });
+  dispatch({ type:PORTACTION.SET_STATUS, status:'' });
 
   if ('development'==process.env.NODE_ENV) {
     console.log(`updateCheck1(disp,getSt,poNumber,item,poCategory): top`);
@@ -255,6 +260,8 @@ export async function updateCheck1(disp,getSt,poNumber,item,poCategory,startPort
 
   if(!isPrimed()){
     // Exit if Not Primed
+    dispatch({ type:PORTACTION.SET_STATUS, status:'' });
+
     return;
   }
 
@@ -286,6 +293,7 @@ export async function updateCheck2(disp,getSt,poNumber,vendorNumber,Address1,Add
 
   dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STARTED });
   dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.LOADING });
+  dispatch({ type:PORTACTION.SET_STATUS, status:'' });
 
   if ('development'==process.env.NODE_ENV) {
     console.log(`updateCheck2(): top`);
@@ -338,6 +346,7 @@ export async function updateCheck3(disp,getSt,vendorNumber,newM2mVendor,startPor
 
   dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STARTED });
   dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.LOADING });
+  dispatch({ type:PORTACTION.SET_STATUS, status:'' });
 
   if ('development'==process.env.NODE_ENV) {
     console.log(`updateCheck3(): top`);
@@ -392,7 +401,11 @@ export default async function POReqTrans(disp,getSt,prime) {
   if(PORTSTATE.STARTED != portState.POReqTrans.state){
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STARTED });
     dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.LOADING });
+
   }
+
+  dispatch({ type:PORTACTION.SET_STATUS, status:'' });
+//    dispatch({ type:PORTACTION.SET_STATUS, status:'Started PO Request Transfer process...' });
 
 
   var cnt=0;

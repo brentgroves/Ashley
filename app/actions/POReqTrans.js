@@ -158,6 +158,13 @@ export function setState(state) {
   };
 }
 
+export function setStatus(status) {
+  return {
+    type: PORTACTION.SET_STATUS,
+    status: status
+  };
+}
+
 export function setVendors(vendors) {
   return {
     type: PORTACTION.SET_VENDORS,

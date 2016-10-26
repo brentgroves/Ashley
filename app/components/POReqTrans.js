@@ -54,7 +54,7 @@ export default class POReqTrans extends Component {
   const chk2 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '5px 13px' };
   const dbg1 ={border: '1px solid blue', padding: '0px' };
 
-  var checks,goButton,portGrid,navbar,cancelBtn,jumboTronTxt;
+  var checks,goButton,portGrid,navbar,cancelBtn,jumboTronTxt,navbarStatus,navbarEnd;
 
   if(PORTSTATE.NOT_PRIMED==this.props.POReqTrans.state){
     jumboTronTxt=
@@ -260,7 +260,7 @@ export default class POReqTrans extends Component {
       </Row>
     </div>
   }
-  var status = 'status';
+  var status = 'currentPO=> ' + this.props.POReqTrans.status;
   if(
       (PORTSTATE.PRIMED==this.props.POReqTrans.state) ||  
       (PORTSTATE.SUCCESS==this.props.POReqTrans.state)   
@@ -269,22 +269,39 @@ export default class POReqTrans extends Component {
     navbar =
       <Navbar inverse fixedBottom>
         <NavbarHeader>
-            <NavbarBrand >
-              <IndexLink to="/" onClick={this.props.cancelApp} >Home
-              </IndexLink>
-            </NavbarBrand>
-
+          <NavbarBrand >
+            <IndexLink to="/" onClick={this.props.cancelApp} >Home
+            </IndexLink>
+          </NavbarBrand>
           <NavbarToggle />
         </NavbarHeader>
-    <Nav>
-<NavbarText><span className="my-header-class">Status</span></NavbarText>
-    </Nav>
+      </Navbar>;
+  }else{
+    navbar =
+      <Navbar inverse fixedBottom>
+        <NavbarCollapse>
+          <span className="navbar-center">{this.props.POReqTrans.status}</span>
+        </NavbarCollapse>
+      </Navbar>;
 
-      </Navbar>
   }
 
   /*
        {
+
+      <Navbar inverse fixedBottom>
+        <NavbarHeader>
+          <NavbarBrand >
+            <IndexLink to="/" onClick={this.props.cancelApp} >Home
+            </IndexLink>
+          </NavbarBrand>
+          <NavbarToggle />
+        </NavbarHeader>
+        <NavbarCollapse>
+          <span className="navbar-center">{status}</span>
+        </NavbarCollapse>
+      </Navbar>;
+
             // We can always force white space by interpolating a
             // white space literal. This way, when the JSX is
             // compiled down into React Element children, the white
@@ -302,6 +319,8 @@ export default class POReqTrans extends Component {
           {portGrid}
           {cancelBtn}
           {navbar}
+          {navbarStatus}
+          {navbarEnd}
         </Grid>
       </div>
 

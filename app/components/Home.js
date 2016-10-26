@@ -65,11 +65,11 @@ export default class Home extends Component {
     </NavbarHeader>
     <NavbarCollapse>
       <Nav>
-        <LinkContainer to="/POUpdateApp">
-          <NavItem eventKey={1}>PO Update</NavItem>
-        </LinkContainer>      
         <LinkContainer to="/POReqTrans">
           <NavItem eventKey={2}>PO Request Transfer</NavItem>
+        </LinkContainer>      
+        <LinkContainer to="/POUpdateApp">
+          <NavItem eventKey={1}>Generate Receivers</NavItem>
         </LinkContainer>      
       </Nav>
     </NavbarCollapse>
@@ -84,7 +84,7 @@ export default class Home extends Component {
         </LinkContainer>      
 
        &nbsp;&nbsp;&nbsp;
-       <Button bsStyle="warning">Gen Receivers</Button>
+       <Button bsStyle="warning">Generate Receivers</Button>
        </p>
     </div>   
 

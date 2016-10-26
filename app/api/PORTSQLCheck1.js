@@ -94,7 +94,7 @@ function portChk1(disp){
 
       // Query
       let qry;
-      if (prod===true) {
+      if (MISC.PROD===true) {
         qry = `
           SELECT ROW_NUMBER() OVER(ORDER BY PONumber, Item) id,PONumber,RTrim(Item) Item,RTrim(ItemDescription) ItemDescription,RTrim(UDF_POCATEGORY) UDF_POCATEGORY
           FROM PODETAIL
@@ -147,6 +147,8 @@ function portChk1(disp){
               dispatch({ type:PORTACTION.SET_NO_CAT_LIST, noCatList:recordset });
               dispatch({ type:PORTACTION.SET_CHECK1, chk1:PORTCHK.FAILURE });
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_10_FAIL });
+              dispatch({ type:PORTACTION.SET_STATUS, status:'Found PO(s) with missing Category...' });
+
             }else {
               contChecks=true;
               dispatch({ type:PORTACTION.SET_CHECK1, chk1:PORTCHK.SUCCESS });

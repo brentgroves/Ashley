@@ -141,6 +141,7 @@ function portChk2(disp){
               dispatch({ type:PORTACTION.SET_CHECK2, chk2:PORTCHK.FAILURE });
               dispatch({ type: PORTACTION.SET_NO_CRIB_VEN, noCribVen:recordset });
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_20_FAIL});
+              dispatch({ type:PORTACTION.SET_STATUS, status:'Found PO(s) with a missing or invalid Cribmaster vendor...' });
             }else {
               dispatch({ type:PORTACTION.SET_CHECK2, chk2:PORTCHK.SUCCESS});
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_20_PASS });
