@@ -27,6 +27,8 @@ export default function reducer( state = {}, action) {
           noCribVen:{$set: [{}]},  
           noM2mVen:{$set: [{}]},  
           poCount:{$set:0},
+          poItem:{$set: [{}]},  
+          poMast:{$set: [{}]},  
           state:{$set: PORTSTATE.NOT_PRIMED},
           status:{$set: ''},
           reason:{$set:''},
@@ -179,10 +181,36 @@ export default function reducer( state = {}, action) {
     }
     case PORTACTION.SET_PO_COUNT:
     {
-      console.log(`set PO Count`);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set PO Count`);
+      }
       var newData = update(state, 
         { 
           poCount: {$set: action.poCount}
+        });
+      return newData;
+
+    }
+    case PORTACTION.SET_POITEM:
+    {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set poItem`);
+      }
+      var newData = update(state, 
+        { 
+          poItem: {$set: action.poItem}
+        });
+      return newData;
+
+    }
+    case PORTACTION.SET_POMAST:
+    {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set poMast`);
+      }
+      var newData = update(state, 
+        { 
+          poMast: {$set: action.poMast}
         });
       return newData;
 

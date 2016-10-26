@@ -1,26 +1,28 @@
 
 var sql = require('mssql');
 const {dialog} = require('electron').remote;
-import * as PORTACTION from "../actions/PORTActionConst.js"
-import * as PORTSTATE from "../actions/PORTState.js"
-import * as PORTCHK from "../actions/PORTChkConst.js"
-import * as PROGRESSBUTTON from "../actions/ProgressButtonConst.js"
 
-import * as CM from "./PORTSQLCM.js"
-import * as M2M from "./PORTSQLM2M.js"
 import * as CHECK1 from "./PORTSQLCheck1.js"
 import * as CHECK2 from "./PORTSQLCheck2.js"
 import * as CHECK3 from "./PORTSQLCheck3.js"
+import * as CM from "./PORTSQLCM.js"
+import * as CONNECT from "./PORTSQLConst.js"
+import * as MISC from "./Misc.js"
+import * as M2M from "./PORTSQLM2M.js"
+import * as PORTACTION from "../actions/PORTActionConst.js"
+import * as PORTCHK from "../actions/PORTChkConst.js"
+import * as PORTSQL from "./PORTSQL.js"
+import * as PORTSQLINSPOMAST from "./PORTSQLInsPOMast.js"
+import * as PORTSQLSETPOCOUNT from "./PORTSQLSetPOCount.js"
+import * as PORTSQLSETPOITEM from "./PORTSQLSetPOItem.js"
+import * as PORTSQLSETPOMAST from "./PORTSQLSetPOMast.js"
+import * as PORTSQLSETNEXTPO from "./PORTSQLSetNextPO.js"
+import * as PORTSTATE from "../actions/PORTState.js"
+import * as PROGRESSBUTTON from "../actions/ProgressButtonConst.js"
+import * as SETCURRENTPO from "./PORTSQLSetCurrentPO.js"
 import * as UPDATE1 from "./PORTSQLUpdate1.js"
 import * as UPDATE2 from "./PORTSQLUpdate2.js"
 import * as UPDATE3 from "./PORTSQLUpdate3.js"
-import * as SETCURRENTPO from "./PORTSQLSetCurrentPO.js"
-import * as PORTSQLSETPOCOUNT from "./PORTSQLSetPOCount.js"
-import * as PORTSQLSETNEXTPO from "./PORTSQLSetNextPO.js"
-import * as PORTSQL from "./PORTSQL.js"
-
-import * as MISC from "./Misc.js"
-import * as CONNECT from "./PORTSQLConst.js"
 
 var prod=false;
 var errors=false;
@@ -432,12 +434,43 @@ export default async function POReqTrans(disp,getSt,prime) {
     if ('development'==process.env.NODE_ENV) {
       console.log(`primeDB Success continue PO Request Transfer.`);
     }
-    CM.sql1(dispatch,getState);
+    PORTSQLSETPOCOUNT.sql1(dispatch,getState);
   }else{
     continueProcess=false;
     if ('development'==process.env.NODE_ENV) {
       console.log(`primeDB FAILED quit PO Request Transfer.`);
     }
+  }
+
+  cnt=0;
+
+  while(continueProcess && !PORTSQLSETPOCOUNT.isDone()){
+    if(++cnt>15 || PORTSQLSETPOCOUNT.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueProcess && PORTSQLSETPOCOUNT.continuePORT()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`setPOCount complete continue PORT process.`);
+    }
+    CM.sql1(dispatch,getState);
+  }else{
+    if(PORTSQLSETPOCOUNT.didFail()){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`setPOCount FAILED stop PORT process.`);
+      }
+      
+    }else if(PORTSQLSETPOCOUNT.noPORequests()) {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`setPOCount there are no POs to transfer stop PORT process.`);
+      }
+      dispatch({ type:PORTACTION.SET_STATUS, status:'There are no POs to transfer...' });
+    }
+    continueProcess=false;
   }
 
   cnt=0;
@@ -639,7 +672,7 @@ export default async function POReqTrans(disp,getSt,prime) {
     continueProcess=false;
   }
 
-// Transfer requested PO(s) to Made2Manage 
+// Create POMast and POItem records
   cnt=0;
 
   while(continueProcess && !PORTSQL.isDone()){
@@ -653,12 +686,67 @@ export default async function POReqTrans(disp,getSt,prime) {
 
   if(continueProcess && PORTSQL.continuePORT()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQL complete PORT process IS DONE.`);
+      console.log(`PORTSQL complete continu PORT process.`);
+    }
+    PORTSQLSETPOMAST.sql1(dispatch,getState);
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQL FAILED stop PORT process.`);
+    }
+    continueProcess=false;
+  }
+
+// Set poMast 
+  cnt=0;
+
+  while(continueProcess && !PORTSQLSETPOMAST.isDone()){
+    if(++cnt>15 || PORTSQLSETPOMAST.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueProcess && PORTSQLSETPOMAST.continuePORT()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLSETPOMAST complete continue PORT process.`);
+    }
+    PORTSQLINSPOMAST.sql1(dispatch,getState);
+  }else{
+    if(PORTSQLSETPOMAST.didFail()){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`setPOMast FAILED stop PORT process.`);
+      }
+    }else if(PORTSQLSETPOMAST.noPORequests()) {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`setPOMast there are no POs to transfer. Stop PORT process.`);
+      }
+      dispatch({ type:PORTACTION.SET_STATUS, status:'There are no POs to transfer...' });
+    }
+    continueProcess=false;
+  }
+
+// Insert into pomast 
+  cnt=0;
+
+  while(continueProcess && !PORTSQLINSPOMAST.isDone()){
+    if(++cnt>15 || PORTSQLINSPOMAST.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueProcess && PORTSQLINSPOMAST.continuePORT()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLINSPOMAST complete continue PORT process.`);
     }
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
   }else{
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQL FAILED stop PORT process.`);
+      console.log(`PORTSQLINSPOMAST.sql1() FAILED stop PORT process.`);
     }
     continueProcess=false;
   }

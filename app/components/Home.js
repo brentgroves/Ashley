@@ -68,7 +68,7 @@ export default class Home extends Component {
         <LinkContainer to="/POReqTrans">
           <NavItem eventKey={2}>PO Request Transfer</NavItem>
         </LinkContainer>      
-        <LinkContainer to="/POUpdateApp">
+        <LinkContainer to="/GenReceivers">
           <NavItem eventKey={1}>Generate Receivers</NavItem>
         </LinkContainer>      
       </Nav>

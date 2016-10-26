@@ -143,6 +143,19 @@ export function setPOCount(poCount) {
     poCount: poCount
   };
 }
+export function setPOItem(poItem) {
+  return {
+    type: PORTACTION.SET_POITEM,
+    poItem: poItem
+  };
+}
+
+export function setPOMast(poMast) {
+  return {
+    type: PORTACTION.SET_POMAST,
+    poMast: poMast
+  };
+}
 
 export function setPrimed(primed) {
   return {

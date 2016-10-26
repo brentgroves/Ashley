@@ -82,6 +82,20 @@ export default class POReqTrans extends Component {
         </Col>
       </Row>
   } else if(
+            (PORTSTATE.UPTODATE==this.props.POReqTrans.state)
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron  >
+            <h1 style={{textAlign: 'center'}}>UpToDate</h1>
+            <p style={{padding: '0px',textAlign:'center'}}>There are currently 'NO' PO Requests to process.</p>
+           
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(
             (PORTSTATE.STARTED==this.props.POReqTrans.state) ||
             (PORTSTATE.STEP_10_PASS==this.props.POReqTrans.state) ||
             (PORTSTATE.STEP_20_PASS==this.props.POReqTrans.state) ||
@@ -262,7 +276,8 @@ export default class POReqTrans extends Component {
   }
   var status = 'currentPO=> ' + this.props.POReqTrans.status;
   if(
-      (PORTSTATE.PRIMED==this.props.POReqTrans.state) ||  
+      (PORTSTATE.PRIMED==this.props.POReqTrans.state) || 
+      (PORTSTATE.UPTODATE==this.props.POReqTrans.state) ||  
       (PORTSTATE.SUCCESS==this.props.POReqTrans.state)   
     )
   {
@@ -275,6 +290,14 @@ export default class POReqTrans extends Component {
           </NavbarBrand>
           <NavbarToggle />
         </NavbarHeader>
+        <NavbarCollapse>
+          <Nav>
+            <LinkContainer to="/GenReceivers">
+              <NavItem eventKey={1}>Generate Receivers</NavItem>
+            </LinkContainer>      
+          </Nav>
+        </NavbarCollapse>
+
       </Navbar>;
   }else{
     navbar =

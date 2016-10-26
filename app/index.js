@@ -27,6 +27,8 @@ const initialState = {
 		noCribVen:[{}],	
 		noM2mVen:[{}],	
 		poCount:0,
+		poMast:[{}],
+		poItem:[{}],
 		primed:false,
 		state:PORTSTATE.NOT_PRIMED,
 		status:'',
