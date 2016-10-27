@@ -157,18 +157,66 @@ function execSQL1(disp,getSt){
         request.input('freqdate', sql.DateTime, po.freqdate);
         request.input('freqsdt', sql.DateTime, po.freqsdt);
         request.input('freqsno', sql.Char(6), po.freqsno);
-        request.input('frevtot', sql.Numeric(15,5), po.frevtot);        
+        request.input('frevtot', sql.Numeric(15,5), po.frevtot);  
+        request.input('fsalestax', sql.Numeric(7,3), po.fsalestax);
+        request.input('ftax', sql.Char(1), po.ftax);
+        request.input('fcsnaddrke', sql.Char(4), po.fcsnaddrke);
+        request.input('fnnextitem', sql.Int, po.fnnextitem);
+        request.input('fautoclose', sql.Char(1), po.fautoclose);
+        request.input('fnusrqty1', sql.Numeric(17,5), po.fnusrqty1);
+        request.input('fnusrcur1', sql.Money, po.fnusrcur1);
+        request.input('fdusrdate1', sql.DateTime, po.fdusrdate1);
+        request.input('fcfactor', sql.Numeric(17,5), po.fcfactor);        
+        request.input('fdcurdate', sql.DateTime, po.fdcurdate);
+        request.input('fdeurodate', sql.DateTime, po.fdeurodate);
+        request.input('feurofctr', sql.Numeric(17,5), po.feurofctr);
+        request.input('fctype', sql.Char(1), po.fctype);
+        request.input('fmsnstreet', sql.Text, po.fmsnstreet);
+        request.input('fpoclosing', sql.Text, po.fpoclosing);
+        request.input('fndbrmod', sql.Int, po.fndbrmod);        
+        request.input('fcsncity', sql.Char(20), po.fcsncity);
+        request.input('fcsnstate', sql.Char(20), po.fcsnstate);
+        request.input('fcsnzip', sql.Char(10), po.fcsnzip);
+        request.input('fcsncountr', sql.Char(25), po.fcsncountr);
+        request.input('fcsnphone', sql.Char(20), po.fcsnphone);
+        request.input('fcsnfax', sql.Char(20), po.fcsnfax);
+        request.input('fcshcompan', sql.Char(35), po.fcshcompan);        
+        request.input('fcshcity', sql.Char(20), po.fcshcity);
+        request.input('fcshstate', sql.Char(20), po.fcshstate);
+        request.input('fcshzip', sql.Char(10), po.fcshzip);
+        request.input('fcshcountr', sql.Char(25), po.fcshcountr);
+        request.input('fcshphone', sql.Char(20), po.fcshphone);
+        request.input('fcshfax', sql.Char(20), po.fcshfax);
+        request.input('fmshstreet', sql.Text, po.fmshstreet);
+        request.input('flpdate', sql.DateTime, po.flpdate);
+        request.input('fconfirm', sql.Char(19), po.fconfirm);
+        request.input('fcontact', sql.Char(20), po.fcontact);
+        request.input('fcfname', sql.Char(15), po.fcfname);
+        request.input('fcshkey', sql.Char(6), po.fcshkey);
+        request.input('fcshaddrke', sql.Char(4), po.fcshaddrke);        
+        request.input('fcusrchr1', sql.Char(20), po.fcusrchr1);
+        request.input('fcusrchr2', sql.VarChar(40), po.fcusrchr2);
+        request.input('fcusrchr3', sql.VarChar(40), po.fcusrchr3);
+        request.input('fccurid', sql.Char(3), po.fccurid);
+        request.input('fmpaytype', sql.Text, po.fmpaytype);
+        request.input('fmusrmemo1', sql.Text, po.fmusrmemo1);
+        request.input('freasoncng', sql.Text, po.freasoncng);        
 
 /*
-@fordtot as numeric(15, 5),
-@fpayterm as char(4),
-@fpaytype as char(1),
-@fporev as char(2),
-@fprint as char(1),
-@freqdate as datetime,
-@freqsdt as datetime,
-@freqsno as char(6), 
-@frevtot as numeric(15, 5) 
+@flpdate datetime,
+@fconfirm char(19),
+@fcontact char(20),
+@fcfname char(15),
+@fcshkey char(6),
+@fcshaddrke char(4),
+@fcusrchr1 char(20),
+@fcusrchr2 varchar(40),
+@fcusrchr3 varchar(40),
+@fccurid char(3),
+@fmpaytype text,
+@fmusrmemo1 text,
+@freasoncng text
+
 
 fpono,cribpo,fcompany,fcshipto, forddate,fstatus,fvendno,fbuyer,
 fchangeby,fshipvia, fcngdate, fcreate, ffob, fmethod, foldstatus, fordrevdt, 

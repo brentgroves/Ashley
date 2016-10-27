@@ -63,8 +63,8 @@ export default class POReqTrans extends Component {
         <Col >
           <Jumbotron  >
              <h1 style={{textAlign: 'center'}}>Connecting to Databases</h1>
-            <p><strong>Description:{" "}</strong>Attempting to connect to CribMaster and Made2Manage</p>
-            <p><strong>Please wait...</strong></p> 
+            <p style={{textAlign: 'center'}}><strong>Description:{" "}</strong>Attempting to connect to CribMaster and Made2Manage</p>
+            <p style={{textAlign: 'center'}}><strong>Please wait...</strong></p> 
             <br/>
           </Jumbotron>
         </Col>

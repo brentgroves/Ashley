@@ -13,6 +13,7 @@ import * as PORTACTION from "../actions/PORTActionConst.js"
 import * as PORTCHK from "../actions/PORTChkConst.js"
 import * as PORTSQL from "./PORTSQL.js"
 import * as PORTSQLINSPOMAST from "./PORTSQLInsPOMast.js"
+import * as PORTSQLINSPOITEM from "./PORTSQLInsPOItem.js"
 import * as PORTSQLSETPOCOUNT from "./PORTSQLSetPOCount.js"
 import * as PORTSQLSETPOITEM from "./PORTSQLSetPOItem.js"
 import * as PORTSQLSETPOMAST from "./PORTSQLSetPOMast.js"
@@ -672,7 +673,6 @@ export default async function POReqTrans(disp,getSt,prime) {
     continueProcess=false;
   }
 
-// Create POMast and POItem records
   cnt=0;
 
   while(continueProcess && !PORTSQL.isDone()){
@@ -743,10 +743,66 @@ export default async function POReqTrans(disp,getSt,prime) {
     if ('development'==process.env.NODE_ENV) {
       console.log(`PORTSQLINSPOMAST complete continue PORT process.`);
     }
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+    PORTSQLSETPOITEM.sql1(dispatch,getState);
   }else{
     if ('development'==process.env.NODE_ENV) {
       console.log(`PORTSQLINSPOMAST.sql1() FAILED stop PORT process.`);
+    }
+    continueProcess=false;
+  }
+// Set poItem
+  cnt=0;
+
+  while(continueProcess && !PORTSQLSETPOITEM.isDone()){
+    if(++cnt>15 || PORTSQLSETPOITEM.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueProcess && PORTSQLSETPOITEM.continuePORT()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLSETPOITEM complete continue PORT process.`);
+    }
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+
+//    PORTSQLINSPOITEM.sql1(dispatch,getState);
+  }else{
+    if(PORTSQLSETPOITEM.didFail()){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`setPOItem FAILED stop PORT process.`);
+      }
+    }else if(PORTSQLSETPOITEM.noPORequests()) {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`setPOItem there are no POs to transfer. Stop PORT process.`);
+      }
+      dispatch({ type:PORTACTION.SET_STATUS, status:'There are no POs to transfer...' });
+    }
+    continueProcess=false;
+  }
+return;
+// Insert into poitem 
+  cnt=0;
+
+  while(continueProcess && !PORTSQLINSPOITEM.isDone()){
+    if(++cnt>15 || PORTSQLINSPOITEM.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueProcess && PORTSQLINSPOITEM.continuePORT()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLINSPOITEM complete continue PORT process.`);
+    }
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLINSPOITEM.sql1() FAILED stop PORT process.`);
     }
     continueProcess=false;
   }
