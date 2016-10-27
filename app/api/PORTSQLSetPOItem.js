@@ -154,7 +154,7 @@ function execSQL1(disp,getSt){
             if ('development'==process.env.NODE_ENV) {
               console.log("PORTSQLSetPOItem.execSQL1() had records.");
             }
-            dispatch({ type:PORTACTION.SET_POITEM, poitem:recordset});
+            dispatch({ type:PORTACTION.SET_POITEM, poItem:recordset});
             contPORT=true;
           }else{
             if ('development'==process.env.NODE_ENV) {

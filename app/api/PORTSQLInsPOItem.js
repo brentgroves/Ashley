@@ -128,7 +128,7 @@ function execSQL1(disp,getSt){
 
         if (MISC.PROD===true) {
           proc = `bpPOItemInsert`;
-        }else{fvucost
+        }else{
           proc = `bpDevPOItemInsert`;
         }
 
@@ -144,6 +144,11 @@ function execSQL1(disp,getSt){
 
         request.input('fjoopno', sql.Int, po.fjoopno);
         request.input('flstcost', sql.Numeric(17,5), po.flstcost);
+        request.input('fstdcost', sql.Numeric(17,5), po.fstdcost);
+        request.input('fleadtime', sql.Numeric(5,1), po.fleadtime);
+        request.input('forgpdate', sql.DateTime, po.forgpdate);
+        request.input('flstpdate', sql.DateTime, po.flstpdate);
+
         request.input('fmultirls', sql.Char(1), po.fmultirls);
         request.input('fnextrels', sql.Int, po.fnextrels);
         request.input('fnqtydm', sql.Numeric(15,5), po.fnqtydm);
@@ -162,19 +167,21 @@ function execSQL1(disp,getSt){
         request.input('finvqty', sql.Numeric(15,5), po.finvqty);
         request.input('fdiscount', sql.Numeric(5,1), po.fdiscount);
         request.input('fstandard', sql.Bit, po.fstandard);
+
+        request.input('ftax', sql.Char(1), po.ftax);
+        request.input('fsalestax', sql.Numeric(7,3), po.fsalestax);
+        request.input('flcost', sql.Numeric(17,5), po.flcost);
+
+        request.input('fucost', sql.Numeric(17,5), po.fucost);
+        request.input('fprintmemo', sql.Char(1), po.fprintmemo);
+        request.input('fvlstcost', sql.Numeric(17,5), po.fvlstcost);
+        request.input('fvleadtime', sql.Numeric(5,1), po.fvleadtime);
+        request.input('fvmeasure', sql.Char(5), po.fvmeasure);
+
         request.input('fvptdes', sql.VarChar(35), po.fvptdes);
         request.input('fvordqty', sql.Numeric(15,5), po.fvordqty);
         request.input('fvconvfact', sql.Numeric(13,9), po.fvconvfact);
         request.input('fvucost', sql.Numeric(17,5), po.fvucost);
-        request.input('fqtyshipr', sql.Numeric(15,5), po.fqtyshipr);
-
-        request.input('finvqty', sql.Numeric(15,5), po.finvqty);
-        request.input('fdiscount', sql.Numeric(5,1), po.fdiscount);
-        request.input('fstandard', sql.Bit, po.fstandard);
-        request.input('fvptdes', sql.VarChar(35), po.fvptdes);
-        request.input('fvordqty', sql.Numeric(15,5), po.fvordqty);
-        request.input('fvconvfact', sql.Numeric(13,9), po.fvconvfact);
-        request.input('fvucost', sql.Numeric(15,5), po.fvucost);
         request.input('fqtyshipr', sql.Numeric(15,5), po.fqtyshipr);
 
         request.input('fdateship', sql.DateTime, po.fdateship);
@@ -217,7 +224,7 @@ function execSQL1(disp,getSt){
         request.input('fueurocost', sql.Numeric(17,5), po.fueurocost);
         request.input('FCBIN', sql.Char(14), po.FCBIN);
         request.input('FCLOC', sql.Char(14), po.FCLOC);
-        request.input('cudrev', sql.Char(3), po.cudrev);
+        request.input('fcudrev', sql.Char(3), po.fcudrev);
         request.input('blanketPO', sql.Bit, po.blanketPO);
         request.input('PlaceDate', sql.DateTime, po.PlaceDate);
         request.input('DockTime', sql.Int, po.DockTime);
