@@ -766,9 +766,7 @@ export default async function POReqTrans(disp,getSt,prime) {
     if ('development'==process.env.NODE_ENV) {
       console.log(`PORTSQLSETPOITEM complete continue PORT process.`);
     }
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
-
-//    PORTSQLINSPOITEM.sql1(dispatch,getState);
+    PORTSQLINSPOITEM.sql1(dispatch,getState);
   }else{
     if(PORTSQLSETPOITEM.didFail()){
       if ('development'==process.env.NODE_ENV) {
@@ -782,7 +780,7 @@ export default async function POReqTrans(disp,getSt,prime) {
     }
     continueProcess=false;
   }
-return;
+
 // Insert into poitem 
   cnt=0;
 

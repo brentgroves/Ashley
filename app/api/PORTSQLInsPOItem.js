@@ -128,7 +128,7 @@ function execSQL1(disp,getSt){
 
         if (MISC.PROD===true) {
           proc = `bpPOItemInsert`;
-        }else{
+        }else{fvucost
           proc = `bpDevPOItemInsert`;
         }
 
@@ -165,51 +165,69 @@ function execSQL1(disp,getSt){
         request.input('fvptdes', sql.VarChar(35), po.fvptdes);
         request.input('fvordqty', sql.Numeric(15,5), po.fvordqty);
         request.input('fvconvfact', sql.Numeric(13,9), po.fvconvfact);
+        request.input('fvucost', sql.Numeric(17,5), po.fvucost);
+        request.input('fqtyshipr', sql.Numeric(15,5), po.fqtyshipr);
+
+        request.input('finvqty', sql.Numeric(15,5), po.finvqty);
+        request.input('fdiscount', sql.Numeric(5,1), po.fdiscount);
+        request.input('fstandard', sql.Bit, po.fstandard);
+        request.input('fvptdes', sql.VarChar(35), po.fvptdes);
+        request.input('fvordqty', sql.Numeric(15,5), po.fvordqty);
+        request.input('fvconvfact', sql.Numeric(13,9), po.fvconvfact);
         request.input('fvucost', sql.Numeric(15,5), po.fvucost);
         request.input('fqtyshipr', sql.Numeric(15,5), po.fqtyshipr);
 
+        request.input('fdateship', sql.DateTime, po.fdateship);
+        request.input('fnorgucost', sql.Numeric(17,5), po.fnorgucost);
+        request.input('fnorgeurcost', sql.Numeric(17,5), po.fnorgeurcost);
+        request.input('fnorgtxncost', sql.Numeric(17,5), po.fnorgtxncost);
+        request.input('futxncost', sql.Numeric(17,5), po.futxncost);
+        request.input('fvueurocost', sql.Numeric(17,5), po.fvueurocost);
+        request.input('fvutxncost', sql.Numeric(17,5), po.fvutxncost);
+        request.input('fljrdif', sql.Bit, po.fljrdif);
+
+        request.input('fucostonly', sql.Numeric(17,5), po.fucostonly);
+        request.input('futxncston', sql.Numeric(17,5), po.futxncston);
+        request.input('fueurcston', sql.Numeric(17,5), po.fueurcston);
+        request.input('fcomments', sql.Text, po.fcomments);
+        request.input('fdescript', sql.Text, po.fdescript);
+        request.input('Fac', sql.Char(20), po.Fac);
+        request.input('fndbrmod', sql.Int, po.fndbrmod);
+        request.input('SchedDate', sql.DateTime, po.SchedDate);
+
+        request.input('fsokey', sql.Char(6), po.fsokey);
+        request.input('fsoitm', sql.Char(3), po.fsoitm);
+        request.input('fsorls', sql.Char(3), po.fsorls);
+        request.input('fjokey', sql.Char(10), po.fjokey);
+        request.input('fjoitm', sql.Char(6), po.fjoitm);
+        request.input('frework', sql.Char(1), po.frework);
+        request.input('finspect', sql.Char(1), po.finspect);
+        request.input('fvpartno', sql.Char(25), po.fvpartno);
+
+        request.input('fparentpo', sql.Char(6), po.fparentpo);
+        request.input('frmano', sql.Char(25), po.frmano);
+        request.input('fdebitmemo', sql.Char(1), po.fdebitmemo);
+        request.input('finspcode', sql.Char(4), po.finspcode);
+        request.input('freceiver', sql.Char(6), po.freceiver);
+        request.input('fcorgcateg', sql.Char(19), po.fcorgcateg);
+        request.input('fparentitm', sql.Char(3), po.fparentitm);
+        request.input('fparentrls', sql.Char(3), po.fparentrls);
+
+        request.input('frecvitm', sql.Char(3), po.frecvitm);
+        request.input('fueurocost', sql.Numeric(17,5), po.fueurocost);
+        request.input('FCBIN', sql.Char(14), po.FCBIN);
+        request.input('FCLOC', sql.Char(14), po.FCLOC);
+        request.input('cudrev', sql.Char(3), po.cudrev);
+        request.input('blanketPO', sql.Bit, po.blanketPO);
+        request.input('PlaceDate', sql.DateTime, po.PlaceDate);
+        request.input('DockTime', sql.Int, po.DockTime);
+
+        request.input('PurchBuf', sql.Int, po.PurchBuf);
+        request.input('Final', sql.Bit, po.Final);
+        request.input('AvailDate', sql.DateTime, po.AvailDate);
+
 /*
 
-@fdateship datetime,
-@fnorgucost M2MMoney,
-@fnorgeurcost M2MMoney,
-@fnorgtxncost M2MMoney,
-@futxncost M2MMoney,
-@fvueurocost M2MMoney,
-@fvutxncost M2MMoney,
-@fljrdif bit,
-@fucostonly M2MMoney,
-@futxncston M2MMoney,
-@fueurcston M2MMoney,
-@fcomments text,
-@fdescript text,
-@Fac M2MFacility,
-@fndbrmod int,
-@SchedDate datetime,
-@fsokey char(6),
-@fsoitm char(3),
-@fsorls char(3),
-@fjokey char(10),
-@fjoitm char(6),
-@frework char(1),
-@finspect char(1),
-@fvpartno char(25),
-@fparentpo char(6),
-@frmano char(25),
-@fdebitmemo char(1),
-@finspcode char(4),
-@freceiver char(6),
-@fcorgcateg char(19),
-@fparentitm char(3),
-@fparentrls char(3),
-@frecvitm char(3),
-@fueurocost M2MMoney,
-@FCBIN char(14),
-@FCLOC char(14),
-@fcudrev char(3),
-@blanketPO bit,
-@PlaceDate datetime,
-@DockTime int,
 @PurchBuf int,
 @Final bit,
 @AvailDate datetime
