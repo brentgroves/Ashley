@@ -119,6 +119,7 @@ function execSQL1(disp,getSt){
         console.log(`PORTSQLInsPOItem.execSQL1() Connection Sucess`);
       }
 
+      var allInsSucceded=true;
       state.POReqTrans.poItem.forEach(function(po,i,arr){
         if ('development'==process.env.NODE_ENV) {
 //          console.log(`po.forddate=>${po.forddate}`);
@@ -256,27 +257,25 @@ fccurid,fmpaytype,fmusrmemo1,freasoncng
             if ('development'==process.env.NODE_ENV) {
               console.log(`PORTSQLInsPOItem.execSQL1() Sucess`);
             }
-            dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_60_PASS });
-            dispatch({ type:PORTACTION.SET_CHECK4, chk4:PORTCHK.SUCCESS});
-            contPORT=true;
-            sql1Done=true;
+
           }else {
-            if(++sql1Cnt<ATTEMPTS) {
-              if ('development'==process.env.NODE_ENV) {
-                console.log(`PORTSQLInsPOItem.execSQL1().query:  ${err.message}` );
-                console.log(`sql1Cnt = ${sql1Cnt}`);
-              }
-            }else{
-              if ('development'==process.env.NODE_ENV) {
-                console.log(`PORTSQLInsPOItem.execSQL1():  ${err.message}` );
-              }
-              dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-              dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-              sql1Failed=true;
+            if ('development'==process.env.NODE_ENV) {
+              console.log(`PORTSQLInsPOItem.execSQL1():  ${err.message}` );
             }
+            dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
+            dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+            sql1Failed=true;
+            allInsSucceded=false;
           }
         });
       });
+
+      if(allInsSucceded){
+        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_60_PASS });
+        dispatch({ type:PORTACTION.SET_CHECK4, chk4:PORTCHK.SUCCESS});
+        contPORT=true;
+      }
+      sql1Done=true;
     }else{
       if(++sql1Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {

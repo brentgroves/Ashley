@@ -15,7 +15,7 @@ import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Co
 }
 */
 
-var initPORT;
+//var initPORT;
 
 export default class POReqTrans extends Component {
 
@@ -29,7 +29,7 @@ export default class POReqTrans extends Component {
     this.state = {
       loading: false
     };
-    initPORT=this.props.initPORT;
+ //   initPORT=this.props.initPORT;
  //   this.handleClick = this.handleClick.bind(this);
 //    this.goHome=this.props.cancelApp.bind(this);
   }

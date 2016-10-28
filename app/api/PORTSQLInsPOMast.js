@@ -118,7 +118,7 @@ function execSQL1(disp,getSt){
       if ('development'==process.env.NODE_ENV) {
         console.log(`PORTSQLInsPOMast.execSQL1() Connection Sucess`);
       }
-
+      var allInsSucceded=true;
       state.POReqTrans.poMast.forEach(function(po,i,arr){
         if ('development'==process.env.NODE_ENV) {
           console.log(`po.forddate=>${po.forddate}`);
@@ -235,9 +235,6 @@ fccurid,fmpaytype,fmusrmemo1,freasoncng
             if ('development'==process.env.NODE_ENV) {
               console.log(`PORTSQLInsPOMast.execSQL1() Sucess`);
             }
-            dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_50_PASS });
-            contPORT=true;
-            sql1Done=true;
           }else {
             if(++sql1Cnt<ATTEMPTS) {
               if ('development'==process.env.NODE_ENV) {
@@ -251,10 +248,17 @@ fccurid,fmpaytype,fmusrmemo1,freasoncng
               dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
               dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
               sql1Failed=true;
+              allInsSucceded=false;
             }
           }
         });
       });
+      if(allInsSucceded){
+        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_50_PASS });
+        contPORT=true;
+      }
+      sql1Done=true;
+
     }else{
       if(++sql1Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
