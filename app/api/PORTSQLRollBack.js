@@ -11,6 +11,8 @@ var sql1Done=false;
 var sql1Cnt=0;
 var sql1Failed=false;
 var contPORT=false;
+var noPOReqs=false;
+var didStart=false;
 const ATTEMPTS=1;
 
 
@@ -21,17 +23,18 @@ export async function sql1(disp,getSt){
   var getState = getSt;
   var state = getState(); 
   if ('development'==process.env.NODE_ENV) {
-    console.log(`PORTSQL.sql1=> top`);
+    console.dir(state);
   }
 
 
   var cnt=0;
   init();
-  execSQL1(dispatch,state);
+  didStart=true;
+  execSQL1(dispatch,getState);
 
   while(!isDone() && !didFail()){
     if(++cnt>15){
-      dispatch({ type:PORTACTION.SET_REASON, reason:`PORTSQL.sql1() Timed Out or Failed.` });
+      dispatch({ type:PORTACTION.SET_REASON, reason:`PORTSQLRollBack.sql1() Timed Out or Failed.` });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
       break;
     }else{
@@ -41,23 +44,23 @@ export async function sql1(disp,getSt){
 
   if(isDone()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQL.sql1(): Completed`)
+      console.log(`PORTSQLRollBack.sql1(): Completed`)
     }
 
   }else{
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQL.sql1(): Did NOT Complete`)
+      console.log(`PORTSQLRollBack.sql1(): Did NOT Complete`)
     }
   }
 
   if(didFail()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQL.sql1(): Failed`)
+      console.log(`PORTSQLRollBack.sql1(): Failed`)
     }
 
   }else{
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQL.sql1(): Suceeded`)
+      console.log(`PORTSQLRollBack.sql1(): Suceeded`)
     }
   }
 
@@ -68,6 +71,18 @@ function init(){
   sql1Cnt=0;
   sql1Failed=false;
   contPORT=false;
+  didStart=false;
+}
+
+export function started(){
+  if(
+    (true==didStart)
+    )
+  {
+    return true;
+  } else{
+    return false;
+  }
 }
 
 export function isDone(){
@@ -101,51 +116,66 @@ export function continuePORT(){
 }
 
 
-
-function execSQL1(disp,PORTstate){
+function execSQL1(disp,getSt){
   var dispatch = disp;
-  var state=PORTstate; 
+  var getState = getSt;
+  var state = getState();
   if ('development'==process.env.NODE_ENV) {
-    console.log(`PORTSQL.execSQL1() top=>${sql1Cnt}`);
+    console.log(`PORTSQLRollBack.execSQL1() top=>${sql1Cnt}`);
   }
 
+  var postart=state.POReqTrans.poRange.postart;
+  var poend=state.POReqTrans.poRange.poend;
 
-  var connection = new sql.Connection(CONNECT.cribDefTO, function(err) {
+  var connection = new sql.Connection(CONNECT.m2mDefTO, function(err) {
     // ... error checks
     if(null==err){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`PORTSQL.execSQL1() Connection Sucess`);
-        console.log(`currentPO=>${state.POReqTrans.currentPO}`);
+        console.log(`PORTSQLRollBack.execSQL1() Connection Sucess`);
+        console.log(`postart=>${postart}`);
+        console.log(`poend=>${poend}`);
       }
 
-      let currentPO=state.POReqTrans.currentPO;
-      let proc;
+      let sproc;
+
       if (MISC.PROD===true) {
-        proc = `bpPORT`;
+        sproc = `bpPORTRollBack`;
       }else{
-        proc = `bpDevPORT`;
+        sproc = `bpDevPORTRollBack`;
       }
+
 
       var request = new sql.Request(connection); 
-      request.input('currentPO', sql.Char(6), currentPO);
-      request.execute(proc, function(err, recordsets, returnValue) {
+      request.input('postart', sql.Char(6),postart);
+      request.input('poend', sql.Char(6),poend);
+      request.execute(sproc, function(err, recordsets, returnValue, affected) {
         // ... error checks
         if(null==err){
           if ('development'==process.env.NODE_ENV) {
-            console.log(`PORTSQL.execSQL1().execute().Sucess`);
-          }
-          dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_40_PASS });
-          contPORT=true;
+            console.log(`PORTSQLRollBack.execSQL1() Sucess`);
+            console.log(affected); // number of rows affected by the statemens
+/*            console.log(recordsets.length); // count of recordsets returned by the procedure
+            console.log(recordsets[0].length); // count of rows contained in first recordset
+            console.log(returnValue); // procedure return value
+            console.log(recordsets.returnValue); // same as previous line
+            console.log(affected); // number of rows affected by the statemens
+            console.log(recordsets.rowsAffected); // same as previous line
+            console.log(request.parameters.postart.value); // output value
+            console.log(request.parameters.poend.value); // output value
+*/          }
+          dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_5_PASS});
+          dispatch({ type:PORTACTION.SET_CHECK0, chk0:PORTCHK.SUCCESS });
           sql1Done=true;
+          contPORT=true;
         }else {
           if(++sql1Cnt<ATTEMPTS) {
             if ('development'==process.env.NODE_ENV) {
-              console.log(`PORTSQL.execSQL1().query:  ${err.message}` );
+              console.log(`PORTSQLRollBack.execSQL1().request.execute():  ${err.message}` );
               console.log(`sql1Cnt = ${sql1Cnt}`);
             }
           }else{
             if ('development'==process.env.NODE_ENV) {
-              console.log(`PORTSQL.execSQL1().query():  ${err.message}` );
+              console.log(`PORTSQLRollBack.execSQL1().request.execute():  ${err.message}` );
             }
             dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
             dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
@@ -156,12 +186,12 @@ function execSQL1(disp,PORTstate){
     }else{
       if(++sql1Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
-          console.log(`PORTSQL.execSQL1().Connection: ${err.message}` );
+          console.log(`PORTSQLRollBack.Connection: ${err.message}` );
           console.log(`sql1Cnt = ${sql1Cnt}`);
         }
       }else{
         if ('development'==process.env.NODE_ENV) {
-          console.log(`PORTSQL.execSQL1().Connection: ${err.message}` );
+          console.log(`PORTSQLRollBack.Connection: ${err.message}` );
         }
         dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
@@ -173,13 +203,13 @@ function execSQL1(disp,PORTstate){
   connection.on('error', function(err) {
     if(++sql1Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
-        console.log(`PORTSQL.connection.on(error): ${err.message}` );
+        console.log(`PORTSQLRollBack.connection.on(error): ${err.message}` );
         console.log(`sql1Cnt = ${sql1Cnt}`);
       }
 
     }else{
       if ('development'==process.env.NODE_ENV) {
-        console.log(`PORTSQL.connection.on(error): ${err.message}` );
+        console.log(`PORTSQLRollBack.connection.on(error): ${err.message}` );
       }
       dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });

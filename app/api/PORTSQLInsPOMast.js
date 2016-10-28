@@ -235,6 +235,7 @@ fccurid,fmpaytype,fmusrmemo1,freasoncng
             if ('development'==process.env.NODE_ENV) {
               console.log(`PORTSQLInsPOMast.execSQL1() Sucess`);
             }
+            dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_50_PASS });
             contPORT=true;
             sql1Done=true;
           }else {

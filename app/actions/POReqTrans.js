@@ -45,6 +45,13 @@ export function primePORT(updateState) {
   }
 }
 
+export function setCheck0(chk0) {
+  return {
+    type: SET_CHECK0,
+    chk0: chk0
+  };
+}
+
 export function setCheck1(chk1) {
   return {
     type: SET_CHECK1,
@@ -154,6 +161,13 @@ export function setPOMast(poMast) {
   return {
     type: PORTACTION.SET_POMAST,
     poMast: poMast
+  };
+}
+
+export function setPORange(poMin,poMax) {
+  return {
+    type: PORTACTION.SET_PO_RANGE,
+    poRange: {poMin:poMin,poMax:poMax}
   };
 }
 

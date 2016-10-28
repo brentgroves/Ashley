@@ -97,6 +97,7 @@ export default class POReqTrans extends Component {
       </Row>
   } else if(
             (PORTSTATE.STARTED==this.props.POReqTrans.state) ||
+            (PORTSTATE.STEP_5_PASS==this.props.POReqTrans.state) ||
             (PORTSTATE.STEP_10_PASS==this.props.POReqTrans.state) ||
             (PORTSTATE.STEP_20_PASS==this.props.POReqTrans.state) ||
             (PORTSTATE.STEP_30_PASS==this.props.POReqTrans.state)
@@ -107,10 +108,8 @@ export default class POReqTrans extends Component {
         <Col >
           <Jumbotron  >
             <h1 style={{textAlign: 'center'}}>PO Validation in Progress</h1>
-            <p style={{padding: '0px'}}>The PO Request Transfer program is in the process of 
-            performing database checks to determine if the requested POs are ready to be 
-            transfered to Made2Manage.</p>
-           
+            <p style={{padding: '0px'}}>Checking if the previous session finished gracefully,
+            and all POs have a valid category and vendor selected.  This shouldn't take long.</p>
           </Jumbotron>
         </Col>
       </Row>
@@ -173,6 +172,22 @@ export default class POReqTrans extends Component {
           </Jumbotron>
         </Col>
       </Row>
+  } else if(
+            (PORTSTATE.STEP_40_PASS==this.props.POReqTrans.state) ||
+            (PORTSTATE.STEP_50_PASS==this.props.POReqTrans.state) ||
+            (PORTSTATE.STEP_60_PASS==this.props.POReqTrans.state)
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron  >
+            <h1 style={{textAlign: 'center'}}>PO Validation in Progress</h1>
+            <p style={{padding: '0px'}}>The PO Request Transfer program is through with it's
+            validation checks and is now transferring the requested PO(s) into Made2Manage.</p>
+          </Jumbotron>
+        </Col>
+      </Row>
   } else if(PORTSTATE.SUCCESS==this.props.POReqTrans.state){
     jumboTronTxt=
       <Row >
@@ -193,9 +208,13 @@ export default class POReqTrans extends Component {
   if(
       (PORTSTATE.PRIMED==this.props.POReqTrans.state) ||
       (PORTSTATE.STARTED==this.props.POReqTrans.state) ||  
+      (PORTSTATE.STEP_5_PASS==this.props.POReqTrans.state) ||
       (PORTSTATE.STEP_10_PASS==this.props.POReqTrans.state) ||  
       (PORTSTATE.STEP_20_PASS==this.props.POReqTrans.state) || 
-      (PORTSTATE.STEP_30_PASS==this.props.POReqTrans.state)  
+      (PORTSTATE.STEP_30_PASS==this.props.POReqTrans.state) || 
+      (PORTSTATE.STEP_40_PASS==this.props.POReqTrans.state) ||  
+      (PORTSTATE.STEP_50_PASS==this.props.POReqTrans.state) || 
+      (PORTSTATE.STEP_60_PASS==this.props.POReqTrans.state)  
     )
   {
     goButton = 
@@ -215,9 +234,13 @@ export default class POReqTrans extends Component {
   }
   if(
       (PORTSTATE.STARTED==this.props.POReqTrans.state) ||
+      (PORTSTATE.STEP_5_PASS==this.props.POReqTrans.state) ||
       (PORTSTATE.STEP_10_PASS==this.props.POReqTrans.state) ||  
       (PORTSTATE.STEP_20_PASS==this.props.POReqTrans.state) || 
       (PORTSTATE.STEP_30_PASS==this.props.POReqTrans.state) || 
+      (PORTSTATE.STEP_40_PASS==this.props.POReqTrans.state) ||  
+      (PORTSTATE.STEP_50_PASS==this.props.POReqTrans.state) || 
+      (PORTSTATE.STEP_60_PASS==this.props.POReqTrans.state) || 
       (PORTSTATE.FAILURE==this.props.POReqTrans.state)  ||
       (PORTSTATE.SUCCESS==this.props.POReqTrans.state)  
     )

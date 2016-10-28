@@ -14,6 +14,7 @@ export default function reducer( state = {}, action) {
         { 
           catRecs:{$set: [{}]},  
           catTypes:{$set: ['cat1','cat2','cat3']},
+          chk0: {$set: 'unknown'},
           chk1: {$set: 'unknown'},
           chk2: {$set: 'unknown'},
           chk3: {$set: 'unknown'},
@@ -29,6 +30,7 @@ export default function reducer( state = {}, action) {
           poCount:{$set:0},
           poItem:{$set: [{}]},  
           poMast:{$set: [{}]},  
+          poRange:{$set:{poMin:0,poMax:0}},
           state:{$set: PORTSTATE.NOT_PRIMED},
           status:{$set: ''},
           reason:{$set:''},
@@ -36,6 +38,18 @@ export default function reducer( state = {}, action) {
           vendorSelect:{$set:[{}]}
         });
       return newData;
+    }
+    case PORTACTION.SET_CHECK0:
+    {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set check0`);
+      }
+      var newData = update(state, 
+        { 
+          chk0: {$set: action.chk0}
+        });
+      return newData;
+
     }
     case PORTACTION.SET_CHECK1:
     {
@@ -211,6 +225,18 @@ export default function reducer( state = {}, action) {
       var newData = update(state, 
         { 
           poMast: {$set: action.poMast}
+        });
+      return newData;
+
+    }
+    case PORTACTION.SET_PO_RANGE:
+    {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set poRange`);
+      }
+      var newData = update(state, 
+        { 
+          poRange: {$set: action.poRange}
         });
       return newData;
 

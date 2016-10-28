@@ -14,9 +14,11 @@ import * as PORTCHK from "../actions/PORTChkConst.js"
 import * as PORTSQL from "./PORTSQL.js"
 import * as PORTSQLINSPOMAST from "./PORTSQLInsPOMast.js"
 import * as PORTSQLINSPOITEM from "./PORTSQLInsPOItem.js"
+import * as PORTSQLROLLBACK from "./PORTSQLRollBack.js"
 import * as PORTSQLSETPOCOUNT from "./PORTSQLSetPOCount.js"
 import * as PORTSQLSETPOITEM from "./PORTSQLSetPOItem.js"
 import * as PORTSQLSETPOMAST from "./PORTSQLSetPOMast.js"
+import * as PORTSQLSETPORANGE from "./PORTSQLSetPORange.js"
 import * as PORTSQLSETNEXTPO from "./PORTSQLSetNextPO.js"
 import * as PORTSTATE from "../actions/PORTState.js"
 import * as PROGRESSBUTTON from "../actions/ProgressButtonConst.js"
@@ -122,9 +124,11 @@ function cribConnect(disp,updateState){
               }
 
             }else{
-              dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-              dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-              primeFailed=true;
+              if(!isPrimed()){
+                dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
+                dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+                primeFailed=true;
+              }
             }
           }
         }
@@ -137,9 +141,11 @@ function cribConnect(disp,updateState){
         }
 
       }else{
-        dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-        primeFailed=true;
+        if(!isPrimed()){
+          dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
+          dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+          primeFailed=true;
+        }
       }
     }
   });
@@ -152,9 +158,11 @@ function cribConnect(disp,updateState){
       }
 
     }else{
-      dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-      primeFailed=true;
+      if(!isPrimed()){
+        dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
+        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+        primeFailed=true;
+      }
     }
   });
 }
@@ -195,9 +203,11 @@ function m2mConnect(disp,updateState){
                 }
 
               }else{
-                dispatch({ type:PORTACTION.SET_REASON, state:err.message });
-                dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-                primeFailed=true;
+                if(!isPrimed()){
+                  dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
+                  dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+                  primeFailed=true;
+                }
               }
             }
           }
@@ -209,9 +219,11 @@ function m2mConnect(disp,updateState){
           console.log(`m2mConnectCnt = ${m2mConnectCnt}`);
         }
       }else{
-        dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-        primeFailed=true;
+        if(!isPrimed()){
+          dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
+          dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+          primeFailed=true;
+        }
       }
 
     }
@@ -225,9 +237,11 @@ function m2mConnect(disp,updateState){
       }
 
     }else{
-      dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-      primeFailed=true;
+      if(!isPrimed()){
+        dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
+        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+        primeFailed=true;
+      }
     }
   });
 }
@@ -398,13 +412,14 @@ export default async function POReqTrans(disp,getSt,prime) {
   var dispatch = disp;
   var getState = getSt;
   var portState = getState(); 
-
   var continueProcess=true;
+  var doRollBackCheck=false;
 
+  // will already be started if called by Update functions.
   if(PORTSTATE.STARTED != portState.POReqTrans.state){
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STARTED });
     dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.LOADING });
-
+    doRollBackCheck=true;
   }
 
   dispatch({ type:PORTACTION.SET_STATUS, status:'' });
@@ -412,34 +427,120 @@ export default async function POReqTrans(disp,getSt,prime) {
 
 
   var cnt=0;
+
   if(prime){
     initPrime();
     primeDB(dispatch,false);
-  }
+    while(!isPrimed() && !primeFailed){
+      if(++cnt>15){
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
 
-
-  if ('development'==process.env.NODE_ENV) {
-    console.dir(portState);
-  }
-
-
-  while(!isPrimed() && !primeFailed){
-    if(++cnt>15){
-      break;
+    if(isPrimed()){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`primeDB Success continue PO Request Transfer.`);
+      }
     }else{
-      await MISC.sleep(2000);
+      continueProcess=false;
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`primeDB FAILED quit PO Request Transfer.`);
+      }
     }
   }
 
-  if(isPrimed()){
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`primeDB Success continue PO Request Transfer.`);
-    }
-    PORTSQLSETPOCOUNT.sql1(dispatch,getState);
-  }else{
+  if(!isPrimed()){
     continueProcess=false;
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`primeDB FAILED quit PO Request Transfer.`);
+  }
+
+  // CHECK FOR PREVIOUSLY FAILED SESSIONS
+  if(continueProcess&&doRollBackCheck){
+    cnt=0;
+    PORTSQLSETPORANGE.sql1(dispatch,getState);
+    while(continueProcess && !PORTSQLSETPORANGE.isDone()){
+      if(++cnt>15 || PORTSQLSETPORANGE.didFail()){
+        continueProcess=false;
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+
+    if(continueProcess && PORTSQLSETPORANGE.continuePORT()){
+      let poRange=getState().POReqTrans.poRange;
+      let poCount=(poRange.poend-poRange.postart);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`setPORange complete continue PORT process.`);
+        console.log(`poRange.postart=>${poRange.postart}`); 
+        console.log(`poRange.poend=>${poRange.poend}`); 
+      }
+      if(0==poCount){
+        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_5_PASS});
+        dispatch({ type:PORTACTION.SET_CHECK0, chk0:PORTCHK.SUCCESS });
+        if ('development'==process.env.NODE_ENV) {
+          console.log(`Previous SESSION Succeded No ROLLBACK necessary.`);
+        }
+      }else if((0<poCount)&&(50>poCount)){
+        // FAILED SESSION DETECTED DO ROLLBACK
+        if ('development'==process.env.NODE_ENV) {
+          console.log(`Previous SESSION Failed ROLLBACK Started.`);
+        }
+        PORTSQLROLLBACK.sql1(dispatch,getState);
+
+        cnt=0;
+
+        while(continueProcess && !PORTSQLROLLBACK.isDone()){
+          if(++cnt>15 || PORTSQLROLLBACK.didFail()){
+            continueProcess=false;
+            break;
+          }else{
+            await MISC.sleep(2000);
+          }
+        }
+
+
+      }else{
+        dispatch({ type:PORTACTION.SET_STATUS, status:`RollBack FAILED: PO count is out of range!` });
+        dispatch({ type:PORTACTION.SET_REASON, reason:`RollBack FAILED: PO count is out of range. Inform IT immediately!` });
+        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+        dispatch({ type:PORTACTION.SET_CHECK0, chk0:PORTCHK.FAIL });
+      }
+
+    }else{
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`setPOCount FAILED stop PORT process.`);
+      }
+      continueProcess=false;
+    }
+  }
+
+  // DEBUG
+ // dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+ // return;
+
+  if(continueProcess){
+    if(doRollBackCheck&&PORTSQLROLLBACK.started()&&PORTSQLROLLBACK.continuePORT()){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`PORTSQLROLLBACK.sql1() SUCCESS continue PORT process.`);
+      }
+      PORTSQLSETPOCOUNT.sql1(dispatch,getState);
+    }else if(doRollBackCheck&&PORTSQLROLLBACK.started()&&!PORTSQLROLLBACK.continuePORT()){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`PORTSQLROLLBACK.sql1() FAILED stop PORT process.`);
+      }
+      continueProcess=false;
+    }else if(doRollBackCheck&&!PORTSQLROLLBACK.started()){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`PORTSQLROLLBACK check NOT needed continue PORT process.`);
+      }
+      PORTSQLSETPOCOUNT.sql1(dispatch,getState);
+    }else{
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`PORTSQLROLLBACK check NOT needed continue PORT process.`);
+      }
+      PORTSQLSETPOCOUNT.sql1(dispatch,getState);
     }
   }
 
@@ -464,7 +565,6 @@ export default async function POReqTrans(disp,getSt,prime) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`setPOCount FAILED stop PORT process.`);
       }
-      
     }else if(PORTSQLSETPOCOUNT.noPORequests()) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`setPOCount there are no POs to transfer stop PORT process.`);

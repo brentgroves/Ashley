@@ -32,7 +32,32 @@ export default class POReqTransChecks extends Component {
   const  chk ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '10px 30px 10px 10px' };
   const  chk1 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   };
 
-  var check1Button,check2Button,check3Button,check4Button;
+  var check0Button,check1Button,check2Button,check3Button,check4Button;
+  switch (this.props.POReqTrans.chk0) {
+    case PORTCHK.SUCCESS:
+      check0Button = 
+        <Row style={chk} >
+          <Col  xs={10}>Previous Session Check</Col>
+          <Col  xs={2}><Button bsStyle="success"><Glyphicon glyph="ok" /></Button></Col>
+        </Row>
+      break; 
+    case PORTCHK.FAILURE:
+        check0Button = 
+          <Row style={chk} >
+            <Col  xs={10}>Previous Session Check</Col>
+            <Col  xs={2}><Button bsStyle="danger"><Glyphicon glyph="remove" /></Button></Col>
+          </Row>;
+        break;
+      default: 
+        check0Button = 
+          <Row style={chk} >
+            <Col  xs={10}>Previous Session Check</Col>
+            <Col  xs={2}><Button bsStyle="info"><Glyphicon glyph="time" /></Button></Col>
+          </Row>;
+        break;
+
+  }
+
   switch (this.props.POReqTrans.chk1) {
     case PORTCHK.SUCCESS:
       check1Button = 
@@ -138,6 +163,11 @@ export default class POReqTransChecks extends Component {
   const jbk ={backgroundColor: 'black' };
     return (
       <div>
+        <Row >
+          <Col xs={11}>
+              {check0Button}
+          </Col>
+        </Row>
         <Row >
           <Col xs={11}>
               {check1Button}

@@ -1,3 +1,107 @@
+--///////////////////////////////////////////
+-- Previous PO Request Transfer session failed 
+-- Delete all pomast and poitem records inserted
+-- in that session.
+--////////////////////////////////////////////////
+create procedure [dbo].[bpDevPORTRollBack] 
+@postart char(6),
+@poend char(6)
+as
+begin
+	Declare @start int,@end int,
+	@ret int
+	set @start= CAST(@postart AS int)
+	set @end= CAST(@poend AS int)
+--select @start,@end
+--select (@end-@start)
+	set @ret =
+	CASE
+		WHEN ((@end-@start)<50) THEN 0
+		else -1
+	END
+--select @ret
+	IF (0=@ret)
+	BEGIN
+		delete from btpomast
+		where fpono >=@postart and fpono <=@poend 
+		delete from btpoitem
+		where fpono >=@postart and fpono <=@poend
+	END
+end
+
+--///////////////////////////////////////////
+-- Previous PO Request Transfer session failed 
+-- Delete all pomast and poitem records inserted
+-- in that session.
+--////////////////////////////////////////////////
+create procedure [dbo].[bpPORTRollBack] 
+@postart char(6),
+@poend char(6)
+as
+begin
+	Declare @start int,@end int,
+	@ret int
+	set @start= CAST(@postart AS int)
+	set @end= CAST(@poend AS int)
+--select @start,@end
+--select (@end-@start)
+	set @ret =
+	CASE
+		WHEN ((@end-@start)<50) THEN 0
+		else -1
+	END
+--select @ret
+	IF (0=@ret)
+	BEGIN
+		delete from pomast
+		where fpono >=@postart and fpono <=@poend 
+		delete from poitem
+		where fpono >=@postart and fpono <=@poend
+	END
+end
+create procedure [dbo].[bpDevPORTPORange]
+@postart int output,
+@poend int output
+AS
+BEGIN
+ SET NOCOUNT ON
+select @postart=min(fpono) from btpomast
+select @poend=max(fpono) from btpomast
+--set @postart=1
+--set @poend=5
+IF (@postart IS NULL)
+ BEGIN
+   set @postart = 0
+ END
+IF (@poend IS NULL)
+ BEGIN
+   set @poend = 0
+ END
+
+RETURN
+END
+
+create procedure [dbo].[bpPORTPORange]
+@postart int output,
+@poend int output
+AS
+BEGIN
+ SET NOCOUNT ON
+select @postart=min(fpono) from btpomast
+select @poend=max(fpono) from btpomast
+IF (@postart IS NULL)
+ BEGIN
+   set @postart = 0
+ END
+IF (@poend IS NULL)
+ BEGIN
+   set @poend = 0
+ END
+
+RETURN
+END
+
+
 create procedure [dbo].[bpDevPOItemInsert] 
 @fpono char(6),
 @fpartno char(25),
