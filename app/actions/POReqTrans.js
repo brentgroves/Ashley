@@ -94,6 +94,13 @@ export function setGoButton(setMe) {
   };
 }
 
+export function setLogId(logId) {
+  return {
+    type: PORTACTION.SET_LOG_ID,
+    logId: logId
+  };
+}
+
 export function setM2MVendors(m2mVendors) {
   return {
     type: PORTACTION.SET_M2M_VENDORS,
@@ -164,10 +171,10 @@ export function setPOMast(poMast) {
   };
 }
 
-export function setPORange(poMin,poMax) {
+export function setPOMastRange(poMin,poMax) {
   return {
-    type: PORTACTION.SET_PO_RANGE,
-    poRange: {poMin:poMin,poMax:poMax}
+    type: PORTACTION.SET_POMAST_RANGE,
+    poMastRange: {poMin:poMin,poMax:poMax}
   };
 }
 

@@ -21,6 +21,7 @@ export default function reducer( state = {}, action) {
           chk4: {$set: 'unknown'},
           currentPO:{$set:0},
           goButton:{$set:''},
+          logId:{$set:0},
           m2mVendors:{$set:[{}]},
           m2mVendorSelect:{$set:[{}]},
           nextPO:{$set:0},
@@ -30,7 +31,7 @@ export default function reducer( state = {}, action) {
           poCount:{$set:0},
           poItem:{$set: [{}]},  
           poMast:{$set: [{}]},  
-          poRange:{$set:{poMin:0,poMax:0}},
+          poMastRange:{$set:{poMin:0,poMax:0}},
           state:{$set: PORTSTATE.NOT_PRIMED},
           status:{$set: ''},
           reason:{$set:''},
@@ -110,6 +111,14 @@ export default function reducer( state = {}, action) {
         });
       return newData;
 
+    }
+    case PORTACTION.SET_LOGID:
+    {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set logId`);
+      }
+      var newData = update(state, {logId: {$set: action.logId}});
+      return newData;
     }
     case PORTACTION.SET_GO_BUTTON:
     {
@@ -229,14 +238,14 @@ export default function reducer( state = {}, action) {
       return newData;
 
     }
-    case PORTACTION.SET_PO_RANGE:
+    case PORTACTION.SET_POMAST_RANGE:
     {
       if ('development'==process.env.NODE_ENV) {
-        console.log(`set poRange`);
+        console.log(`set poMastRange`);
       }
       var newData = update(state, 
         { 
-          poRange: {$set: action.poRange}
+          poMastRange: {$set: action.poMastRange}
         });
       return newData;
 

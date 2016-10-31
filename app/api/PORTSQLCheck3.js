@@ -7,7 +7,6 @@ import * as CONNECT from "./PORTSQLConst.js"
 import * as M2M from "./PORTSQLM2M.js"
 import * as MISC from "./Misc.js"
 
-var prod=false;
 
 var portCheckDone=false;
 var portCheckCnt=0;
@@ -111,7 +110,7 @@ function portChk(disp,getSt){
 
       // Query
       let qry;
-      if (prod===true) {
+      if (MISC.PROD===true) {
         qry = `
           select ROW_NUMBER() OVER(ORDER BY PONumber) id, po.PONumber, po.Address1, vendor.VendorNumber, vendor.UDFM2MVENDORNUMBER
           from

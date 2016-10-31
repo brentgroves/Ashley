@@ -182,7 +182,7 @@ export default class POReqTrans extends Component {
         <Col xs={1}>&nbsp;</Col>
         <Col >
           <Jumbotron  >
-            <h1 style={{textAlign: 'center'}}>PO Validation in Progress</h1>
+            <h1 style={{textAlign: 'center'}}>PO Request Transfer</h1>
             <p style={{padding: '0px'}}>The PO Request Transfer program is through with it's
             validation checks and is now transferring the requested PO(s) into Made2Manage.</p>
           </Jumbotron>

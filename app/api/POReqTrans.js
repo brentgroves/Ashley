@@ -12,13 +12,15 @@ import * as M2M from "./PORTSQLM2M.js"
 import * as PORTACTION from "../actions/PORTActionConst.js"
 import * as PORTCHK from "../actions/PORTChkConst.js"
 import * as PORTSQL from "./PORTSQL.js"
+import * as PORTSQLEXEC from "./PORTSQLExec.js"
+import * as PORTSQLINSLOG from "./PORTSQLInsLog.js"
 import * as PORTSQLINSPOMAST from "./PORTSQLInsPOMast.js"
 import * as PORTSQLINSPOITEM from "./PORTSQLInsPOItem.js"
-import * as PORTSQLROLLBACK from "./PORTSQLRollBack.js"
+import * as PORTSQLDELPOMASTANDPOITEM from "./PORTSQLDelPOMastAndPOItem.js"
 import * as PORTSQLSETPOCOUNT from "./PORTSQLSetPOCount.js"
 import * as PORTSQLSETPOITEM from "./PORTSQLSetPOItem.js"
 import * as PORTSQLSETPOMAST from "./PORTSQLSetPOMast.js"
-import * as PORTSQLSETPORANGE from "./PORTSQLSetPORange.js"
+import * as PORTSQLSETPOMASTRANGE from "./PORTSQLSetPOMastRange.js"
 import * as PORTSQLSETNEXTPO from "./PORTSQLSetNextPO.js"
 import * as PORTSTATE from "../actions/PORTState.js"
 import * as PROGRESSBUTTON from "../actions/ProgressButtonConst.js"
@@ -413,13 +415,13 @@ export default async function POReqTrans(disp,getSt,prime) {
   var getState = getSt;
   var portState = getState(); 
   var continueProcess=true;
-  var doRollBackCheck=false;
+  var isFirstPass=false;
 
   // will already be started if called by Update functions.
   if(PORTSTATE.STARTED != portState.POReqTrans.state){
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STARTED });
     dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.LOADING });
-    doRollBackCheck=true;
+    isFirstPass=true;
   }
 
   dispatch({ type:PORTACTION.SET_STATUS, status:'' });
@@ -455,12 +457,13 @@ export default async function POReqTrans(disp,getSt,prime) {
     continueProcess=false;
   }
 
+
   // CHECK FOR PREVIOUSLY FAILED SESSIONS
-  if(continueProcess&&doRollBackCheck){
+  if(continueProcess&&isFirstPass){
+    PORTSQLINSLOG.sql1(dispatch,getState);
     cnt=0;
-    PORTSQLSETPORANGE.sql1(dispatch,getState);
-    while(continueProcess && !PORTSQLSETPORANGE.isDone()){
-      if(++cnt>15 || PORTSQLSETPORANGE.didFail()){
+    while(continueProcess && !PORTSQLINSLOG.isDone()){
+      if(++cnt>15 || PORTSQLINSLOG.didFail()){
         continueProcess=false;
         break;
       }else{
@@ -468,49 +471,128 @@ export default async function POReqTrans(disp,getSt,prime) {
       }
     }
 
-    if(continueProcess && PORTSQLSETPORANGE.continuePORT()){
-      let poRange=getState().POReqTrans.poRange;
-      let poCount=(poRange.poend-poRange.postart);
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`setPORange complete continue PORT process.`);
-        console.log(`poRange.postart=>${poRange.postart}`); 
-        console.log(`poRange.poend=>${poRange.poend}`); 
+    if(continueProcess && PORTSQLINSLOG.continuePORT()){
+      PORTSQLSETPOMASTRANGE.sql1(dispatch,getState);
+    }else{
+      continueProcess=false;
+    }
+
+    cnt=0;
+    while(continueProcess && !PORTSQLSETPOMASTRANGE.isDone()){
+      if(++cnt>15 || PORTSQLSETPOMASTRANGE.didFail()){
+        continueProcess=false;
+        break;
+      }else{
+        await MISC.sleep(2000);
       }
-      if(0==poCount){
+    }
+
+
+    if(continueProcess && PORTSQLSETPOMASTRANGE.continuePORT()){
+      let poMastRange=getState().POReqTrans.poMastRange;
+      let poMastCount=(poMastRange.poend-poMastRange.postart);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`setPOMastRange complete continue PORT process.`);
+        console.log(`poMastRange.postart=>${poMastRange.postart}`); 
+        console.log(`poMastRange.poend=>${poMastRange.poend}`); 
+      }
+      if(0==poMastCount){
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_5_PASS});
         dispatch({ type:PORTACTION.SET_CHECK0, chk0:PORTCHK.SUCCESS });
         if ('development'==process.env.NODE_ENV) {
           console.log(`Previous SESSION Succeded No ROLLBACK necessary.`);
         }
-      }else if((0<poCount)&&(50>poCount)){
+        // Sanity check on how many po(s) are being deleted
+      }else if((0<poMastCount)&&(250>poMastCount)){
         // FAILED SESSION DETECTED DO ROLLBACK
         if ('development'==process.env.NODE_ENV) {
           console.log(`Previous SESSION Failed ROLLBACK Started.`);
         }
-        PORTSQLROLLBACK.sql1(dispatch,getState);
-
+        PORTSQLDELPOMASTANDPOITEM.sql1(dispatch,getState,CONNECT.m2mDefTO);
         cnt=0;
-
-        while(continueProcess && !PORTSQLROLLBACK.isDone()){
-          if(++cnt>15 || PORTSQLROLLBACK.didFail()){
+        while(continueProcess && !PORTSQLDELPOMASTANDPOITEM.isDone()){
+          if(++cnt>15 || PORTSQLDELPOMASTANDPOITEM.didFail()){
             continueProcess=false;
             break;
           }else{
             await MISC.sleep(2000);
           }
         }
+        if(continueProcess && PORTSQLDELPOMASTANDPOITEM.continuePORT()){
+          if ('development'==process.env.NODE_ENV) {
+            console.log(`DELPOMASTANDPOITEM M2M complete continue PORT process.`);
+          }
+          PORTSQLDELPOMASTANDPOITEM.sql1(dispatch,getState,CONNECT.cribDefTO);
+        }else{
+          if ('development'==process.env.NODE_ENV) {
+            console.log(`DELPOMASTANDPOITEM M2M FAILED stop PORT process.`);
+          }
+          continueProcess=false;
+        }
+
+        cnt=0;
+        while(continueProcess && !PORTSQLDELPOMASTANDPOITEM.isDone()){
+          if(++cnt>15 || PORTSQLDELPOMASTANDPOITEM.didFail()){
+            continueProcess=false;
+            break;
+          }else{
+            await MISC.sleep(2000);
+          }
+        }
+        if(continueProcess && PORTSQLDELPOMASTANDPOITEM.continuePORT()){
+          if ('development'==process.env.NODE_ENV) {
+            console.log(`DELPOMASTANDPOITEM Crib complete continue PORT process.`);
+          }
+          let logId=getState().POReqTrans.logId;
+          let sql=`
+            update [dbo].[btPORTLog]
+            set fRollBack=1,
+            fRBPOMastStart=${poMastRange.postart},
+            fRBPOMastEnd=${poMastRange.poend},
+            fStart=GETDATE()
+            where id=${logId}
+          `;
+          PORTSQLEXEC.sql1(dispatch,getState,sql);
+
+        }else{
+          if ('development'==process.env.NODE_ENV) {
+            console.log(`ROLLBACK Crib FAILED stop PORT process.`);
+          }
+          continueProcess=false;
+        }
+
+        cnt=0;
+        while(continueProcess && !PORTSQLEXEC.isDone()){
+          if(++cnt>15 || PORTSQLEXEC.didFail()){
+            continueProcess=false;
+            break;
+          }else{
+            await MISC.sleep(2000);
+          }
+        }
+        if(continueProcess && PORTSQLEXEC.continuePORT()){
+          // we are done with firstPass processing
+        }else{
+          if ('development'==process.env.NODE_ENV) {
+            console.log(`btPORTLog update FAILED stop PORT process.`);
+          }
+
+          continueProcess=false;
+        }
+
 
 
       }else{
-        dispatch({ type:PORTACTION.SET_STATUS, status:`RollBack FAILED: PO count is out of range!` });
-        dispatch({ type:PORTACTION.SET_REASON, reason:`RollBack FAILED: PO count is out of range. Inform IT immediately!` });
+        dispatch({ type:PORTACTION.SET_STATUS, status:`RollBack FAILED: POMast count is out of range!` });
+        dispatch({ type:PORTACTION.SET_REASON, reason:`RollBack FAILED: POMast count is out of range. Inform IT immediately!` });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
         dispatch({ type:PORTACTION.SET_CHECK0, chk0:PORTCHK.FAIL });
+        continueProcess=false;
       }
 
     }else{
       if ('development'==process.env.NODE_ENV) {
-        console.log(`setPOCount FAILED stop PORT process.`);
+        console.log(`setPOMastRange FAILED stop PORT process.`);
       }
       continueProcess=false;
     }
@@ -520,32 +602,14 @@ export default async function POReqTrans(disp,getSt,prime) {
  // dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
  // return;
 
+ // DONE WITH FIRSTPASS PROCESSING AT THIS POINT
   if(continueProcess){
-    if(doRollBackCheck&&PORTSQLROLLBACK.started()&&PORTSQLROLLBACK.continuePORT()){
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`PORTSQLROLLBACK.sql1() SUCCESS continue PORT process.`);
-      }
-      PORTSQLSETPOCOUNT.sql1(dispatch,getState);
-    }else if(doRollBackCheck&&PORTSQLROLLBACK.started()&&!PORTSQLROLLBACK.continuePORT()){
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`PORTSQLROLLBACK.sql1() FAILED stop PORT process.`);
-      }
-      continueProcess=false;
-    }else if(doRollBackCheck&&!PORTSQLROLLBACK.started()){
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`PORTSQLROLLBACK check NOT needed continue PORT process.`);
-      }
-      PORTSQLSETPOCOUNT.sql1(dispatch,getState);
-    }else{
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`PORTSQLROLLBACK check NOT needed continue PORT process.`);
-      }
-      PORTSQLSETPOCOUNT.sql1(dispatch,getState);
-    }
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_5_PASS});
+    dispatch({ type:PORTACTION.SET_CHECK0, chk0:PORTCHK.SUCCESS });
+    PORTSQLSETPOCOUNT.sql1(dispatch,getState);
   }
 
   cnt=0;
-
   while(continueProcess && !PORTSQLSETPOCOUNT.isDone()){
     if(++cnt>15 || PORTSQLSETPOCOUNT.didFail()){
       continueProcess=false;
@@ -561,15 +625,8 @@ export default async function POReqTrans(disp,getSt,prime) {
     }
     CM.sql1(dispatch,getState);
   }else{
-    if(PORTSQLSETPOCOUNT.didFail()){
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`setPOCount FAILED stop PORT process.`);
-      }
-    }else if(PORTSQLSETPOCOUNT.noPORequests()) {
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`setPOCount there are no POs to transfer stop PORT process.`);
-      }
-      dispatch({ type:PORTACTION.SET_STATUS, status:'There are no POs to transfer...' });
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`setPOCount FAILED stop PORT process.`);
     }
     continueProcess=false;
   }
@@ -897,13 +954,174 @@ export default async function POReqTrans(disp,getSt,prime) {
     if ('development'==process.env.NODE_ENV) {
       console.log(`PORTSQLINSPOITEM complete continue PORT process.`);
     }
-    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+    PORTSQLSETPOMASTRANGE.sql1(dispatch,getState);
   }else{
     if ('development'==process.env.NODE_ENV) {
       console.log(`PORTSQLINSPOITEM.sql1() FAILED stop PORT process.`);
     }
     continueProcess=false;
   }
+
+
+  // START CRIB POMAST / POITEM DELETIONS
+  cnt=0;
+  while(continueProcess && !PORTSQLSETPOMASTRANGE.isDone()){
+    if(++cnt>15 || PORTSQLSETPOMASTRANGE.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+
+
+  if(continueProcess && PORTSQLSETPOMASTRANGE.continuePORT()){
+    let poMastRange=getState().POReqTrans.poMastRange;
+    let logId=getState().POReqTrans.logId;
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`setPOMastRange complete continue PORT process.`);
+      console.log(`poMastRange.postart=>${poMastRange.postart}`); 
+      console.log(`poMastRange.poend=>${poMastRange.poend}`); 
+    }
+
+    let sql=`
+      update [dbo].[btPORTLog]
+      set fRollBack=1,
+      fPOMastStart=${poMastRange.postart},
+      fPOMastEnd=${poMastRange.poend}
+      where id=${logId}
+    `;
+    PORTSQLEXEC.sql1(dispatch,getState,sql);
+
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`setSetPOMastRange FAILED stop PORT process.`);
+    }
+    continueProcess=false;
+  }
+
+  cnt=0;
+  while(continueProcess && !PORTSQLEXEC.isDone()){
+    if(++cnt>15 || PORTSQLEXEC.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+  if(continueProcess && PORTSQLEXEC.continuePORT()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLEXEC update Log complete continue PORT process.`);
+    }
+    let poMastRange=getState().POReqTrans.poMastRange;
+    let poMastCount=(poMastRange.poend-poMastRange.postart);
+
+    // Sanity check on how many po(s) are being deleted
+    if((0<poMastCount)&&(250>poMastCount)){
+      PORTSQLDELPOMASTANDPOITEM.sql1(dispatch,getState,CONNECT.cribDefTO);
+    }else{
+      dispatch({ type:PORTACTION.SET_STATUS, status:`DEL POMAST AND POITEM FAILED: POMast count is out of range!` });
+      dispatch({ type:PORTACTION.SET_REASON, reason:`DELPOMASTANDPOITEM FAILED: POMast count is out of range. Inform IT immediately!` });
+      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+      dispatch({ type:PORTACTION.SET_CHECK4, chk4:PORTCHK.FAIL });
+      continueProcess=false;
+    }
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`PORTSQLEXEC update Log FAILED stop PORT process.`);
+    }
+    continueProcess=false;
+  }
+
+
+  cnt=0;
+  while(continueProcess && !PORTSQLDELPOMASTANDPOITEM.isDone()){
+    if(++cnt>15 || PORTSQLDELPOMASTANDPOITEM.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+  if(continueProcess && PORTSQLDELPOMASTANDPOITEM.continuePORT()){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`DELPOMASTANDPOITEM M2M complete continue PORT process.`);
+    }
+   // statement
+    let statement;
+    if (MISC.PROD===true) {
+      statement = `
+        update PO
+        set POStatusNo = 0 
+        WHERE POSTATUSNO = 3 and SITEID <> '90' and (BLANKETPO = '' or BLANKETPO is null)
+      `;
+    }else{
+      statement = `
+        update btPO
+        set POStatusNo = 0 
+        WHERE POSTATUSNO = 3 and SITEID <> '90' and (BLANKETPO = '' or BLANKETPO is null)
+      `;
+    }
+    PORTSQLEXEC.sql1(dispatch,getState,statement);
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`DELPOMASTANDPOITEM M2M FAILED stop PORT process.`);
+    }
+    continueProcess=false;
+  }
+
+
+  cnt=0;
+  while(continueProcess && !PORTSQLEXEC.isDone()){
+    if(++cnt>15 || PORTSQLEXEC.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+  if(continueProcess && PORTSQLEXEC.continuePORT()){
+    let logId=getState().POReqTrans.logId;
+    let sql=`
+      update [dbo].[btPORTLog]
+      set fEnd=GETDATE()
+      where id=${logId}
+    `;
+    PORTSQLEXEC.sql1(dispatch,getState,sql);
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`btPO.POStatusNo update FAILED stop PORT process.`);
+    }
+
+    continueProcess=false;
+  }
+
+  cnt=0;
+  while(continueProcess && !PORTSQLEXEC.isDone()){
+    if(++cnt>15 || PORTSQLEXEC.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+  if(continueProcess && PORTSQLEXEC.continuePORT()){
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_60_PASS });
+    dispatch({ type:PORTACTION.SET_CHECK4, chk4:PORTCHK.SUCCESS});
+
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`btPORTLog update FAILED stop PORT process.`);
+    }
+
+    continueProcess=false;
+  }
+
+
+
 
   return;
 

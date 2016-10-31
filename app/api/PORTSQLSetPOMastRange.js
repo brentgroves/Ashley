@@ -32,7 +32,7 @@ export async function sql1(disp,getSt){
 
   while(!isDone() && !didFail()){
     if(++cnt>15){
-      dispatch({ type:PORTACTION.SET_REASON, reason:`PORTSQLSetPORange.sql1() Timed Out or Failed.` });
+      dispatch({ type:PORTACTION.SET_REASON, reason:`PORTSQLSetPOMastRange.sql1() Timed Out or Failed.` });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
       break;
     }else{
@@ -42,23 +42,23 @@ export async function sql1(disp,getSt){
 
   if(isDone()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQLSetPORange.sql1(): Completed`)
+      console.log(`PORTSQLSetPOMastRange.sql1(): Completed`)
     }
 
   }else{
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQLSetPORange.sql1(): Did NOT Complete`)
+      console.log(`PORTSQLSetPOMastRange.sql1(): Did NOT Complete`)
     }
   }
 
   if(didFail()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQLSetPORange.sql1(): Failed`)
+      console.log(`PORTSQLSetPOMastRange.sql1(): Failed`)
     }
 
   }else{
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQLSetPORange.sql1(): Suceeded`)
+      console.log(`PORTSQLSetPOMastRange.sql1(): Suceeded`)
     }
   }
 
@@ -107,7 +107,7 @@ function execSQL1(disp,getSt){
   var getState = getSt;
   var state = getState();
   if ('development'==process.env.NODE_ENV) {
-    console.log(`PORTSQLSetPORange.execSQL1() top=>${sql1Cnt}`);
+    console.log(`PORTSQLSetPOMastRange.execSQL1() top=>${sql1Cnt}`);
   }
 
 
@@ -115,15 +115,15 @@ function execSQL1(disp,getSt){
     // ... error checks
     if(null==err){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`PORTSQLSetPORange.execSQL1() Connection Sucess`);
+        console.log(`PORTSQLSetPOMastRange.execSQL1() Connection Sucess`);
       }
 
       let sproc;
 
       if (MISC.PROD===true) {
-        sproc = `bpPORTPORange`;
+        sproc = `bpPORTPOMastRange`;
       }else{
-        sproc = `bpDevPORTPORange`;
+        sproc = `bpDevPORTPOMastRange`;
       }
 
       var postart,poend;
@@ -135,7 +135,7 @@ function execSQL1(disp,getSt){
         // ... error checks
         if(null==err){
           if ('development'==process.env.NODE_ENV) {
-            console.log(`PORTSQLSetPORange.execSQL1() Sucess`);
+            console.log(`PORTSQLSetPOMastRange.execSQL1() Sucess`);
 /*            console.log(recordsets.length); // count of recordsets returned by the procedure
             console.log(recordsets[0].length); // count of rows contained in first recordset
             console.log(returnValue); // procedure return value
@@ -147,18 +147,18 @@ function execSQL1(disp,getSt){
 */          }
           postart=request.parameters.postart.value;
           poend=request.parameters.poend.value;
-          dispatch({ type:PORTACTION.SET_PO_RANGE,poRange:{postart,poend}});
+          dispatch({ type:PORTACTION.SET_POMAST_RANGE,poMastRange:{postart,poend}});
           sql1Done=true;
           contPORT=true;
         }else {
           if(++sql1Cnt<ATTEMPTS) {
             if ('development'==process.env.NODE_ENV) {
-              console.log(`PORTSQLSetPORange.execSQL1().request.execute():  ${err.message}` );
+              console.log(`PORTSQLSetPOMastRange.execSQL1().request.execute():  ${err.message}` );
               console.log(`sql1Cnt = ${sql1Cnt}`);
             }
           }else{
             if ('development'==process.env.NODE_ENV) {
-              console.log(`PORTSQLSetPORange.execSQL1().request.execute():  ${err.message}` );
+              console.log(`PORTSQLSetPOMastRange.execSQL1().request.execute():  ${err.message}` );
             }
             dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
             dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
@@ -169,12 +169,12 @@ function execSQL1(disp,getSt){
     }else{
       if(++sql1Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
-          console.log(`PORTSQLSetPORange.Connection: ${err.message}` );
+          console.log(`PORTSQLSetPOMastRange.Connection: ${err.message}` );
           console.log(`sql1Cnt = ${sql1Cnt}`);
         }
       }else{
         if ('development'==process.env.NODE_ENV) {
-          console.log(`PORTSQLSetPORange.Connection: ${err.message}` );
+          console.log(`PORTSQLSetPOMastRange.Connection: ${err.message}` );
         }
         dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
@@ -192,7 +192,7 @@ function execSQL1(disp,getSt){
 
     }else{
       if ('development'==process.env.NODE_ENV) {
-        console.log(`PORTSQLSetPORange.connection.on(error): ${err.message}` );
+        console.log(`PORTSQLSetPOMastRange.connection.on(error): ${err.message}` );
       }
       dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
