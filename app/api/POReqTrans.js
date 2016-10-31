@@ -1082,6 +1082,7 @@ export default async function POReqTrans(disp,getSt,prime) {
       await MISC.sleep(2000);
     }
   }
+  
   if(continueProcess && PORTSQLEXEC.continuePORT()){
     let logId=getState().POReqTrans.logId;
     let sql=`
