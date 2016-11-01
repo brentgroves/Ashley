@@ -6,8 +6,6 @@ import * as PORTCHK from "../actions/PORTChkConst.js"
 import * as CONNECT from "./PORTSQLConst.js"
 import * as MISC from "./Misc.js"
 
-var prod=false;
-
 var sql1Done=false;
 var sql1Cnt=0;
 var sql1Failed=false;
@@ -107,7 +105,7 @@ function execSQL1(disp,poNumber,vendorNumber,Address1,Address2,Address3,Address4
 
       
       let procedure_name;
-      if (prod===true) {
+      if (MISC.PROD===true) {
         procedure_name = `bpPOVendorUpdate`;
       }else{
         procedure_name = `bpDevPOVendorUpdate`;

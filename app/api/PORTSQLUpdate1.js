@@ -6,7 +6,6 @@ import * as PORTCHK from "../actions/PORTChkConst.js"
 import * as CONNECT from "./PORTSQLConst.js"
 import * as MISC from "./Misc.js"
 
-var prod=false;
 
 var sql1Done=false;
 var sql1Cnt=0;
@@ -107,7 +106,7 @@ function execSQL1(disp,poNumber,item,poCategory){
 
       
       let statement;
-      if (prod===true) {
+      if (MISC.prod===true) {
         statement = `
           update PODETAIL
           set UDF_POCATEGORY = ${poCategory}

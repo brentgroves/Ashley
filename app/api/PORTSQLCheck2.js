@@ -6,7 +6,7 @@ import * as PORTCHK from "../actions/PORTChkConst.js"
 import * as CONNECT from "./PORTSQLConst.js"
 import * as MISC from "./Misc.js"
 
-var prod=false;
+
 
 var portCheck2Done=false;
 var portCheck2Cnt=0;
@@ -95,7 +95,7 @@ function portChk2(disp){
 
       // Query
       let qry;
-      if (prod===true) {
+      if (MISC.PROD===true) {
         qry = `
           select ROW_NUMBER() OVER(ORDER BY PONumber) id, po.PONumber, po.Address1
           from

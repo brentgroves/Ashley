@@ -17,6 +17,7 @@ import * as PORTSQLINSLOG from "./PORTSQLInsLog.js"
 import * as PORTSQLINSPOMAST from "./PORTSQLInsPOMast.js"
 import * as PORTSQLINSPOITEM from "./PORTSQLInsPOItem.js"
 import * as PORTSQLDELPOMASTANDPOITEM from "./PORTSQLDelPOMastAndPOItem.js"
+import * as PORTSQLDELPOMASTANDPOITEMANDPOSTATUS from "./PORTSQLDelPOMastAndPOItemAndPOStatus.js"
 import * as PORTSQLSETPOCOUNT from "./PORTSQLSetPOCount.js"
 import * as PORTSQLSETPOITEM from "./PORTSQLSetPOItem.js"
 import * as PORTSQLSETPOMAST from "./PORTSQLSetPOMast.js"
@@ -29,7 +30,6 @@ import * as UPDATE1 from "./PORTSQLUpdate1.js"
 import * as UPDATE2 from "./PORTSQLUpdate2.js"
 import * as UPDATE3 from "./PORTSQLUpdate3.js"
 
-var prod=false;
 var errors=false;
 var primed=false;
 var primeFailed=false;
@@ -987,8 +987,7 @@ export default async function POReqTrans(disp,getSt,prime) {
 
     let sql=`
       update [dbo].[btPORTLog]
-      set fRollBack=1,
-      fPOMastStart=${poMastRange.postart},
+      set fPOMastStart=${poMastRange.postart},
       fPOMastEnd=${poMastRange.poend}
       where id=${logId}
     `;
@@ -1020,10 +1019,10 @@ export default async function POReqTrans(disp,getSt,prime) {
 
     // Sanity check on how many po(s) are being deleted
     if((0<poMastCount)&&(250>poMastCount)){
-      PORTSQLDELPOMASTANDPOITEM.sql1(dispatch,getState,CONNECT.cribDefTO);
+      PORTSQLDELPOMASTANDPOITEMANDPOSTATUS.sql1(dispatch,getState,CONNECT.cribDefTO);
     }else{
-      dispatch({ type:PORTACTION.SET_STATUS, status:`DEL POMAST AND POITEM FAILED: POMast count is out of range!` });
-      dispatch({ type:PORTACTION.SET_REASON, reason:`DELPOMASTANDPOITEM FAILED: POMast count is out of range. Inform IT immediately!` });
+      dispatch({ type:PORTACTION.SET_STATUS, status:`DEL POMAST AND POITEM And update POSTATUSNO FAILED: POMast count is out of range!` });
+      dispatch({ type:PORTACTION.SET_REASON, reason:`DELPOMASTANDPOITEMANDPOSTATUS FAILED: POMast count is out of range. Inform IT immediately!` });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
       dispatch({ type:PORTACTION.SET_CHECK4, chk4:PORTCHK.FAIL });
       continueProcess=false;
@@ -1037,90 +1036,28 @@ export default async function POReqTrans(disp,getSt,prime) {
 
 
   cnt=0;
-  while(continueProcess && !PORTSQLDELPOMASTANDPOITEM.isDone()){
-    if(++cnt>15 || PORTSQLDELPOMASTANDPOITEM.didFail()){
+  while(continueProcess && !PORTSQLDELPOMASTANDPOITEMANDPOSTATUS.isDone()){
+    if(++cnt>15 || PORTSQLDELPOMASTANDPOITEMANDPOSTATUS.didFail()){
       continueProcess=false;
       break;
     }else{
       await MISC.sleep(2000);
     }
   }
-  if(continueProcess && PORTSQLDELPOMASTANDPOITEM.continuePORT()){
+  if(continueProcess && PORTSQLDELPOMASTANDPOITEMANDPOSTATUS.continuePORT()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`DELPOMASTANDPOITEM M2M complete continue PORT process.`);
+      console.log(`PORTSQLDELPOMASTANDPOITEMANDPOSTATUS M2M complete done with PORT process.`);
     }
-   // statement
-    let statement;
-    if (MISC.PROD===true) {
-      statement = `
-        update PO
-        set POStatusNo = 0 
-        WHERE POSTATUSNO = 3 and SITEID <> '90' and (BLANKETPO = '' or BLANKETPO is null)
-      `;
-    }else{
-      statement = `
-        update btPO
-        set POStatusNo = 0 
-        WHERE POSTATUSNO = 3 and SITEID <> '90' and (BLANKETPO = '' or BLANKETPO is null)
-      `;
-    }
-    PORTSQLEXEC.sql1(dispatch,getState,statement);
-  }else{
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`DELPOMASTANDPOITEM M2M FAILED stop PORT process.`);
-    }
-    continueProcess=false;
-  }
-
-
-  cnt=0;
-  while(continueProcess && !PORTSQLEXEC.isDone()){
-    if(++cnt>15 || PORTSQLEXEC.didFail()){
-      continueProcess=false;
-      break;
-    }else{
-      await MISC.sleep(2000);
-    }
-  }
-  
-  if(continueProcess && PORTSQLEXEC.continuePORT()){
-    let logId=getState().POReqTrans.logId;
-    let sql=`
-      update [dbo].[btPORTLog]
-      set fEnd=GETDATE()
-      where id=${logId}
-    `;
-    PORTSQLEXEC.sql1(dispatch,getState,sql);
-  }else{
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`btPO.POStatusNo update FAILED stop PORT process.`);
-    }
-
-    continueProcess=false;
-  }
-
-  cnt=0;
-  while(continueProcess && !PORTSQLEXEC.isDone()){
-    if(++cnt>15 || PORTSQLEXEC.didFail()){
-      continueProcess=false;
-      break;
-    }else{
-      await MISC.sleep(2000);
-    }
-  }
-  if(continueProcess && PORTSQLEXEC.continuePORT()){
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_60_PASS });
     dispatch({ type:PORTACTION.SET_CHECK4, chk4:PORTCHK.SUCCESS});
-
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+
   }else{
     if ('development'==process.env.NODE_ENV) {
-      console.log(`btPORTLog update FAILED stop PORT process.`);
+      console.log(`PORTSQLDELPOMASTANDPOITEMANDPOSTATUS M2M FAILED stop PORT process.`);
     }
-
     continueProcess=false;
   }
-
 
 
 
