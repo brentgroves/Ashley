@@ -253,6 +253,7 @@ export default class POReqTrans extends Component {
       <Row>
         <Col xs={1}>&nbsp;</Col>
       </Row>
+
       <Row >
         <Col xs={4}></Col>
         <Col xs={4}><POReqTransChecks /></Col>
@@ -290,6 +291,7 @@ export default class POReqTrans extends Component {
       <Row>
         <Col xs={1}>&nbsp;</Col>
       </Row>
+
       <Row>
         <Col xs={5} >&nbsp;</Col>
         <Col xs={2}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
@@ -333,6 +335,18 @@ export default class POReqTrans extends Component {
   }
 
   /*
+        <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+
+
+        <Row >
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+
        {
 
       <Navbar inverse fixedBottom>

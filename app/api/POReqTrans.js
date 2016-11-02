@@ -490,7 +490,7 @@ export default async function POReqTrans(disp,getSt,prime) {
 
     if(continueProcess && PORTSQLSETPOMASTRANGE.continuePORT()){
       let poMastRange=getState().POReqTrans.poMastRange;
-      let poMastCount=(poMastRange.poend-poMastRange.postart);
+      let poMastCount=(poMastRange.poend-poMastRange.postart+1);
       if ('development'==process.env.NODE_ENV) {
         console.log(`setPOMastRange complete continue PORT process.`);
         console.log(`poMastRange.postart=>${poMastRange.postart}`); 
@@ -1015,7 +1015,7 @@ export default async function POReqTrans(disp,getSt,prime) {
       console.log(`PORTSQLEXEC update Log complete continue PORT process.`);
     }
     let poMastRange=getState().POReqTrans.poMastRange;
-    let poMastCount=(poMastRange.poend-poMastRange.postart);
+    let poMastCount=(poMastRange.poend-poMastRange.postart+1);
 
     // Sanity check on how many po(s) are being deleted
     if((0<poMastCount)&&(250>poMastCount)){
@@ -1024,7 +1024,7 @@ export default async function POReqTrans(disp,getSt,prime) {
       dispatch({ type:PORTACTION.SET_STATUS, status:`DEL POMAST AND POITEM And update POSTATUSNO FAILED: POMast count is out of range!` });
       dispatch({ type:PORTACTION.SET_REASON, reason:`DELPOMASTANDPOITEMANDPOSTATUS FAILED: POMast count is out of range. Inform IT immediately!` });
       dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-      dispatch({ type:PORTACTION.SET_CHECK4, chk4:PORTCHK.FAIL });
+      dispatch({ type:PORTACTION.SET_CHECK4, chk4:PORTCHK.FAILURE });
       continueProcess=false;
     }
   }else{
@@ -1049,7 +1049,7 @@ export default async function POReqTrans(disp,getSt,prime) {
       console.log(`PORTSQLDELPOMASTANDPOITEMANDPOSTATUS M2M complete done with PORT process.`);
     }
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_60_PASS });
-    dispatch({ type:PORTACTION.SET_CHECK4, chk4:PORTCHK.SUCCESS});
+    dispatch({ type:PORTACTION.SET_CHECK4, chk4:PORTCHK.SUCCESS });
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
 
   }else{
