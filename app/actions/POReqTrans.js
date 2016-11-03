@@ -1,7 +1,6 @@
 import * as PORTACTION from "./PORTActionConst.js"
-
 import { push } from 'react-router-redux';
-
+import * as SQLPRIMEDB from "../api/SQLPrimeDB.js"
 import POReqTrans,{updateCheck1,updateCheck2,updateCheck3,primeDB,startCheck3} from '../api/POReqTrans';
 
 export function cancelApp() {
@@ -35,12 +34,14 @@ export function primePORT(updateState) {
   if(updateState){
    return (dispatch,getState) => {
       var disp = dispatch;
-      primeDB(disp,true);
+      var getSt = getState;
+      SQLPRIMEDB.sql1(disp,getSt,updateState);
     };
   }else{
    return (dispatch,getState) => {
       var disp = dispatch;
-      primeDB(disp,false);
+      var getSt = getState;
+      primeDB(disp,getSt,updateState);
     };
   }
 }

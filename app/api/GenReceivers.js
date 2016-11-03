@@ -187,7 +187,9 @@ function m2mConnect(disp,updateState){
       var request = new sql.Request(m2mConnection); 
       request.query(
         `
-        SELECT FCNUMBER FROM SYSEQU WHERE fcclass = 'RCMAST.FRECEIVER'
+          select fvendno, fcompany
+          FROM apvend 
+          where fvendno = '002946'
         `,function(err, recordset) {
             // ... error checks
             if(null==err){
@@ -247,7 +249,6 @@ function m2mConnect(disp,updateState){
     }
   });
 }
-
 */
 export async function updateCheck1(disp,getSt,poNumber,item,poCategory,startPort) {
 //  var that = this;
@@ -255,9 +256,6 @@ export async function updateCheck1(disp,getSt,poNumber,item,poCategory,startPort
   var getState = getSt;
   var portState = getState(); 
   var cnt=0;
-  var maxCnt=5;
-  var continueProcess=true;
-
 
 
   dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STARTED });
@@ -266,44 +264,37 @@ export async function updateCheck1(disp,getSt,poNumber,item,poCategory,startPort
 
   if ('development'==process.env.NODE_ENV) {
     console.log(`updateCheck1(disp,getSt,poNumber,item,poCategory): top`);
+    console.dir(portState);
+    console.dir(startPort);
   }
 
 //  initPrime();
 //  primeDB(dispatch,false);
-  SQLPRIMEDB.sql1(dispatch,getState,false);
+  SQLPRIMEDB.primeDB(dispatch,getState,false);
 
-
-  cnt=0;
-  maxCnt=5;
-  while(!SQLPRIMEDB.isDone()){
-    if(++cnt>maxCnt || SQLPRIMEDB.didFail()){
+  while(!isPrimed() && !primeFailed){
+    if(++cnt>15){
       break;
     }else{
       await MISC.sleep(2000);
     }
   }
 
-  if(!SQLPRIMEDB.didFail()){
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`primeDB Success continue PO Request Transfer.`);
-    }
-    UPDATE1.sql1(dispatch,getState,poNumber,item,poCategory);
-  }else{
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`primeDB FAILED Stop PO Request Transfer.`);
-    }
+  if(!isPrimed()){
     // Exit if Not Primed
     dispatch({ type:PORTACTION.SET_STATUS, status:'' });
-    continueProcess=false;
+
+    return;
   }
 
-  /////////////////////////////
+
+  UPDATE1.sql1(dispatch,getState,poNumber,item,poCategory);
 
   cnt=0;
-  maxCnt=15;
-  while(continueProcess&&!UPDATE1.isDone())
+
+  while(!UPDATE1.isDone())
   {
-    if(++cnt>maxCnt || UPDATE1.didFail()){
+    if(++cnt>15 || UPDATE1.didFail()){
       break;
     }else{
       await MISC.sleep(2000);
@@ -321,8 +312,6 @@ export async function updateCheck2(disp,getSt,poNumber,vendorNumber,Address1,Add
   var getState = getSt;
   var portState = getState(); 
   var cnt=0;
-  var maxCnt=5;
-  var continueProcess=true;
 
   dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STARTED });
   dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.LOADING });
@@ -330,44 +319,35 @@ export async function updateCheck2(disp,getSt,poNumber,vendorNumber,Address1,Add
 
   if ('development'==process.env.NODE_ENV) {
     console.log(`updateCheck2(): top`);
+    console.dir(portState);
+    console.dir(startPort);
   }
 
 
-  SQLPRIMEDB.sql1(dispatch,getState,false);
+  var cnt=0;
+  initPrime();
+  primeDB(dispatch,false);
 
-
-  cnt=0;
-  maxCnt=5;
-  while(!SQLPRIMEDB.isDone()){
-    if(++cnt>maxCnt || SQLPRIMEDB.didFail()){
+  while(!isPrimed() && !primeFailed){
+    if(++cnt>15){
       break;
     }else{
       await MISC.sleep(2000);
     }
   }
 
-  if(!SQLPRIMEDB.didFail()){
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`primeDB Success continue PO Request Transfer.`);
-    }
-    UPDATE2.sql1(dispatch,getState,poNumber,vendorNumber,Address1,Address2,Address3,Address4);
-  }else{
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`primeDB FAILED Stop PO Request Transfer.`);
-    }
+  if(!isPrimed()){
     // Exit if Not Primed
-    dispatch({ type:PORTACTION.SET_STATUS, status:'' });
-    continueProcess=false;
+    return;
   }
 
-  /////////////////////////////
+  UPDATE2.sql1(dispatch,getState,poNumber,vendorNumber,Address1,Address2,Address3,Address4);
 
   cnt=0;
-  maxCnt=15;
 
-  while(continueProcess&&!UPDATE2.isDone())
+  while(!UPDATE2.isDone())
   {
-    if(++cnt>maxCnt || UPDATE2.didFail()){
+    if(++cnt>15 || UPDATE2.didFail()){
       break;
     }else{
       await MISC.sleep(2000);
@@ -375,7 +355,7 @@ export async function updateCheck2(disp,getSt,poNumber,vendorNumber,Address1,Add
   }
 
   if(UPDATE2.isDone() && !UPDATE2.didFail()){
-    startPort(false);
+    startPort();
   }
 } // updateCheck2
 
@@ -385,8 +365,6 @@ export async function updateCheck3(disp,getSt,vendorNumber,newM2mVendor,startPor
   var getState = getSt;
   var portState = getState(); 
   var cnt=0;
-  var maxCnt=5;
-  var continueProcess=true;
 
   dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STARTED });
   dispatch({ type:PORTACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.LOADING });
@@ -394,41 +372,34 @@ export async function updateCheck3(disp,getSt,vendorNumber,newM2mVendor,startPor
 
   if ('development'==process.env.NODE_ENV) {
     console.log(`updateCheck3(): top`);
+    console.dir(portState);
+    console.dir(startPort);
   }
 
-  SQLPRIMEDB.sql1(dispatch,getState,false);
-
-
   cnt=0;
-  maxCnt=5;
-  while(!SQLPRIMEDB.isDone()){
-    if(++cnt>maxCnt || SQLPRIMEDB.didFail()){
+  initPrime();
+  primeDB(dispatch,false);
+
+  while(!isPrimed() && !primeFailed){
+    if(++cnt>15){
       break;
     }else{
       await MISC.sleep(2000);
     }
   }
 
-  if(!SQLPRIMEDB.didFail()){
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`primeDB Success continue PO Request Transfer.`);
-    }
-    UPDATE3.sql1(dispatch,getState,vendorNumber,newM2mVendor);
-  }else{
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`primeDB FAILED Stop PO Request Transfer.`);
-    }
+  if(!isPrimed()){
     // Exit if Not Primed
-    dispatch({ type:PORTACTION.SET_STATUS, status:'' });
-    continueProcess=false;
+    return;
   }
 
-  cnt=0;
-  maxCnt=15;
+  UPDATE3.sql1(dispatch,getState,vendorNumber,newM2mVendor);
 
-  while(continueProcess&&!UPDATE3.isDone())
+  cnt=0;
+
+  while(!UPDATE3.isDone())
   {
-    if(++cnt>maxCnt || UPDATE3.didFail()){
+    if(++cnt>15 || UPDATE3.didFail()){
       break;
     }else{
       await MISC.sleep(2000);
@@ -463,32 +434,6 @@ export default async function POReqTrans(disp,getSt,prime) {
   var cnt=0;
 
   if(prime){
-    SQLPRIMEDB.sql1(dispatch,getState,false);
-
-    cnt=0;
-
-    while(!SQLPRIMEDB.isDone()){
-      if(++cnt>15 || SQLPRIMEDB.didFail()){
-        break;
-      }else{
-        await MISC.sleep(2000);
-      }
-    }
-
-    if(!SQLPRIMEDB.didFail()){
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`primeDB Success continue PO Request Transfer.`);
-      }
-    }else{
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`primeDB FAILED Stop PO Request Transfer.`);
-      }
-      continueProcess=false;
-    }
-  }
-
-/*
-  if(prime){
     initPrime();
     primeDB(dispatch,false);
     while(!isPrimed() && !primeFailed){
@@ -515,7 +460,7 @@ export default async function POReqTrans(disp,getSt,prime) {
     continueProcess=false;
   }
 
-*/
+
   // CHECK FOR PREVIOUSLY FAILED SESSIONS
   if(continueProcess&&isFirstPass){
     PORTSQLINSLOG.sql1(dispatch,getState);
