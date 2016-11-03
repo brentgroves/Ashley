@@ -84,7 +84,9 @@ export default class Home extends Component {
         </LinkContainer>      
 
        &nbsp;&nbsp;&nbsp;
-       <Button bsStyle="warning">Generate Receivers</Button>
+        <LinkContainer to="/GenReceivers">
+         <Button href="#" bsStyle="warning">Generate Receivers</Button>
+        </LinkContainer>      
        </p>
     </div>   
 

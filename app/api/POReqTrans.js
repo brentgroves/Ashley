@@ -496,7 +496,7 @@ export default async function POReqTrans(disp,getSt,prime) {
         console.log(`poMastRange.postart=>${poMastRange.postart}`); 
         console.log(`poMastRange.poend=>${poMastRange.poend}`); 
       }
-      if(0==poMastCount){
+      if(0==poMastRange.poend){
         dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_5_PASS});
         dispatch({ type:PORTACTION.SET_CHECK0, chk0:PORTCHK.SUCCESS });
         if ('development'==process.env.NODE_ENV) {
