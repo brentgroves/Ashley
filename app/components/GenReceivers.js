@@ -2,10 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { Link,IndexLink } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
-import GenReceiversButton from '../containers/GenReceiversButton';
-import POReqTransChecks from '../containers/POReqTransChecks';
-import PORTGrid from '../containers/PORTGrid';
-import {linuxSQLPrime} from '../api/POReqTrans';
+import GRButton from '../containers/GRButton';
+import GRChecks from '../containers/GRChecks';
 import * as GRSTATE from "../actions/GRState.js"
 import { Grid, Row, Col, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse, Text as NavbarText } from 'react-bootstrap/lib/Navbar'
@@ -20,12 +18,12 @@ import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Co
 export default class GenReceivers extends Component {
 
   static propTypes = {
-    POReqTrans: PropTypes.object.isRequired
+    GenR: PropTypes.object.isRequired
   };
 
   constructor(props) {
     super(props);
-    this.props.primePORT(true);
+    this.props.prime(true);
     this.state = {
       loading: false
     };
@@ -43,9 +41,9 @@ export default class GenReceivers extends Component {
   const chk2 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '5px 13px' };
   const dbg1 ={border: '1px solid blue', padding: '0px' };
 
-  var checks,goButton,portGrid,navbar,cancelBtn,jumboTronTxt,navbarStatus,navbarEnd;
+  var checks,goButton,navbar,cancelBtn,jumboTronTxt,navbarStatus,navbarEnd;
 
-  if(GRSTATE.NOT_PRIMED==this.props.POReqTrans.state){
+  if(GRSTATE.NOT_PRIMED==this.props.GenR.state){
     jumboTronTxt=
       <Row >
         <Col xs={1}>&nbsp;</Col>
@@ -58,21 +56,21 @@ export default class GenReceivers extends Component {
           </Jumbotron>
         </Col>
       </Row>
-  } else if(GRSTATE.PRIMED==this.props.POReqTrans.state){
+  } else if(GRSTATE.PRIMED==this.props.GenR.state){
     jumboTronTxt=
       <Row >
         <Col xs={1}>&nbsp;</Col>
         <Col >
           <Jumbotron  >
              <h1 style={{textAlign: 'center'}}>Generate Receivers</h1>
-            <p style={{padding: '0px'}}>This App generates M2m receivers from Cribmaster PO requests. 
-            Once the GO! button is clicked each received Cribmaster PO item will be received into cooresponding M2m PO. </p>
+            <p style={{padding: '0px'}}>This App generates M2m receivers from items received into Cribmaster. 
+            Once the GO! button is clicked this process will start. </p>
              <br/>
           </Jumbotron>
         </Col>
       </Row>
   } else if(
-            (GRSTATE.UPTODATE==this.props.POReqTrans.state)
+            (GRSTATE.UPTODATE==this.props.GenR.state)
             ){
     jumboTronTxt=
       <Row >
@@ -88,8 +86,8 @@ export default class GenReceivers extends Component {
   }
 
   if(
-      (GRSTATE.PRIMED==this.props.POReqTrans.state) ||
-      (GRSTATE.STARTED==this.props.POReqTrans.state) 
+      (GRSTATE.PRIMED==this.props.GenR.state) ||
+      (GRSTATE.STARTED==this.props.GenR.state) 
     )
   {
     goButton = 
@@ -102,37 +100,14 @@ export default class GenReceivers extends Component {
       </Row>
       <Row>
         <Col xs={5} >&nbsp;</Col>
-        <Col xs={2}><GenReceiversButton /></Col>
+        <Col xs={2}><GRButton /></Col>
         <Col xs={5}>&nbsp;</Col>
       </Row>
     </div>
   }
-  if(
-      (GRSTATE.STARTED==this.props.POReqTrans.state) 
-    )
-  {
-    checks = 
-    <div>
-      <Row >
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-
-      <Row >
-        <Col xs={4}></Col>
-        <Col xs={4}><POReqTransChecks /></Col>
-        <Col xs={4}></Col>
-      </Row>
-    </div>;
-  } 
 
   if(
-      (GRSTATE.STEP_10_FAIL==this.props.POReqTrans.state) ||  
-      (GRSTATE.STEP_20_FAIL==this.props.POReqTrans.state) || 
-      (GRSTATE.STEP_30_FAIL==this.props.POReqTrans.state) || 
-      (GRSTATE.FAILURE==this.props.POReqTrans.state) 
+      (GRSTATE.FAILURE==this.props.GenR.state) 
     )
   {
     cancelBtn = 
@@ -148,11 +123,10 @@ export default class GenReceivers extends Component {
       </Row>
     </div>
   }
-  var status = 'currentPO=> ' + this.props.POReqTrans.status;
   if(
-      (GRSTATE.PRIMED==this.props.POReqTrans.state) || 
-      (GRSTATE.UPTODATE==this.props.POReqTrans.state) ||  
-      (GRSTATE.SUCCESS==this.props.POReqTrans.state)   
+      (GRSTATE.PRIMED==this.props.GenR.state) || 
+      (GRSTATE.UPTODATE==this.props.GenR.state) ||  
+      (GRSTATE.SUCCESS==this.props.GenR.state)   
     )
   {
     navbar =
@@ -177,7 +151,7 @@ export default class GenReceivers extends Component {
     navbar =
       <Navbar inverse fixedBottom>
         <NavbarCollapse>
-          <span className="navbar-center">{this.props.POReqTrans.status}</span>
+          <span className="navbar-center">{this.props.GenR.status}</span>
         </NavbarCollapse>
       </Navbar>;
 
@@ -190,10 +164,7 @@ export default class GenReceivers extends Component {
         <Grid >
           {jumboTronTxt}
           {goButton}
-          {cancelBtn}
           {navbar}
-          {navbarStatus}
-          {navbarEnd}
         </Grid>
       </div>
 
@@ -203,3 +174,27 @@ export default class GenReceivers extends Component {
 
 
 
+/*
+  if(
+      (GRSTATE.STARTED==this.props.GenR.state) 
+    )
+  {
+    checks = 
+    <div>
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+
+      <Row >
+        <Col xs={4}></Col>
+        <Col xs={4}><GRChecks /></Col>
+        <Col xs={4}></Col>
+      </Row>
+    </div>;
+  } 
+
+
+*/

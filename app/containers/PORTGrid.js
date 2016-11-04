@@ -5,7 +5,7 @@ import * as POReqTrans from '../actions/POReqTrans';
 
 function mapStateToProps(state) {
   return {
-	POReqTrans: state.POReqTrans
+    	POReqTrans: state.POReqTrans
   };
 }
 

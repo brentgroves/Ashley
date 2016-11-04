@@ -6,9 +6,13 @@ import createLogger from 'redux-logger';
 import rootReducer from '../reducers';
 
 import * as PORTActions from '../actions/POReqTrans';
+import * as CommonActions from '../actions/Common';
+import * as GRActions from '../actions/GRActions';
 
 const actionCreators = {
   ...PORTActions,
+  ...CommonActions,
+  ...GRActions,
   push,
 };
 

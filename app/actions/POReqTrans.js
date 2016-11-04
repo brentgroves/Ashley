@@ -1,7 +1,9 @@
 import * as PORTACTION from "./PORTActionConst.js"
 import { push } from 'react-router-redux';
 import * as SQLPRIMEDB from "../api/SQLPrimeDB.js"
-import POReqTrans,{updateCheck1,updateCheck2,updateCheck3,primeDB,startCheck3} from '../api/POReqTrans';
+import * as PORTAPI from '../api/POReqTrans';
+import * as MISC from "../api/Misc.js"
+
 
 export function cancelApp() {
  return (dispatch,getState) => {
@@ -30,19 +32,11 @@ export function initPORT() {
   };
 }
 
-export function primePORT(updateState) {
-  if(updateState){
-   return (dispatch,getState) => {
-      var disp = dispatch;
-      var getSt = getState;
-      SQLPRIMEDB.sql1(disp,getSt,updateState);
-    };
-  }else{
-   return (dispatch,getState) => {
-      var disp = dispatch;
-      var getSt = getState;
-      primeDB(disp,getSt,updateState);
-    };
+export function primePORT() {
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    PORTAPI.primePORT(disp,getSt);
   }
 }
 
@@ -217,7 +211,7 @@ export function setVendorSelect(vendorSelect) {
 export function startChk3() {
  return (dispatch,getState) => {
       var disp = dispatch;
-      startCheck3(disp);
+      PORTAPI.startCheck3(disp);
  };
 }
 
@@ -225,7 +219,7 @@ export function startPORT(prime) {
  return (dispatch,getState) => {
     var disp = dispatch;
     var getSt = getState;
-    POReqTrans(disp,getSt,prime);
+    PORTAPI.POReqTrans(disp,getSt,prime);
   };
 }
 
@@ -233,7 +227,7 @@ export function updateChk1(poNumber,item,poCategory,startPORT) {
  return (dispatch,getState) => {
     var disp = dispatch;
     var getSt = getState;
-    updateCheck1(disp,getSt,poNumber,item,poCategory,startPORT);
+    PORTAPI.updateCheck1(disp,getSt,poNumber,item,poCategory,startPORT);
   };
 }
 
@@ -241,7 +235,7 @@ export function updateChk2(poNumber,vendorNumber,Address1,Address2,Address3,Addr
  return (dispatch,getState) => {
     var disp = dispatch;
     var getSt = getState;
-    updateCheck2(disp,getSt,poNumber,vendorNumber,Address1,Address2,Address3,Address4,startPORT);
+    PORTAPI.updateCheck2(disp,getSt,poNumber,vendorNumber,Address1,Address2,Address3,Address4,startPORT);
   };
 }
 
@@ -249,7 +243,7 @@ export function updateChk3(vendorNumber,newM2mVendor,startPORT) {
  return (dispatch,getState) => {
     var disp = dispatch;
     var getSt = getState;
-    updateCheck3(disp,getSt,vendorNumber,newM2mVendor,startPORT);
+    PORTAPI.updateCheck3(disp,getSt,vendorNumber,newM2mVendor,startPORT);
   };
 }
 

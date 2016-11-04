@@ -1,7 +1,7 @@
 import ProgressButton from 'react-progress-button'
 import React, { Component } from 'react';
 
-const POReqTransButton = React.createClass({
+const GRButton = React.createClass({
   getInitialState () {
     return {
       buttonState: ''
@@ -10,14 +10,14 @@ const POReqTransButton = React.createClass({
 
   render () {
     if ('development'==process.env.NODE_ENV) {
-      console.log('button render =' + this.props.POReqTrans.goButton);
+      console.log('button render =' + this.props.GenR.goButton);
     }
 
 
     return (
       <div>
         <ProgressButton onClick={this.handleClick} 
-        state={this.props.POReqTrans.goButton}>
+        state={this.props.GenR.goButton}>
           Go!
         </ProgressButton>
       </div>
@@ -28,17 +28,9 @@ const POReqTransButton = React.createClass({
     if ('development'==process.env.NODE_ENV) {
       console.log('handleClick');
     }
+    this.props.start(true);
 
-
-    this.props.startPORT(true);
-
-   // make asynchronous call
-  //   setTimeout(function() {
-  //     POReqTrans.call(this);
-  // //    this.props.setCheck1('failure');
-  // //    this.setState({buttonState: 'success'})
-  //   }.bind(this), 3000)
   }
 })
 
-export default POReqTransButton;
+export default GRButton;

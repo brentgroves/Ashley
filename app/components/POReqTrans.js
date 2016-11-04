@@ -5,17 +5,10 @@ import {LinkContainer} from 'react-router-bootstrap';
 import POReqTransButton from '../containers/POReqTransButton';
 import POReqTransChecks from '../containers/POReqTransChecks';
 import PORTGrid from '../containers/PORTGrid';
-import {linuxSQLPrime} from '../api/POReqTrans';
 import * as PORTSTATE from "../actions/PORTState.js"
+
 import { Grid, Row, Col, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse, Text as NavbarText } from 'react-bootstrap/lib/Navbar'
-/*
-.jumbotron {
-    background-color:black !important; 
-}
-*/
-
-//var initPORT;
 
 export default class POReqTrans extends Component {
 
@@ -25,22 +18,12 @@ export default class POReqTrans extends Component {
 
   constructor(props) {
     super(props);
-    this.props.primePORT(true);
+    this.props.primePORT();
+
     this.state = {
       loading: false
     };
- //   initPORT=this.props.initPORT;
- //   this.handleClick = this.handleClick.bind(this);
-//    this.goHome=this.props.cancelApp.bind(this);
   }
-
-/*
-  goHome() {
-    console.log("go Home");
- //   this.props.cancelApp();
-  }
-
-*/
 
   render() {
 

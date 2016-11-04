@@ -250,18 +250,6 @@ export default function reducer( state = {}, action) {
       return newData;
 
     }
-    case PORTACTION.SET_PRIMED:
-    {
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`set primed`);
-      }
-      var newData = update(state, 
-        { 
-          primed: {$set: action.primed}
-        });
-      return newData;
-
-    }
     case PORTACTION.SET_REASON:
     {
       if ('development'==process.env.NODE_ENV) {

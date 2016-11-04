@@ -1,6 +1,7 @@
 
 var sql = require('mssql');
 import * as PORTACTION from "../actions/PORTActionConst.js"
+import * as COMMON from "../actions/CommonConst.js"
 import * as PORTSTATE from "../actions/PORTState.js"
 import * as PORTCHK from "../actions/PORTChkConst.js"
 import * as CONNECT from "./PORTSQLConst.js"
@@ -12,13 +13,13 @@ var sql1Failed=false;
 var sql2Done=false;
 var sql2Cnt=0;
 var sql2Failed=false;
-var contPORT=false;
-const ATTEMPTS=1;
-const MAXCNT=5;
+const ATTEMPTSCRIB=1;
+const ATTEMPTSM2M=3;
+const MAXCNT=10;
 
 
 
-export async function sql1(disp,getSt,updateState){
+export async function sql1(disp,getSt){
   var dispatch = disp;
   var getState = getSt;
   var state = getState(); 
@@ -29,14 +30,17 @@ export async function sql1(disp,getSt,updateState){
 
   var cnt=0;
   init();
+  dispatch({ type:COMMON.SET_PRIMED, primed:false });
+
   execSQL1(dispatch);
+  execSQL2(dispatch);
+  execSQL2(dispatch);
+  execSQL2(dispatch);
   execSQL2(dispatch);
 
   while(!isDone() && !didFail()){
     if(++cnt>MAXCNT){
       timedOut=true;
-      dispatch({ type:PORTACTION.SET_REASON, reason:`SQLPrimeDB.sql1() Timed Out or Failed.` });
-      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
       break;
     }else{
       await MISC.sleep(2000);
@@ -63,11 +67,8 @@ export async function sql1(disp,getSt,updateState){
     if ('development'==process.env.NODE_ENV) {
       console.log(`SQLPrimeDB.sql1(): Suceeded`)
     }
-    dispatch({ type:PORTACTION.SET_PRIMED, primed:true });
-    if(updateState){
-      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.PRIMED });
-    }
-
+//    dispatch({ type:PORTACTION.SET_PRIMED, primed:true });
+    dispatch({ type:COMMON.SET_PRIMED, primed:true });
   }
 
 
@@ -80,7 +81,6 @@ function init(){
   sql2Done=false;
   sql2Cnt=0;
   sql2Failed=false;
-  contPORT=false;
 }
 
 export function isDone(){
@@ -100,14 +100,6 @@ export function didFail(){
     (true==sql1Failed) &&
     (true==sql2Failed) 
     )
-  {
-    return true;
-  } else{
-    return false;
-  }
-}
-export function continuePORT(){
-  if(true==contPORT)
   {
     return true;
   } else{
@@ -143,42 +135,36 @@ function execSQL1(disp){
             }
             sql1Done=true;
           }else{
-            if(++sql1Cnt<ATTEMPTS) {
+            if(++sql1Cnt<ATTEMPTSCRIB) {
               if ('development'==process.env.NODE_ENV) {
                 console.log(`SQLPrimeDB.execSQL1().query:  ${err.message}` );
                 console.log(`sql1Cnt = ${sql1Cnt}`);
               }
             }else{
-              dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-              dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
               sql1Failed=true;
             }
           }
         }
       );
     }else{
-      if(++sql1Cnt<ATTEMPTS) {
+      if(++sql1Cnt<ATTEMPTSCRIB) {
         if ('development'==process.env.NODE_ENV) {
           console.log(`SQLPrimeDB.execSQL1().Connection:  ${err.message}` );
           console.log(`sql1Cnt = ${sql1Cnt}`);
         }
       }else{
-        dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
         sql1Failed=true;
       }
     }
   });
   
   cribConnection.on('error', function(err) {
-    if(++sql1Cnt<ATTEMPTS) {
+    if(++sql1Cnt<ATTEMPTSCRIB) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLPrimeDB.execSQL1().cribConnection.on('error', function(err):  ${err.message}` );
         console.log(`sql1Cnt = ${sql1Cnt}`);
       }
     }else{
-      dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
       sql1Failed=true;
     }
   });
@@ -209,42 +195,36 @@ function execSQL2(disp){
             }
             sql2Done=true;
           }else{
-            if(++sql2Cnt<ATTEMPTS) {
+            if(++sql2Cnt<ATTEMPTSM2M) {
               if ('development'==process.env.NODE_ENV) {
                 console.log(`SQLPrimeDB.execSQL2().query:  ${err.message}` );
                 console.log(`sql2Cnt = ${sql2Cnt}`);
               }
             }else{
-              dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-              dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
               sql2Failed=true;
             }
           }
         }
       );
     }else{
-      if(++sql2Cnt<ATTEMPTS) {
+      if(++sql2Cnt<ATTEMPTSM2M) {
         if ('development'==process.env.NODE_ENV) {
           console.log(`SQLPrimeDB.execSQL2().Connection:  ${err.message}` );
           console.log(`sql2Cnt = ${sql2Cnt}`);
         }
       }else{
-        dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
         sql2Failed=true;
       }
     }
   });
   
   m2mConnection.on('error', function(err) {
-    if(++sql2Cnt<ATTEMPTS) {
+    if(++sql2Cnt<ATTEMPTSM2M) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLPrimeDB.execSQL2().m2mConnection.on('error', function(err):  ${err.message}` );
         console.log(`sql2Cnt = ${sql2Cnt}`);
       }
     }else{
-      dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
       sql2Failed=true;
     }
   });

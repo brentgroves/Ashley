@@ -8,8 +8,11 @@ import configureStore from './store/configureStore';
 import './app.global.css';
 import * as PORTSTATE from "./actions/PORTState.js"
 import * as PORTCHK from "./actions/PORTChkConst.js"
+import * as CHK from "./actions/ChkConst.js"
+import * as GRSTATE from "./actions/GRState.js"
 
 const initialState = {
+
 	POReqTrans:{ 
 		catRecs:[{}],
 		catTypes:['cat1','cat2','cat3'],
@@ -31,12 +34,23 @@ const initialState = {
 		poItem:[{}],
 		poMast:[{}],
 		poMastRange:{poMin:0,poMax:0},
-		primed:false,
 		state:PORTSTATE.NOT_PRIMED,
 		status:'',
 		reason:'',
 		vendors:[{}],
 		vendorSelect:[{}]
+	},
+
+	GenReceivers:{ 
+		chk0:CHK.UNKNOWN,
+		goButton:'', 
+		logId:0,
+		state:GRSTATE.NOT_PRIMED,
+		status:'',
+		reason:''
+	},
+	Common:{ 
+		primed:false
 	}
 
 //	noVenPoList:[{PONumber:1,Vendor:2,Address1:'1633 S US HWY 33'}]

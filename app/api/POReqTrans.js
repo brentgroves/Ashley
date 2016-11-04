@@ -6,6 +6,7 @@ import * as CHECK1 from "./PORTSQLCheck1.js"
 import * as CHECK2 from "./PORTSQLCheck2.js"
 import * as CHECK3 from "./PORTSQLCheck3.js"
 import * as CM from "./PORTSQLCM.js"
+import * as COMMON from "../actions/CommonConst.js"
 import * as CONNECT from "./PORTSQLConst.js"
 import * as MISC from "./Misc.js"
 import * as M2M from "./PORTSQLM2M.js"
@@ -26,236 +27,58 @@ import * as PORTSQLSETNEXTPO from "./PORTSQLSetNextPO.js"
 import * as PORTSTATE from "../actions/PORTState.js"
 import * as PROGRESSBUTTON from "../actions/ProgressButtonConst.js"
 import * as SETCURRENTPO from "./PORTSQLSetCurrentPO.js"
+
 import * as SQLPRIMEDB from "./SQLPrimeDB.js"
 import * as UPDATE1 from "./PORTSQLUpdate1.js"
 import * as UPDATE2 from "./PORTSQLUpdate2.js"
 import * as UPDATE3 from "./PORTSQLUpdate3.js"
 
-/*
-var errors=false;
-var primed=false;
-var primeFailed=false;
-var m2mConnectCnt=0;
-var cribConnectCnt=0;
-
-export async function primeDB(disp,stateUpdate){
-  var dispatch=disp;
-  var updateState=stateUpdate;
+export async function primePORT(disp,getSt){
+  var dispatch = disp;
+  var getState = getSt; 
   var cnt=0;
+  var maxCnt=10;
+
   if ('development'==process.env.NODE_ENV) {
-    console.log(`primeDB top`);
+    console.log(`primePORT() top.`);
   }
 
-  initPrime();
-  // FIRST CONNECT ALWAYS FAILS IN DEVELOPER MODE
-  cribConnect(dispatch,updateState);
-  m2mConnect(dispatch,updateState);
-  m2mConnect(dispatch,updateState);
-  m2mConnect(dispatch,updateState);
-  m2mConnect(dispatch,updateState);
+  dispatch((dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    SQLPRIMEDB.sql1(disp,getSt);
+  });
 
-  while(!isPrimed() && !primeFailed){
-    if(++cnt>15){
-      dispatch({ type:PORTACTION.SET_REASON, reason:`primeDB(disp) Cannot Connect to Cribmaster or Made2Manage.` });
-      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+  cnt=0;
+  while(!getState().Common.primed){
+    if(++cnt>maxCnt ){
       break;
     }else{
       await MISC.sleep(2000);
     }
   }
-
-  if(isPrimed()){
-    dispatch({ type:PORTACTION.SET_PRIMED, primed:true });
-    if(updateState){
-      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.PRIMED });
+  if(!getState().Common.primed){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`primePORT FAILED Stop PO Request Transfer.`);
     }
+    dispatch({ type:PORTACTION.SET_REASON, reason:`primePORT FAILED Stop PO Request Transfer.` });
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+    dispatch({ type:PORTACTION.SET_STATUS, status:'Can not connect to Made2Manage or Cribmaster...' });
   }else{
-     dispatch({ type:PORTACTION.SET_STATUS, status:'Cannot connect to Cribmaster or Made2Manage....' });
-
-  }
-
-}
-
-function initPrime(){
-  primed=false;
-  primeFailed=false;
-  m2mConnectCnt=0;
-  cribConnectCnt=0;
-}
-
-function isPrimed(){
-  if(true==primed){
-    return true;
-  } else{
-    return false;
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`primePORT Success continue PO Request Transfer.`);
+    }
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.PRIMED });
   }
 }
 
-function cribConnect(disp,updateState){
-  var dispatch=disp;
-  if ('development'==process.env.NODE_ENV) {
-    console.log(`cribConnectCnt = ${cribConnectCnt}`);
-  }
-
-
-  var cribConnection = new sql.Connection(CONNECT.cribDefTO, function(err) {
-    // ... error checks
-    if(null==err){
-      if ('development'==process.env.NODE_ENV) {
-        console.dir(cribConnection);
-      }
-
-      // Query
-
-      var request = new sql.Request(cribConnection); // or: var request = connection1.request();
-      request.query(
-      `
-        select * from po where ponumber = 25619
-      `, function(err, recordset) {
-          if(null==err){
-            // ... error checks
-          if ('development'==process.env.NODE_ENV) {
-            console.log(`crib query`);
-            console.dir(recordset);
-          }
-
-            primed=true;
-          }else{
-            if(++cribConnectCnt<3) {
-              if ('development'==process.env.NODE_ENV) {
-                console.log(`cribConnect.query:  ${err.message}` );
-                console.log(`cribConnectCnt = ${cribConnectCnt}`);
-              }
-
-            }else{
-              if(!isPrimed()){
-                dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-                dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-                primeFailed=true;
-              }
-            }
-          }
-        }
-      );
-    }else{
-      if(++cribConnectCnt<3) {
-        if ('development'==process.env.NODE_ENV) {
-          console.log(`cribConnect.Connection:  ${err.message}` );
-          console.log(`cribConnectCnt = ${cribConnectCnt}`);
-        }
-
-      }else{
-        if(!isPrimed()){
-          dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-          dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-          primeFailed=true;
-        }
-      }
-    }
-  });
-  
-  cribConnection.on('error', function(err) {
-    if(++cribConnectCnt<3) {
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`cribConnect.on('error', function(err):  ${err.message}` );
-        console.log(`cribConnectCnt = ${cribConnectCnt}`);
-      }
-
-    }else{
-      if(!isPrimed()){
-        dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-        primeFailed=true;
-      }
-    }
-  });
-}
-
-function m2mConnect(disp,updateState){
-  var dispatch=disp;
-  if ('development'==process.env.NODE_ENV) {
-    console.log(`m2mConnectCnt = ${m2mConnectCnt}`);
-  }
-
-
-  var m2mConnection = new sql.Connection(CONNECT.m2mDefTO, function(err) {
-    // ... error checks
-    if(null==err){
-      if ('development'==process.env.NODE_ENV) {
-        console.dir(m2mConnection);
-      }
-      var request = new sql.Request(m2mConnection); 
-      request.query(
-        `
-        SELECT FCNUMBER FROM SYSEQU WHERE fcclass = 'RCMAST.FRECEIVER'
-        `,function(err, recordset) {
-            // ... error checks
-            if(null==err){
-              if ('development'==process.env.NODE_ENV) {
-                console.log(`m2mConnect: query success`);
-                console.dir(recordset);
-              }
-
-              primed=true;
-            }else{
-              if(++m2mConnectCnt<3) {
-                if ('development'==process.env.NODE_ENV) {
-                  console.log(`m2mConnect.query:  ${err.message}` );
-                  console.log(`m2mConnectCnt = ${m2mConnectCnt}`);
-                }
-
-              }else{
-                if(!isPrimed()){
-                  dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-                  dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-                  primeFailed=true;
-                }
-              }
-            }
-          }
-      );
-    }else{
-      if(++m2mConnectCnt<3) {
-        if ('development'==process.env.NODE_ENV) {
-          console.log(`m2mConnect.Connection:  ${err.message}` );
-          console.log(`m2mConnectCnt = ${m2mConnectCnt}`);
-        }
-      }else{
-        if(!isPrimed()){
-          dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-          dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-          primeFailed=true;
-        }
-      }
-
-    }
-  });
-  
-  m2mConnection.on('error', function(err) {
-    if(++m2mConnectCnt<3) {
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`m2mConnect.on('error', function(err):  ${err.message}` );
-        console.log(`m2mConnectCnt = ${m2mConnectCnt}`);
-      }
-
-    }else{
-      if(!isPrimed()){
-        dispatch({ type:PORTACTION.SET_REASON, reason:err.message });
-        dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
-        primeFailed=true;
-      }
-    }
-  });
-}
-
-*/
 export async function updateCheck1(disp,getSt,poNumber,item,poCategory,startPort) {
 //  var that = this;
   var dispatch = disp;
   var getState = getSt;
   var portState = getState(); 
   var cnt=0;
-  var maxCnt=5;
+  var maxCnt=10;
   var continueProcess=true;
 
 
@@ -270,32 +93,35 @@ export async function updateCheck1(disp,getSt,poNumber,item,poCategory,startPort
 
 //  initPrime();
 //  primeDB(dispatch,false);
-  SQLPRIMEDB.sql1(dispatch,getState,false);
-
+  dispatch((dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    SQLPRIMEDB.sql1(disp,getSt);
+  });
 
   cnt=0;
-  maxCnt=5;
-  while(!SQLPRIMEDB.isDone()){
-    if(++cnt>maxCnt || SQLPRIMEDB.didFail()){
+  while(!getState().Common.primed){
+    if(++cnt>maxCnt ){
       break;
     }else{
       await MISC.sleep(2000);
     }
   }
-
-  if(!SQLPRIMEDB.didFail()){
+  if(!getState().Common.primed){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`primeDB FAILED Stop PO Request Transfer.`);
+    }
+    dispatch({ type:PORTACTION.SET_REASON, reason:`primeDB FAILED Stop PO Request Transfer.` });
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+    dispatch({ type:PORTACTION.SET_STATUS, status:'Can not connect to Made2Manage or Cribmaster...' });
+    continueProcess=false;
+  }else{
     if ('development'==process.env.NODE_ENV) {
       console.log(`primeDB Success continue PO Request Transfer.`);
     }
     UPDATE1.sql1(dispatch,getState,poNumber,item,poCategory);
-  }else{
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`primeDB FAILED Stop PO Request Transfer.`);
-    }
-    // Exit if Not Primed
-    dispatch({ type:PORTACTION.SET_STATUS, status:'' });
-    continueProcess=false;
   }
+
 
   /////////////////////////////
 
@@ -321,7 +147,7 @@ export async function updateCheck2(disp,getSt,poNumber,vendorNumber,Address1,Add
   var getState = getSt;
   var portState = getState(); 
   var cnt=0;
-  var maxCnt=5;
+  var maxCnt=10;
   var continueProcess=true;
 
   dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STARTED });
@@ -332,32 +158,33 @@ export async function updateCheck2(disp,getSt,poNumber,vendorNumber,Address1,Add
     console.log(`updateCheck2(): top`);
   }
 
-
-  SQLPRIMEDB.sql1(dispatch,getState,false);
-
+  dispatch((dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    SQLPRIMEDB.sql1(disp,getSt);
+  });
 
   cnt=0;
-  maxCnt=5;
-  while(!SQLPRIMEDB.isDone()){
-    if(++cnt>maxCnt || SQLPRIMEDB.didFail()){
+  while(!getState().Common.primed){
+    if(++cnt>maxCnt ){
       break;
     }else{
       await MISC.sleep(2000);
     }
   }
-
-  if(!SQLPRIMEDB.didFail()){
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`primeDB Success continue PO Request Transfer.`);
-    }
-    UPDATE2.sql1(dispatch,getState,poNumber,vendorNumber,Address1,Address2,Address3,Address4);
-  }else{
+  if(!getState().Common.primed){
     if ('development'==process.env.NODE_ENV) {
       console.log(`primeDB FAILED Stop PO Request Transfer.`);
     }
-    // Exit if Not Primed
-    dispatch({ type:PORTACTION.SET_STATUS, status:'' });
+    dispatch({ type:PORTACTION.SET_REASON, reason:`primeDB FAILED Stop PO Request Transfer.` });
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+    dispatch({ type:PORTACTION.SET_STATUS, status:'Can not connect to Made2Manage or Cribmaster...' });
     continueProcess=false;
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`primeDB Success continue PO Request Transfer.`);
+    }
+    UPDATE2.sql1(dispatch,getState,poNumber,item,poCategory);
   }
 
   /////////////////////////////
@@ -385,7 +212,7 @@ export async function updateCheck3(disp,getSt,vendorNumber,newM2mVendor,startPor
   var getState = getSt;
   var portState = getState(); 
   var cnt=0;
-  var maxCnt=5;
+  var maxCnt=10;
   var continueProcess=true;
 
   dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STARTED });
@@ -396,33 +223,36 @@ export async function updateCheck3(disp,getSt,vendorNumber,newM2mVendor,startPor
     console.log(`updateCheck3(): top`);
   }
 
-  SQLPRIMEDB.sql1(dispatch,getState,false);
-
+  dispatch((dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    SQLPRIMEDB.sql1(disp,getSt);
+  });
 
   cnt=0;
-  maxCnt=5;
-  while(!SQLPRIMEDB.isDone()){
-    if(++cnt>maxCnt || SQLPRIMEDB.didFail()){
+  while(!getState().Common.primed){
+    if(++cnt>maxCnt ){
       break;
     }else{
       await MISC.sleep(2000);
     }
   }
-
-  if(!SQLPRIMEDB.didFail()){
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`primeDB Success continue PO Request Transfer.`);
-    }
-    UPDATE3.sql1(dispatch,getState,vendorNumber,newM2mVendor);
-  }else{
+  if(!getState().Common.primed){
     if ('development'==process.env.NODE_ENV) {
       console.log(`primeDB FAILED Stop PO Request Transfer.`);
     }
-    // Exit if Not Primed
-    dispatch({ type:PORTACTION.SET_STATUS, status:'' });
+    dispatch({ type:PORTACTION.SET_REASON, reason:`primeDB FAILED Stop PO Request Transfer.` });
+    dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+    dispatch({ type:PORTACTION.SET_STATUS, status:'Can not connect to Made2Manage or Cribmaster...' });
     continueProcess=false;
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`primeDB Success continue PO Request Transfer.`);
+    }
+    UPDATE3.sql1(dispatch,getState,poNumber,item,poCategory);
   }
 
+////////////////////////////
   cnt=0;
   maxCnt=15;
 
@@ -441,7 +271,7 @@ export async function updateCheck3(disp,getSt,vendorNumber,newM2mVendor,startPor
 } // updateCheck3
 
 
-export default async function POReqTrans(disp,getSt,prime) {
+export async function POReqTrans(disp,getSt,prime) {
 //  var that = this;
   var dispatch = disp;
   var getState = getSt;
@@ -460,62 +290,36 @@ export default async function POReqTrans(disp,getSt,prime) {
 //    dispatch({ type:PORTACTION.SET_STATUS, status:'Started PO Request Transfer process...' });
 
 
+  var maxCnt=10;
   var cnt=0;
 
   if(prime){
-    SQLPRIMEDB.sql1(dispatch,getState,false);
+    //SQLPRIMEDB.sql1(dispatch,getState);
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
+      SQLPRIMEDB.sql1(disp,getSt);
+    });
 
     cnt=0;
-
-    while(!SQLPRIMEDB.isDone()){
-      if(++cnt>15 || SQLPRIMEDB.didFail()){
+    while(!getState().Common.primed){
+      if(++cnt>maxCnt ){
         break;
       }else{
         await MISC.sleep(2000);
       }
     }
-
-    if(!SQLPRIMEDB.didFail()){
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`primeDB Success continue PO Request Transfer.`);
-      }
-    }else{
+    if(!getState().Common.primed){
       if ('development'==process.env.NODE_ENV) {
         console.log(`primeDB FAILED Stop PO Request Transfer.`);
       }
       continueProcess=false;
+      dispatch({ type:PORTACTION.SET_REASON, reason:`primeDB FAILED Stop PO Request Transfer. ` });
+      dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.FAILURE });
+      dispatch({ type:PORTACTION.SET_STATUS, status:'Can not connect to Made2Manage or Cribmaster...' });
     }
   }
 
-/*
-  if(prime){
-    initPrime();
-    primeDB(dispatch,false);
-    while(!isPrimed() && !primeFailed){
-      if(++cnt>15){
-        break;
-      }else{
-        await MISC.sleep(2000);
-      }
-    }
-
-    if(isPrimed()){
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`primeDB Success continue PO Request Transfer.`);
-      }
-    }else{
-      continueProcess=false;
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`primeDB FAILED quit PO Request Transfer.`);
-      }
-    }
-  }
-
-  if(!isPrimed()){
-    continueProcess=false;
-  }
-
-*/
   // CHECK FOR PREVIOUSLY FAILED SESSIONS
   if(continueProcess&&isFirstPass){
     PORTSQLINSLOG.sql1(dispatch,getState);
