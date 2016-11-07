@@ -2,11 +2,15 @@
 var sql = require('mssql');
 const {dialog} = require('electron').remote;
 
-import * as CONNECT from "./SQLConst.js"
-import * as GRACTION from "../actions/GRConst.js"
-import * as GRSTATE from "../actions/GRState.js"
-import * as MISC from "./Misc.js"
-import * as SQLPRIMEDB from "./SQLPrimeDB.js"
+import * as CONNECT from "../SQLConst.js"
+import * as GRACTION from "../../actions/GRConst.js"
+import * as GRSTATE from "../../actions/GRState.js"
+import * as MISC from "../Misc.js"
+import * as PROGRESSBUTTON from "../../actions/ProgressButtonConst.js"
+import * as SQLPRIMEDB from "../SQLPrimeDB.js"
+import * as SQLSETCURRENTRECEIVER from "./SQLSetCurrentReceiver.js"
+import * as SQLSETRECEIVERCOUNT from "./SQLSetReceiverCount.js"
+import * as SQLSETSHIPVIA from "./SQLSetShipVia.js"
 
 export async function prime(disp,getSt){
   var dispatch = disp;
@@ -17,6 +21,8 @@ export async function prime(disp,getSt){
   if ('development'==process.env.NODE_ENV) {
     console.log(`prime() top.`);
   }
+
+  dispatch({ type:GRACTION.INIT});
 
   dispatch((dispatch,getState) => {
     var disp = dispatch;
@@ -99,12 +105,75 @@ export async function start(disp,getSt,prime) {
     }
   }
 
-
+ // DONE WITH FIRSTPASS PROCESSING AT THIS POINT
   if(continueProcess){
-    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+    SQLSETRECEIVERCOUNT.sql1(dispatch,getState);
+  }
+
+  cnt=0;
+  maxCnt=10;
+  while(continueProcess && !SQLSETRECEIVERCOUNT.isDone()){
+    if(++cnt>maxCnt || SQLSETRECEIVERCOUNT.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
   }
 
 
+  if(continueProcess&&SQLSETRECEIVERCOUNT.continueGR()){
+    if(getState().GenReceivers.receiverCount>0){
+      SQLSETCURRENTRECEIVER.sql1(dispatch,getState);
+    }else{
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLSETRECEIVERCOUNT not successful or did not run.`);
+      }
+      continueProcess=false;
+    }
+  }
+
+  cnt=0;
+  maxCnt=10;
+  while(continueProcess && !SQLSETCURRENTRECEIVER.isDone()){
+    if(++cnt>maxCnt || SQLSETCURRENTRECEIVER.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+
+  if(continueProcess&&SQLSETCURRENTRECEIVER.continueGR()){
+    SQLSETSHIPVIA.sql1(dispatch,getState);
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`SQLSETCURRENTRECEIVER not successful or did not run.`);
+    }
+    continueProcess=false;
+  }
+
+  cnt=0;
+  maxCnt=10;
+  while(continueProcess && !SQLSETSHIPVIA.isDone()){
+    if(++cnt>maxCnt || SQLSETSHIPVIA.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+
+  if(continueProcess&&SQLSETSHIPVIA.continueGR()){
+    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`SQLSETSHIPVIA not successful or did not run.`);
+    }
+    continueProcess=false;
+  }
 
   return;
 

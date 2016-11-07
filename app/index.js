@@ -6,10 +6,11 @@ import { syncHistoryWithStore } from 'react-router-redux';
 import routes from './routes';
 import configureStore from './store/configureStore';
 import './app.global.css';
-import * as PORTSTATE from "./actions/PORTState.js"
-import * as PORTCHK from "./actions/PORTChkConst.js"
 import * as CHK from "./actions/ChkConst.js"
 import * as GRSTATE from "./actions/GRState.js"
+import * as PORTSTATE from "./actions/PORTState.js"
+import * as PORTCHK from "./actions/PORTChkConst.js"
+import * as PROGRESSBUTTON from "./actions/ProgressButtonConst.js"
 
 const initialState = {
 
@@ -22,7 +23,7 @@ const initialState = {
 		chk3:PORTCHK.UNKNOWN,
 		chk4:PORTCHK.UNKNOWN,
 		currentPO:0,
-		goButton:'', 
+		goButton:PROGRESSBUTTON.READY, 
 		logId:0,
 		m2mVendors:[{}],
 		m2mVendorSelect:[{}],
@@ -43,11 +44,14 @@ const initialState = {
 
 	GenReceivers:{ 
 		chk0:CHK.UNKNOWN,
-		goButton:'', 
+		currentReceiver:0,
+		goButton:PROGRESSBUTTON.READY, 
 		logId:0,
+		shipVia:[{}],
 		state:GRSTATE.NOT_PRIMED,
 		status:'',
-		reason:''
+		reason:'',
+		receiverCount:0
 	},
 	Common:{ 
 		primed:false

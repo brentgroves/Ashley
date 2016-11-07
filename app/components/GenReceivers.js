@@ -83,7 +83,50 @@ export default class GenReceivers extends Component {
           </Jumbotron>
         </Col>
       </Row>
+  } else if(
+            (GRSTATE.STARTED==this.props.GenR.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron  >
+            <h1 style={{textAlign: 'center'}}>Validation in Progress</h1>
+            <p style={{padding: '0px'}}>Checking if the previous session finished gracefully,
+            and all POs items are ready to receive into Made2Manage.  This shouldn't take long.</p>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(GRSTATE.FAILURE==this.props.GenR.state){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron  >
+            <h1 style={{textAlign: 'center'}}>Error!</h1>
+            <p><strong>Description:{" "}</strong>{this.props.GenR.reason}</p>
+            <p><strong>Press the Cancel button and try again.</strong></p> 
+            <p><strong>If the problem persists give IT the error description above.</strong></p>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(GRSTATE.SUCCESS==this.props.GenR.state){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron  >
+            <h1 style={{textAlign: 'center'}}>SUCCESS!</h1>
+            <div style={{textAlign: 'center'}}>
+            <h3 >All of the requested PO(s) items have been received
+            into Made2Manage successfully.</h3></div>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
   }
+
 
   if(
       (GRSTATE.PRIMED==this.props.GenR.state) ||
@@ -103,8 +146,30 @@ export default class GenReceivers extends Component {
         <Col xs={2}><GRButton /></Col>
         <Col xs={5}>&nbsp;</Col>
       </Row>
+
     </div>
   }
+  if(
+      (GRSTATE.STARTED==this.props.GenR.state) 
+    )
+  {
+    checks = 
+    <div>
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+
+      <Row >
+        <Col xs={4}></Col>
+        <Col xs={4}><GRChecks /></Col>
+        <Col xs={4}></Col>
+      </Row>
+    </div>;
+  } 
+
 
   if(
       (GRSTATE.FAILURE==this.props.GenR.state) 
@@ -123,6 +188,7 @@ export default class GenReceivers extends Component {
       </Row>
     </div>
   }
+
   if(
       (GRSTATE.PRIMED==this.props.GenR.state) || 
       (GRSTATE.UPTODATE==this.props.GenR.state) ||  
@@ -163,7 +229,9 @@ export default class GenReceivers extends Component {
       <div  >
         <Grid >
           {jumboTronTxt}
+          {checks}
           {goButton}
+          {cancelBtn}
           {navbar}
         </Grid>
       </div>
@@ -175,6 +243,7 @@ export default class GenReceivers extends Component {
 
 
 /*
+
   if(
       (GRSTATE.STARTED==this.props.GenR.state) 
     )

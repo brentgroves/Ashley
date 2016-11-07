@@ -1,6 +1,7 @@
 import * as CHK from "../actions/ChkConst.js"
 import * as GRACTION from "../actions/GRConst.js"
 import * as GRSTATE from "../actions/GRState.js"
+import * as PROGRESSBUTTON from "../actions/ProgressButtonConst.js"
 import update from 'react-addons-update';
 
 
@@ -14,11 +15,14 @@ export default function reducer( state = {}, action) {
       var newData = update(state, 
         { 
           chk0: {$set: CHK.UNKNOWN},
-          goButton:{$set:''},
+          currentReceiver:{$set:0},
+          goButton:{$set:PROGRESSBUTTON.READY},
           logId:{$set:0},
-          state:{$set: GRSTATE.NOT_PRIMED},
-          status:{$set: ''},
+          receiverCount:{$set:0},
           reason:{$set:''},
+          shipVia:{$set:[{}]},
+          state:{$set: GRSTATE.NOT_PRIMED},
+          status:{$set: ''}
         });
       return newData;
     }
@@ -28,6 +32,11 @@ export default function reducer( state = {}, action) {
         console.log(`set logId`);
       }
       var newData = update(state, {logId: {$set: action.logId}});
+      return newData;
+    }
+    case GRACTION.SET_CURRENT_RECEIVER:
+    {
+      var newData = update(state, {currentReceiver: {$set: action.currentReceiver}});
       return newData;
     }
     case GRACTION.SET_GO_BUTTON:
@@ -44,6 +53,17 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {reason: {$set: action.reason}});
       return newData;
     }
+    case GRACTION.SET_RECEIVER_COUNT:
+    {
+      var newData = update(state, {receiverCount: {$set: action.receiverCount}});
+      return newData;
+    }
+    case GRACTION.SET_SHIP_VIA:
+    {
+      var newData = update(state, {state: {$set: action.shipVia}});
+      return newData;
+    }
+
     case GRACTION.SET_STATE:
     {
       var newData = update(state, {state: {$set: action.state}});

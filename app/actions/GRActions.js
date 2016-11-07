@@ -1,6 +1,6 @@
 import * as GRACTION from "./GRConst.js"
 import { push } from 'react-router-redux';
-import * as GRAPI from '../api/GenReceivers';
+import * as GRAPI from '../api/GR/GenReceivers';
 import * as MISC from "../api/Misc.js"
 
 
@@ -25,10 +25,38 @@ export function prime() {
   }
 }
 
+export function setCurrentReceiver(currentReceiver) {
+  return {
+    type: GRACTION.SET_CURRENT_RECEIVER,
+    currentReceiver: currentReceiver
+  };
+}
+
+export function setGoButton(goButton) {
+  return {
+    type: GRACTION.SET_GO_BUTTON,
+    goButton: goButton
+  };
+}
+
 export function setLogId(logId) {
   return {
     type: GRACTION.SET_LOGID,
     logId: logId
+  };
+}
+
+export function setReceiverCount(receiverCount) {
+  return {
+    type: GRACTION.SET_RECEIVER_COUNT,
+    receiverCount: receiverCount
+  };
+}
+
+export function setShipVia(shipVia) {
+  return {
+    type: GRACTION.SET_SHIP_VIA,
+    shipVia: shipVia
   };
 }
 

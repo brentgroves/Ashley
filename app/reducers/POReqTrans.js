@@ -1,5 +1,6 @@
 import * as PORTACTION from "../actions/PORTActionConst.js"
 import * as PORTSTATE from "../actions/PORTState.js"
+import * as PROGRESSBUTTON from "../actions/ProgressButtonConst.js"
 import update from 'react-addons-update';
 
 
@@ -20,7 +21,7 @@ export default function reducer( state = {}, action) {
           chk3: {$set: 'unknown'},
           chk4: {$set: 'unknown'},
           currentPO:{$set:0},
-          goButton:{$set:''},
+          goButton:{$set:PROGRESSBUTTON.READY},
           logId:{$set:0},
           m2mVendors:{$set:[{}]},
           m2mVendorSelect:{$set:[{}]},

@@ -43,6 +43,8 @@ export async function primePORT(disp,getSt){
     console.log(`primePORT() top.`);
   }
 
+  dispatch({ type:PORTACTION.INIT_PORT});
+
   dispatch((dispatch,getState) => {
     var disp = dispatch;
     var getSt = getState;
