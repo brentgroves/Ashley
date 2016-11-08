@@ -20,17 +20,17 @@ export async function sql1(disp,getSt){
   var getState = getSt;
   var state = getState(); 
   if ('development'==process.env.NODE_ENV) {
-    console.log(`SQLSetCurrentReceiver=> top`);
+    console.log(`SQLSetRCMast=> top`);
   }
 
 
   var cnt=0;
   init();
-  execSQL1(dispatch);
+  execSQL1(dispatch,getState);
 
   while(!isDone() && !didFail()){
     if(++cnt>15){
-      dispatch({ type:GRACTION.SET_REASON, reason:`SetSQLShipVia.sql1() Timed Out or Failed.` });
+      dispatch({ type:GRACTION.SET_REASON, reason:`SetSQLRCMast.sql1() Timed Out or Failed.` });
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
       break;
     }else{
@@ -40,23 +40,23 @@ export async function sql1(disp,getSt){
 
   if(isDone()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSetShipVia.sql1(): Completed`)
+      console.log(`SQLSetReceiverCount.sql1(): Completed`)
     }
 
   }else{
     if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSetShipVia.sql1(): Did NOT Complete`)
+      console.log(`SQLSetRCMast.sql1(): Did NOT Complete`)
     }
   }
 
   if(didFail()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSetShipVia.sql1(): Failed`)
+      console.log(`SQLSetRCMast.sql1(): Failed`)
     }
 
   }else{
     if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSetShipVia.sql1(): Suceeded`)
+      console.log(`SQLSetRCMast.sql1(): Suceeded`)
     }
   }
 
@@ -101,81 +101,60 @@ export function continueGR(){
 
 
 
-function execSQL1(disp){
+function execSQL1(disp,getSt){
   var dispatch = disp;
+  var getState=getSt;
   if ('development'==process.env.NODE_ENV) {
-    console.log(`SQLSetShipVia.execSQL1() top=>${sql1Cnt}`);
+    console.log(`SQLSetRCMast.execSQL1() top=>${sql1Cnt}`);
   }
 
 
-  var connection = new sql.Connection(CONNECT.m2mDefTO, function(err) {
+  var connection = new sql.Connection(CONNECT.cribDefTO, function(err) {
     // ... error checks
     if(null==err){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLSetShipVia.execSQL1() Connection Sucess`);
+        console.log(`SQLSetRCMast.execSQL1() Connection Sucess`);
       }
 
-      let qry;
+      let sproc;
 
       if (MISC.PROD===true) {
-        qry = `
-          select distinct rtrim(ffrtcarr) ffrtcarr
-          from rcmast 
-          where ffrtcarr <> ''
-          order by ffrtcarr desc
-          `;
+        sproc = `bpGRGenRCMast`;
       }else{
-        qry = `
-          select distinct rtrim(ffrtcarr) ffrtcarr
-          from rcmast 
-          where ffrtcarr <> ''
-          order by ffrtcarr desc
-          `;
+        // Don't want to use bpGRDevGenRCMast for testing
+        sproc = `bpGRGenRCMast`;
       }
 
+      let currentReceiver = getState().GenReceivers.currentReceiver;
 
       var request = new sql.Request(connection); 
-      request.query(qry, function(err, recordset) {
+      request.input('currentReceiver', sql.Int,currentReceiver);
+      request.execute(sproc, function(err, recordsets, returnValue, affected) {
         // ... error checks
         if(null==err){
           if ('development'==process.env.NODE_ENV) {
-            console.log(`SQLSetShipVia.execSQL1() Sucess`);
-          }
-          if(recordset.length!==0){
-            let currentReceiver=parseInt(recordset[0].fcnumber);
-            if ('development'==process.env.NODE_ENV) {
-              console.log("SQLSetShipVia.execSQL1() had records.");
-              console.log(`ffrtcarr=>${recordset[0].ffrtcarr}`);
-            }
-
-            var shipVia=[];
-            recordset.forEach(function(carrier,i,arr){
-              if ('development'==process.env.NODE_ENV) {
-                console.log(`carrier.ffrtcarr=>${carrier.ffrtcarr}`);
-              }
-              shipVia.push(carrier.ffrtcarr);
-            });
-
-            dispatch({ type:GRACTION.SET_SHIP_VIA, shipVia:shipVia});
-            contGR=true;
-          }else{
-            if ('development'==process.env.NODE_ENV) {
-              console.log(`SQLSetShipVia.execSQL1() err: Could not retrieve ffrtcarr.` );
-            }
-            dispatch({ type:GRACTION.SET_REASON, reason:'Could not retrieve ffrtcarr.' });
-            dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-            sql1Failed=true;
-          }
+            console.log(`SQLSetRCMast.execSQL1() Sucess`);
+/*            console.log(recordsets.length); // count of recordsets returned by the procedure
+            console.log(recordsets[0].length); // count of rows contained in first recordset
+            console.log(returnValue); // procedure return value
+            console.log(recordsets.returnValue); // same as previous line
+            console.log(affected); // number of rows affected by the statemens
+            console.log(recordsets.rowsAffected); // same as previous line
+            console.log(request.parameters.postart.value); // output value
+            console.log(request.parameters.poend.value); // output value
+*/          }
+          dispatch({ type:GRACTION.SET_RCMAST,rcmast:recordsets[0]});
           sql1Done=true;
+          contGR=true;
         }else {
           if(++sql1Cnt<ATTEMPTS) {
             if ('development'==process.env.NODE_ENV) {
-              console.log(`SQLSetShipVia.execSQL1().query:  ${err.message}` );
+              console.log(`SQLSetRCMast.execSQL1().query:  ${err.message}` );
               console.log(`sql1Cnt = ${sql1Cnt}`);
             }
           }else{
             if ('development'==process.env.NODE_ENV) {
-              console.log(`SQLSetShipVia.execSQL1() err:  ${err.message}` );
+              console.log(`SQLSetRCMast.execSQL1() err:  ${err.message}` );
             }
             dispatch({ type:GRACTION.SET_REASON, reason:err.message });
             dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
@@ -186,12 +165,12 @@ function execSQL1(disp){
     }else{
       if(++sql1Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLSetShipVia.Connection: ${err.message}` );
+          console.log(`SQLSetRCMast.Connection: ${err.message}` );
           console.log(`sql1Cnt = ${sql1Cnt}`);
         }
       }else{
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLSetShipVia.Connection: ${err.message}` );
+          console.log(`SQLSetRCMast.Connection: ${err.message}` );
         }
         dispatch({ type:GRACTION.SET_REASON, reason:err.message });
         dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
@@ -203,13 +182,13 @@ function execSQL1(disp){
   connection.on('error', function(err) {
     if(++sql1Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLSetShipVia.connection.on(error): ${err.message}` );
+        console.log(`SQLSetRCMast.connection.on(error): ${err.message}` );
         console.log(`sql1Cnt = ${sql1Cnt}`);
       }
 
     }else{
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLSetShipVia.connection.on(error): ${err.message}` );
+        console.log(`SQLSetRCMast.connection.on(error): ${err.message}` );
       }
       dispatch({ type:GRACTION.SET_REASON, reason:err.message });
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });

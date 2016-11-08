@@ -9,6 +9,7 @@ import * as MISC from "../Misc.js"
 import * as PROGRESSBUTTON from "../../actions/ProgressButtonConst.js"
 import * as SQLPRIMEDB from "../SQLPrimeDB.js"
 import * as SQLSETCURRENTRECEIVER from "./SQLSetCurrentReceiver.js"
+import * as SQLSETRCMAST from "./SQLSetRCMast.js"
 import * as SQLSETRECEIVERCOUNT from "./SQLSetReceiverCount.js"
 import * as SQLSETSHIPVIA from "./SQLSetShipVia.js"
 
@@ -167,10 +168,32 @@ export async function start(disp,getSt,prime) {
 
 
   if(continueProcess&&SQLSETSHIPVIA.continueGR()){
-    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+    SQLSETRCMAST.sql1(dispatch,getState);
   }else{
     if ('development'==process.env.NODE_ENV) {
       console.log(`SQLSETSHIPVIA not successful or did not run.`);
+    }
+    continueProcess=false;
+  }
+
+  cnt=0;
+  maxCnt=10;
+  while(continueProcess && !SQLSETRCMAST.isDone()){
+    if(++cnt>maxCnt || SQLSETRCMAST.didFail()){
+      continueProcess=false;
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+
+
+  if(continueProcess&&SQLSETRCMAST.continueGR()){
+    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.GEN_RCMAST });
+//    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`SQLSETRCMAST not successful or did not run.`);
     }
     continueProcess=false;
   }

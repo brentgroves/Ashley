@@ -46,6 +46,14 @@ export function setLogId(logId) {
   };
 }
 
+export function setRCMast(rcmast) {
+  return {
+    type: GRACTION.SET_RCMAST,
+    rcmast:rcmast
+  };
+}
+
+
 export function setReceiverCount(receiverCount) {
   return {
     type: GRACTION.SET_RECEIVER_COUNT,

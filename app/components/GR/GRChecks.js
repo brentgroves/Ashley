@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 import { Grid, Row, Glyphicon, Col, Button} from 'react-bootstrap';
-import * as CHK from "../actions/ChkConst.js"
+import * as CHK from "../../actions/ChkConst.js"
 
 
 export default class GRChecks extends Component {

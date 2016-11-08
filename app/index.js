@@ -50,6 +50,7 @@ const initialState = {
 		shipVia:[{}],
 		state:GRSTATE.NOT_PRIMED,
 		status:'',
+		rcmast:[{}],
 		reason:'',
 		receiverCount:0
 	},

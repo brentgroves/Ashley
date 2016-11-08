@@ -2,9 +2,10 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { Link,IndexLink } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
-import GRButton from '../containers/GRButton';
-import GRChecks from '../containers/GRChecks';
-import * as GRSTATE from "../actions/GRState.js"
+import GRButton from '../../containers/GR/GRButton';
+import GRChecks from '../../containers/GR/GRChecks';
+import GRGrid from '../../containers/GR/GRGrid';
+import * as GRSTATE from "../../actions/GRState.js"
 import { Grid, Row, Col, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse, Text as NavbarText } from 'react-bootstrap/lib/Navbar'
 /*
@@ -41,7 +42,7 @@ export default class GenReceivers extends Component {
   const chk2 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '5px 13px' };
   const dbg1 ={border: '1px solid blue', padding: '0px' };
 
-  var checks,goButton,navbar,cancelBtn,jumboTronTxt,navbarStatus,navbarEnd;
+  var checks,goButton,grid,navbar,cancelBtn,jumboTronTxt,navbarStatus,navbarEnd;
 
   if(GRSTATE.NOT_PRIMED==this.props.GenR.state){
     jumboTronTxt=
@@ -94,6 +95,20 @@ export default class GenReceivers extends Component {
             <h1 style={{textAlign: 'center'}}>Validation in Progress</h1>
             <p style={{padding: '0px'}}>Checking if the previous session finished gracefully,
             and all POs items are ready to receive into Made2Manage.  This shouldn't take long.</p>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(
+            (GRSTATE.GEN_RCMAST==this.props.GenR.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron  >
+            <h1 style={{textAlign: 'center'}}>Validation in Progress</h1>
+            <p style={{padding: '0px'}}>Please fill in the packing list number and
+            select the appropriate freight carrier before continuing.</p>
           </Jumbotron>
         </Col>
       </Row>
@@ -170,9 +185,25 @@ export default class GenReceivers extends Component {
     </div>;
   } 
 
+  if(
+      (GRSTATE.GEN_RCMAST==this.props.GenR.state)  
+    )
+  {
+    grid = 
+    <div>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={12}><GRGrid /></Col>
+      </Row>
+    </div>
+  }
 
   if(
-      (GRSTATE.FAILURE==this.props.GenR.state) 
+      (GRSTATE.FAILURE==this.props.GenR.state) ||
+      (GRSTATE.GEN_RCMAST==this.props.GenR.state) 
+
     )
   {
     cancelBtn = 
@@ -230,6 +261,7 @@ export default class GenReceivers extends Component {
         <Grid >
           {jumboTronTxt}
           {checks}
+          {grid}
           {goButton}
           {cancelBtn}
           {navbar}
@@ -242,28 +274,3 @@ export default class GenReceivers extends Component {
 
 
 
-/*
-
-  if(
-      (GRSTATE.STARTED==this.props.GenR.state) 
-    )
-  {
-    checks = 
-    <div>
-      <Row >
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-
-      <Row >
-        <Col xs={4}></Col>
-        <Col xs={4}><GRChecks /></Col>
-        <Col xs={4}></Col>
-      </Row>
-    </div>;
-  } 
-
-
-*/

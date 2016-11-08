@@ -3,7 +3,7 @@ import { Route, IndexRoute } from 'react-router';
 import App from './containers/App';
 import HomePage from './containers/HomePage';
 import POReqTrans from './containers/POReqTrans';
-import GenReceivers from './containers/GenReceivers';
+import GenReceivers from './containers/GR/GenReceivers';
 
 
 export default (

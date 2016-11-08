@@ -19,6 +19,7 @@ export default function reducer( state = {}, action) {
           goButton:{$set:PROGRESSBUTTON.READY},
           logId:{$set:0},
           receiverCount:{$set:0},
+          rcmast:{$set:[{}]},
           reason:{$set:''},
           shipVia:{$set:[{}]},
           state:{$set: GRSTATE.NOT_PRIMED},
@@ -58,9 +59,14 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {receiverCount: {$set: action.receiverCount}});
       return newData;
     }
+    case GRACTION.SET_RCMAST:
+    {
+      var newData = update(state, {rcmast: {$set: action.rcmast}});
+      return newData;
+    }
     case GRACTION.SET_SHIP_VIA:
     {
-      var newData = update(state, {state: {$set: action.shipVia}});
+      var newData = update(state, {shipVia: {$set: action.shipVia}});
       return newData;
     }
 

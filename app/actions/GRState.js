@@ -5,6 +5,8 @@ export const PRIMED = 'PRIMED';
 // state 3 - started
 export const STARTED = 'STARTED';
 
+// state 10 - Generate rcmast
+export const GEN_RCMAST = 'GEN_RCMAST';
 
 // state 80 - FAILED
 export const UPTODATE = 'UPTODATE';

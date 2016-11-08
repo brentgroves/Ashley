@@ -1,16 +1,16 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import GenReceivers from '../components/GenReceivers';
-import * as GRActions from '../actions/GRActions';
+import GRButton from '../../components/GR/GRButton';
+import * as GRActions from '../../actions/GRActions';
 
 function mapStateToProps(state) {
   return {
-    	GenR: state.GenReceivers
-	};
+	GenR: state.GenReceivers
+  };
 }
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(GRActions, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(GenReceivers);
+export default connect(mapStateToProps, mapDispatchToProps)(GRButton);

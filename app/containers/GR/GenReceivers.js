@@ -1,8 +1,7 @@
-
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import GRChecks from '../components/GRChecks';
-import * as GRActions from '../actions/GRActions';
+import GenReceivers from '../../components/GR/GenReceivers';
+import * as GRActions from '../../actions/GRActions';
 
 function mapStateToProps(state) {
   return {
@@ -14,4 +13,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(GRActions, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(GRChecks);
+export default connect(mapStateToProps, mapDispatchToProps)(GenReceivers);

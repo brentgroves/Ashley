@@ -1,3 +1,227 @@
+USE [Cribmaster]
+GO
+
+/*
+bpGRDevGenRCMast
+Generate one rcmast record for each vendorpo/date pair where items have been received since this sproc was last ran
+*/
+create procedure [dbo].[bpGRDevGenRCMast] 
+	@currentReceiver as char(6)
+AS
+SET NOCOUNT ON
+Declare @lastRun datetime
+select @lastRun=flastrun from btgrvars
+--Declare @currentReceiver int
+--set @currentReceiver='283343'
+insert into btrcmast
+(
+fclandcost
+,frmano
+,fporev
+,fcstatus
+,fdaterecv
+,fpono
+,freceiver
+,fvendno
+,faccptby
+,fbilllad
+,fcompany
+,ffrtcarr
+,fpacklist
+,fretship
+,fshipwgt
+,ftype
+,start
+,fprinted
+,flothrupd
+,fccurid
+,fcfactor
+,fdcurdate
+,fdeurodate
+,feurofctr
+,flpremcv
+,docstatus
+,frmacreator
+)
+--Declare @currentReceiver int
+--set @currentReceiver='283343'
+--Declare @lastRun datetime
+--select @lastRun=flastrun from btgrvars
+	select 
+	'N' fclandcost
+	,'' frmano
+	,'00' fporev
+	,'C' fcstatus
+	,received fdaterecv
+	,right(VendorPONumber,6) fpono
+	,@currentReceiver -1 + row_number() over (order by VendorPONumber) as freceiver
+	,UDFM2MVENDORNUMBER fvendno
+	,'NS' faccptby
+	,'' fbilllad
+	, fcompany
+	,'' ffrtcarr
+	,'' fpacklist
+	,'' fretship
+	,0.00 fshipwgt
+	,'P' ftype
+	, DATEADD(DD, DATEDIFF(DD, 0, received), 0) start
+	,0 fprinted
+	,1 flothrupd
+	,'' fccurid
+	,0.00 fcfactor
+	,'1900-01-01 00:00:00.000' fdcurdate
+	,'1900-01-01 00:00:00.000' fdeurodate
+	,0.00 feurofctr
+	,0 flpremcv
+	,'RECEIVED' docstatus
+	,'' frmacreator
+	from 
+	(
+		-- add various fields to base rcmast record
+		select VendorPONumber, start,received, pod3.VendorNumber,
+		vn1.UDFM2MVENDORNUMBER,apv.fccompany fcompany
+		from 
+		(
+			-- select distinct po/date(s) with only one received time for each po/date combo
+			select vendorponumber,start,max(VendorNumber) VendorNumber,max(received) received
+			from 
+			(
+				-- select only the records not transfered yet
+				select VendorPONumber, VendorNumber, id,DATEADD(DD, DATEDIFF(DD, 0, received), 0) start, received
+				from btPODETAIL
+				where Received > @lastRun
+			) pod2
+			group by VendorPONumber,start 
+		) pod3
+		inner join
+		(
+			select VendorNumber,UDFM2MVENDORNUMBER from vendor 
+		)vn1
+		on pod3.VendorNumber = vn1.VendorNumber
+		inner join
+		(
+			select fvendno,fccompany from btapvend
+		)apv
+		on vn1.UDFM2MVENDORNUMBER=apv.fvendno
+	)pd
+	order by VendorPONumber desc
+
+select ROW_NUMBER() OVER(ORDER BY fpono,start) id,LEFT(convert(varchar, start, 107),10) rcvdate,
+* 
+from 
+btrcmast
+
+
+/*
+bpGRGenRCMast
+Generate one rcmast record for each vendorpo/date pair where items have been received since this sproc was last ran
+*/
+create procedure [dbo].[bpGRGenRCMast] 
+	@currentReceiver as char(6)
+AS
+SET NOCOUNT ON
+Declare @lastRun datetime
+select @lastRun=flastrun from btgrvars
+--Declare @currentReceiver int
+--set @currentReceiver='283343'
+insert into btrcmast
+(
+fclandcost
+,frmano
+,fporev
+,fcstatus
+,fdaterecv
+,fpono
+,freceiver
+,fvendno
+,faccptby
+,fbilllad
+,fcompany
+,ffrtcarr
+,fpacklist
+,fretship
+,fshipwgt
+,ftype
+,start
+,fprinted
+,flothrupd
+,fccurid
+,fcfactor
+,fdcurdate
+,fdeurodate
+,feurofctr
+,flpremcv
+,docstatus
+,frmacreator
+)
+--Declare @currentReceiver int
+--set @currentReceiver='283343'
+--Declare @lastRun datetime
+--select @lastRun=flastrun from btgrvars
+	select 
+	'N' fclandcost
+	,'' frmano
+	,'00' fporev
+	,'C' fcstatus
+	,received fdaterecv
+	,right(VendorPONumber,6) fpono
+	,@currentReceiver -1 + row_number() over (order by VendorPONumber) as freceiver
+	,UDFM2MVENDORNUMBER fvendno
+	,'NS' faccptby
+	,'' fbilllad
+	, fcompany
+	,'' ffrtcarr
+	,'' fpacklist
+	,'' fretship
+	,0.00 fshipwgt
+	,'P' ftype
+	, DATEADD(DD, DATEDIFF(DD, 0, received), 0) start
+	,0 fprinted
+	,1 flothrupd
+	,'' fccurid
+	,0.00 fcfactor
+	,'1900-01-01 00:00:00.000' fdcurdate
+	,'1900-01-01 00:00:00.000' fdeurodate
+	,0.00 feurofctr
+	,0 flpremcv
+	,'RECEIVED' docstatus
+	,'' frmacreator
+	from 
+	(
+		-- add various fields to base rcmast record
+		select VendorPONumber, start,received, pod3.VendorNumber,
+		vn1.UDFM2MVENDORNUMBER,apv.fccompany fcompany
+		from 
+		(
+			-- select distinct po/date(s) with only one received time for each po/date combo
+			select vendorponumber,start,max(VendorNumber) VendorNumber,max(received) received
+			from 
+			(
+				-- select only the records not transfered yet
+				select VendorPONumber, VendorNumber, id,DATEADD(DD, DATEDIFF(DD, 0, received), 0) start, received
+				from PODETAIL
+				where Received > @lastRun
+			) pod2
+			group by VendorPONumber,start 
+		) pod3
+		inner join
+		(
+			select VendorNumber,UDFM2MVENDORNUMBER from vendor 
+		)vn1
+		on pod3.VendorNumber = vn1.VendorNumber
+		inner join
+		(
+			select fvendno,fccompany from btapvend
+		)apv
+		on vn1.UDFM2MVENDORNUMBER=apv.fvendno
+	)pd
+	order by VendorPONumber desc
+
+select ROW_NUMBER() OVER(ORDER BY fpono,start) id,LEFT(convert(varchar, start, 107),10) rcvdate,
+* 
+from 
+btrcmast
+
 
 create procedure [dbo].[bpDevPORT] 
 	@currentPO as char(6)
