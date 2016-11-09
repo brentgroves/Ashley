@@ -37,12 +37,32 @@ export default class GRGrid extends React.Component{
   }
 
   cellEditPropChk1 = {
-    mode: "dbclick",
+    mode: "click",
     blurToSave: true,
+  //  beforeSaveCell:this.onBeforeSaveCellChk1.bind(this),
     afterSaveCell: this.onAfterSaveCellChk1.bind(this)
 
   };
+/*
+  onBeforeSaveCellChk1(row, cellName, cellValue){
+    if ('development'==process.env.NODE_ENV) {
+      console.log("Save cell '"+cellName+"' with value '"+cellValue+"'");
+      console.log("Thw whole row :");
+      console.log(row);
+    }
 
+    let pl = cellValue.trim();
+    if(!pl){
+      return 'Packing List is required!'
+    }else if((pl.length<4)||(pl.length>15)){
+      console.log(`length is ${pl.length}`)
+      return `Packing List must be 4 to 15 characters in length.`
+
+    }
+    return true;
+
+  }
+*/
   onAfterSaveCellChk1(row, cellName, cellValue){
     if ('development'==process.env.NODE_ENV) {
       console.log("Save cell '"+cellName+"' with value '"+cellValue+"'");
@@ -50,6 +70,16 @@ export default class GRGrid extends React.Component{
       console.log(row);
       console.log(`this = `);
       console.dir(this);
+    }
+    if('ffrtcarr'==cellName){
+      let ffrtcarr=cellValue.trim();
+      console.log(`this.props.updateRCMastFFrtCarr=>${this.props.updateRCMastFFrtCarr}`)
+
+      this.props.updateRCMastFPackList(row.identity_column,ffrtcarr)
+    }else if('fpacklist'==cellName){
+      let fpacklist=cellValue.trim();
+      console.log(`this.props.updateRCMastFPackList=>${this.props.updateRCMastFPackList}`)
+      this.props.updateRCMastFPackList(row.identity_column,fpacklist)
     }
   }
 
@@ -64,7 +94,7 @@ export default class GRGrid extends React.Component{
     return true;
   }
 
-//table-striped table-bordered table-condensed
+//table-striped table-bordered table-condensed editable={{type:'text', validator:this.fpacklistValidator}}
   render(){
 
     var whichTable;
@@ -80,11 +110,11 @@ export default class GRGrid extends React.Component{
             bodyContainerClass='my-body-container-class'
             hover={true} bordered={true} condensed={true} 
             cellEdit={this.cellEditPropChk1} insertRow={false}>
-            <TableHeaderColumn dataField="id" hidden={true} isKey={true}>Row</TableHeaderColumn>
+            <TableHeaderColumn dataField="identity_column" hidden={true} isKey={true}>Row</TableHeaderColumn>
             <TableHeaderColumn dataField="fpono" width="155" columnClassName='td-first-column' editable={false} >PO Number</TableHeaderColumn>
             <TableHeaderColumn dataField="rcvdate" width="155" editable={false} >Date</TableHeaderColumn>
             <TableHeaderColumn dataField="fcompany" width="300" editable={false} >Company</TableHeaderColumn>
-            <TableHeaderColumn dataField="fpacklist" width="200" editable={{type:'text', validator:this.fpacklistValidator}} >Packing List</TableHeaderColumn>
+            <TableHeaderColumn dataField="fpacklist" width="200" editable={{type:'text', validator:this.fpacklistValidator}}  >Packing List</TableHeaderColumn>
             <TableHeaderColumn dataField="carrier" width="200" columnClassName={columnClassNameFormat} 
             editable={{type:'select', options:{values:this.props.GenR.shipVia}}}>Select Carrier</TableHeaderColumn>
           </BootstrapTable>;

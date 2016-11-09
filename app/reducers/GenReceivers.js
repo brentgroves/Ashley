@@ -46,6 +46,17 @@ export default function reducer( state = {}, action) {
     //  return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
       return newData;
     }
+    case GRACTION.SET_RCMAST:
+    {
+      var newData = update(state, {rcmast: {$set: action.rcmast}});
+      return newData;
+    }
+    case GRACTION.UPDATE_RCMAST_FPACKLIST:
+    {
+      var newData = update(state, {rcmast: {$set: action.rcmast}});
+      return newData;
+    }
+    
     case GRACTION.SET_REASON:
     {
       if ('development'==process.env.NODE_ENV) {
@@ -57,11 +68,6 @@ export default function reducer( state = {}, action) {
     case GRACTION.SET_RECEIVER_COUNT:
     {
       var newData = update(state, {receiverCount: {$set: action.receiverCount}});
-      return newData;
-    }
-    case GRACTION.SET_RCMAST:
-    {
-      var newData = update(state, {rcmast: {$set: action.rcmast}});
       return newData;
     }
     case GRACTION.SET_SHIP_VIA:

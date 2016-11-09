@@ -2,7 +2,7 @@ import * as GRACTION from "./GRConst.js"
 import { push } from 'react-router-redux';
 import * as GRAPI from '../api/GR/GenReceivers';
 import * as MISC from "../api/Misc.js"
-
+//Supervisor-PLT-7
 
 export function cancelApp() {
  return (dispatch,getState) => {
@@ -90,6 +90,40 @@ export function start(prime) {
   };
 }
 
+export function updateRCMastFPackList(identity_column,newfPacklist) {
+  var rcmast=getState().GenReceivers.rcmast;
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`rcmast=>${rcmast}`);
+  }
+  var newRCMast=[];
+  rcmast.every(function(oldRCMast,i,arr){
 
+    if(oldRCMast.identity_column==identity_column){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(oldRCMast.identity_column + "==" + identity_column);
+      }
+      oldRCMast.fpacklist=newfPacklist;
+    }else{
+      if ('development'==process.env.NODE_ENV) {
+        console.log(oldRCMast.identity_column + "==" + identity_column);
+      }
+    }
+    newRCMast.push(oldRCMast);
+
+  });
+
+  return {
+    type: GRACTION.UPDATE_RCMAST,
+    rcmast:newRCMast
+  };
+}
+
+export function updateRCMastFFrtCarr(identity_column,ffrtcarr) {
+  return {
+    type: GRACTION.UPDATE_RCMAST_FFRTCARR,
+    identity_column:identity_column,
+    ffrtcarr,ffrtcarr
+  };
+}
 
 

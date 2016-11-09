@@ -42,7 +42,7 @@ export default class GenReceivers extends Component {
   const chk2 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '5px 13px' };
   const dbg1 ={border: '1px solid blue', padding: '0px' };
 
-  var checks,goButton,grid,navbar,cancelBtn,jumboTronTxt,navbarStatus,navbarEnd;
+  var checks,goButton,grid,navbar,cancelBtn,saveAndCancelBtn,jumboTronTxt,navbarStatus,navbarEnd;
 
   if(GRSTATE.NOT_PRIMED==this.props.GenR.state){
     jumboTronTxt=
@@ -201,8 +201,7 @@ export default class GenReceivers extends Component {
   }
 
   if(
-      (GRSTATE.FAILURE==this.props.GenR.state) ||
-      (GRSTATE.GEN_RCMAST==this.props.GenR.state) 
+      (GRSTATE.FAILURE==this.props.GenR.state)
 
     )
   {
@@ -215,6 +214,26 @@ export default class GenReceivers extends Component {
       <Row>
         <Col xs={5} >&nbsp;</Col>
         <Col xs={2}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
+        <Col xs={5}>&nbsp;</Col>
+      </Row>
+    </div>
+  }
+
+  if(
+      (GRSTATE.GEN_RCMAST==this.props.GenR.state) 
+
+    )
+  {
+    saveAndCancelBtn = 
+    <div>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+
+      <Row>
+        <Col xs={5} >&nbsp;</Col>
+        <Col xs={1}><Button  onClick={this.props.saveApp} bsSize="large" bsStyle="info">Save</Button></Col>
+        <Col xs={1}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
         <Col xs={5}>&nbsp;</Col>
       </Row>
     </div>
@@ -263,6 +282,7 @@ export default class GenReceivers extends Component {
           {checks}
           {grid}
           {goButton}
+          {saveAndCancelBtn}
           {cancelBtn}
           {navbar}
         </Grid>
