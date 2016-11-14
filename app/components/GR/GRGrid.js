@@ -71,16 +71,29 @@ export default class GRGrid extends React.Component{
       console.log(`this = `);
       console.dir(this);
     }
-    if('ffrtcarr'==cellName){
-      let ffrtcarr=cellValue.trim();
-      console.log(`this.props.updateRCMastFFrtCarr=>${this.props.updateRCMastFFrtCarr}`)
+    var rcmast=this.props.GenR.rcmast;
+    let newValue=cellValue.trim();
+    var newRCMast=[];
+    var identity_column=row.identity_column;
+    rcmast.every(function(oldRCMast,i,arr){
+      if(oldRCMast.identity_column==identity_column){
+        if ('development'==process.env.NODE_ENV) {
+          console.log(oldRCMast.identity_column + "==" + identity_column);
+        }
+        if('ffrtcarr'==cellName){
+          oldRCMast.ffrtcarr=newValue;
+        }else if('fpacklist'==cellName){
+          oldRCMast.fpacklist=newValue;
+        }  
+      }else{
+        if ('development'==process.env.NODE_ENV) {
+          console.log(oldRCMast.identity_column + "!=" + identity_column);
+        }
+      }
+      newRCMast.push(oldRCMast);
 
-      this.props.updateRCMastFPackList(row.identity_column,ffrtcarr)
-    }else if('fpacklist'==cellName){
-      let fpacklist=cellValue.trim();
-      console.log(`this.props.updateRCMastFPackList=>${this.props.updateRCMastFPackList}`)
-      this.props.updateRCMastFPackList(row.identity_column,fpacklist)
-    }
+    });
+    this.props.setRCMast(rcmast);
   }
 
 // validator function pass the user input value and should return true|false.
@@ -115,7 +128,7 @@ export default class GRGrid extends React.Component{
             <TableHeaderColumn dataField="rcvdate" width="155" editable={false} >Date</TableHeaderColumn>
             <TableHeaderColumn dataField="fcompany" width="300" editable={false} >Company</TableHeaderColumn>
             <TableHeaderColumn dataField="fpacklist" width="200" editable={{type:'text', validator:this.fpacklistValidator}}  >Packing List</TableHeaderColumn>
-            <TableHeaderColumn dataField="carrier" width="200" columnClassName={columnClassNameFormat} 
+            <TableHeaderColumn dataField="ffrtcarr" width="200" columnClassName={columnClassNameFormat} 
             editable={{type:'select', options:{values:this.props.GenR.shipVia}}}>Select Carrier</TableHeaderColumn>
           </BootstrapTable>;
     return ( <div>{whichTable}</div> );

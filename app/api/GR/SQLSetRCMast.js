@@ -40,7 +40,7 @@ export async function sql1(disp,getSt){
 
   if(isDone()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSetReceiverCount.sql1(): Completed`)
+      console.log(`SQLSetRCMast.sql1(): Completed`)
     }
 
   }else{
@@ -119,10 +119,10 @@ function execSQL1(disp,getSt){
       let sproc;
 
       if (MISC.PROD===true) {
-        sproc = `bpGRGenRCMast`;
+        sproc = `bpGRGenReceivers`;
       }else{
         // Don't want to use bpGRDevGenRCMast for testing
-        sproc = `bpGRGenRCMast`;
+        sproc = `bpGRGenReceivers`;
       }
 
       let currentReceiver = getState().GenReceivers.currentReceiver;

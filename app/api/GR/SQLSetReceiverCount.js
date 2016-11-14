@@ -120,7 +120,8 @@ function execSQL1(disp){
       if (MISC.PROD===true) {
         sproc = `bpGRReceiverCount`;
       }else{
-        sproc = `bpGRDevReceiverCount`;
+        // Dont want to use bpGRDevReceiverCount
+        sproc = `bpGRReceiverCount`;
       }
 
 
