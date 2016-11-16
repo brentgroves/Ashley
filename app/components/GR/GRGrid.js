@@ -72,10 +72,13 @@ export default class GRGrid extends React.Component{
       console.dir(this);
     }
     var rcmast=this.props.GenR.rcmast;
+    console.log(`rcmast =`);
+    console.dir(rcmast);
     let newValue=cellValue.trim();
+    console.log(`newValue = ${newValue}`);
     var newRCMast=[];
     var identity_column=row.identity_column;
-    rcmast.every(function(oldRCMast,i,arr){
+    rcmast.forEach(function(oldRCMast,i,arr){
       if(oldRCMast.identity_column==identity_column){
         if ('development'==process.env.NODE_ENV) {
           console.log(oldRCMast.identity_column + "==" + identity_column);
@@ -93,7 +96,40 @@ export default class GRGrid extends React.Component{
       newRCMast.push(oldRCMast);
 
     });
-    this.props.setRCMast(rcmast);
+    console.log(`newRCMast=`);
+    console.dir(newRCMast);
+    this.props.setRCMast(newRCMast);
+  // Determine if the user has selected a packlist number and freight carrier
+  // for each record
+  /*
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`newRCMast.length=>${newRCMast.length}`);
+      console.log(`newRCMast:`);
+      console.dir(newRCMast);
+    }
+*/
+    var readyToInsert=true;
+    rcmast.forEach(function(rcm,i,arr){
+
+      if(!rcm.fpacklist){
+        readyToInsert=false;
+      }else if((rcm.fpacklist.trim().length<4)||(rcm.fpacklist.trim().length>15)){
+        readyToInsert=false;
+      }
+
+      if(!rcm.ffrtcarr){
+        readyToInsert=false;
+      }else if(rcm.ffrtcarr.trim().length<1){
+        readyToInsert=false;
+      }
+    });
+//    this.props.setRCMast(newRCMast);
+    if(readyToInsert){
+      this.props.setState(GRSTATE.RCMAST_INSERT_READY);
+    }else{
+      this.props.setState(GRSTATE.RCMAST_INSERT_NOT_READY);
+    }
+
   }
 
 // validator function pass the user input value and should return true|false.

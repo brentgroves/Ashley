@@ -99,16 +99,31 @@ export default class GenReceivers extends Component {
         </Col>
       </Row>
   } else if(
-            (GRSTATE.GEN_RCMAST==this.props.GenR.state) 
+            (GRSTATE.RCMAST_INSERT_NOT_READY==this.props.GenR.state) 
             ){
     jumboTronTxt=
       <Row >
         <Col xs={1}>&nbsp;</Col>
         <Col >
           <Jumbotron  >
-            <h1 style={{textAlign: 'center'}}>Validation in Progress</h1>
-            <p style={{padding: '0px'}}>Please fill in the packing list number and
+            <h1 style={{textAlign: 'center'}}>Freight Carrier & Packing List</h1>
+            <p style={{textAlign: 'center'}}>Please enter the packing list number and
             select the appropriate freight carrier before continuing.</p>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(
+            (GRSTATE.RCMAST_INSERT_READY==this.props.GenR.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron  >
+            <h1 style={{textAlign: 'center'}}>Ready to Save</h1>
+            <p style={{textAlign: 'center'}}>You have entered a packing list number and
+            selected a freight carrier for every receiver. Press the
+            'save' button to create receiver(s) in Made2Manage.</p>
           </Jumbotron>
         </Col>
       </Row>
@@ -164,6 +179,7 @@ export default class GenReceivers extends Component {
 
     </div>
   }
+
   if(
       (GRSTATE.STARTED==this.props.GenR.state) 
     )
@@ -186,7 +202,8 @@ export default class GenReceivers extends Component {
   } 
 
   if(
-      (GRSTATE.GEN_RCMAST==this.props.GenR.state)  
+      (GRSTATE.RCMAST_INSERT_NOT_READY==this.props.GenR.state)  ||
+      (GRSTATE.RCMAST_INSERT_READY==this.props.GenR.state)  
     )
   {
     grid = 
@@ -220,7 +237,7 @@ export default class GenReceivers extends Component {
   }
 
   if(
-      (GRSTATE.GEN_RCMAST==this.props.GenR.state) 
+      (GRSTATE.RCMAST_INSERT_NOT_READY==this.props.GenR.state) 
 
     )
   {
@@ -232,7 +249,27 @@ export default class GenReceivers extends Component {
 
       <Row>
         <Col xs={5} >&nbsp;</Col>
-        <Col xs={1}><Button  onClick={this.props.saveApp} bsSize="large" bsStyle="info">Save</Button></Col>
+        <Col xs={1}><Button  onClick={this.props.rcmastInsert} bsSize="large" bsStyle="info" disabled>Save</Button></Col>
+        <Col xs={1}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
+        <Col xs={5}>&nbsp;</Col>
+      </Row>
+    </div>
+  }
+
+  if(
+      (GRSTATE.RCMAST_INSERT_READY==this.props.GenR.state) 
+
+    )
+  {
+    saveAndCancelBtn = 
+    <div>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+
+      <Row>
+        <Col xs={5} >&nbsp;</Col>
+        <Col xs={1}><Button  onClick={this.props.rcmastInsert} bsSize="large" bsStyle="info" >Save</Button></Col>
         <Col xs={1}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
         <Col xs={5}>&nbsp;</Col>
       </Row>

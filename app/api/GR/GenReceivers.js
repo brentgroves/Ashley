@@ -12,6 +12,8 @@ import * as SQLSETCURRENTRECEIVER from "./SQLSetCurrentReceiver.js"
 import * as SQLSETRCMAST from "./SQLSetRCMast.js"
 import * as SQLSETRECEIVERCOUNT from "./SQLSetReceiverCount.js"
 import * as SQLSETSHIPVIA from "./SQLSetShipVia.js"
+import * as SQLRCMASTINSERT from "./SQLRCMastInsert.js"
+
 
 export async function prime(disp,getSt){
   var dispatch = disp;
@@ -53,6 +55,78 @@ export async function prime(disp,getSt){
     dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.PRIMED });
   }
 }
+
+
+export async function rcitemInsert(disp,getSt) {
+//  var that = this;
+  var dispatch = disp;
+  var getState = getSt;
+
+  var maxCnt=10;
+  var cnt=0;
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`rcitemInsert()->top.`);
+  }
+
+  dispatch((dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    SQLRCITEMINSERT.sql1(disp,getSt);
+  });
+
+  cnt=0;
+  while(!getState().GenReceivers.rcitemInsert.done){
+    if(++cnt>maxCnt ){
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+  if(getState().GenReceivers.rcitemInsert.failed){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`SQLRCITEMINSERT.sql1() FAILED.`);
+    }
+  }else{
+ //   dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.RCMAST_INSERT_READY });
+  }
+
+}
+
+export async function rcmastInsert(disp,getSt) {
+//  var that = this;
+  var dispatch = disp;
+  var getState = getSt;
+
+  var maxCnt=10;
+  var cnt=0;
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`rcmastInsert()->top.`);
+  }
+
+  dispatch((dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    SQLRCMASTINSERT.sql1(disp,getSt);
+  });
+
+  cnt=0;
+  while(!getState().GenReceivers.rcmastInsert.done){
+    if(++cnt>maxCnt ){
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+  if(getState().GenReceivers.rcmastInsert.failed){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`SQLRCMASTINSERT.sql1() FAILED.`);
+    }
+  }else{
+//    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.RCMAST_INSERT_READY });
+  }
+
+}
+
 
 export async function start(disp,getSt,prime) {
 //  var that = this;
@@ -128,8 +202,9 @@ export async function start(disp,getSt,prime) {
       SQLSETCURRENTRECEIVER.sql1(dispatch,getState);
     }else{
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLSETRECEIVERCOUNT not successful or did not run.`);
+        console.log(`SQLSETRECEIVERCOUNT count =0.`);
       }
+      dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.UPTODATE });
       continueProcess=false;
     }
   }
@@ -189,8 +264,8 @@ export async function start(disp,getSt,prime) {
 
 
   if(continueProcess&&SQLSETRCMAST.continueGR()){
-    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.GEN_RCMAST });
-//    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.RCMAST_INSERT_NOT_READY });
+//   RCMAST_INSERT dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
   }else{
     if ('development'==process.env.NODE_ENV) {
       console.log(`SQLSETRCMAST not successful or did not run.`);

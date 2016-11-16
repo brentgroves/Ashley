@@ -5,8 +5,12 @@ export const PRIMED = 'PRIMED';
 // state 3 - started
 export const STARTED = 'STARTED';
 
-// state 10 - Generate rcmast
-export const GEN_RCMAST = 'GEN_RCMAST';
+// state 10 - Freight Carrier and packing list NOT selected for each record
+export const RCMAST_INSERT_NOT_READY = 'RCMAST_INSERT_NOT_READY'
+
+// state 20 - Freight Carrier and packing list selected for each record
+export const RCMAST_INSERT_READY = 'RCMAST_INSERT_READY'
+
 
 // state 80 - FAILED
 export const UPTODATE = 'UPTODATE';

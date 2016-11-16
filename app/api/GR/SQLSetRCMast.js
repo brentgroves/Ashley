@@ -121,7 +121,7 @@ function execSQL1(disp,getSt){
       if (MISC.PROD===true) {
         sproc = `bpGRGenReceivers`;
       }else{
-        // Don't want to use bpGRDevGenRCMast for testing
+        // Don't want to use bpGRGenRCMastDev for testing
         sproc = `bpGRGenReceivers`;
       }
 
@@ -144,6 +144,7 @@ function execSQL1(disp,getSt){
             console.log(request.parameters.poend.value); // output value
 */          }
           dispatch({ type:GRACTION.SET_RCMAST,rcmast:recordsets[0]});
+          dispatch({ type:GRACTION.SET_RCITEM,rcitem:recordsets[1]});
           sql1Done=true;
           contGR=true;
         }else {

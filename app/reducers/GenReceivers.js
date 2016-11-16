@@ -19,7 +19,10 @@ export default function reducer( state = {}, action) {
           goButton:{$set:PROGRESSBUTTON.READY},
           logId:{$set:0},
           receiverCount:{$set:0},
+          rcitem:{$set:[{}]},
+          rcitemInsert:{$set:{done:false,failed:false}},
           rcmast:{$set:[{}]},
+          rcmastInsert:{$set:{done:false,failed:false}},
           reason:{$set:''},
           shipVia:{$set:[{}]},
           state:{$set: GRSTATE.NOT_PRIMED},
@@ -27,6 +30,35 @@ export default function reducer( state = {}, action) {
         });
       return newData;
     }
+    case GRACTION.RCITEM_INSERT_DONE:
+    {
+      var rcitemInsert = state.rcitemInsert;
+      rcitemInsert.done=action.done;
+      var newData = update(state, {rcitemInsert: {$set: rcitemInsert}});
+      return newData;
+    }
+    case GRACTION.RCITEM_INSERT_FAILED:
+    {
+      var rcitemInsert = state.rcitemInsert;
+      rcitemInsert.failed=action.failed;
+      var newData = update(state, {rcitemInsert: {$set: rcitemInsert}});
+      return newData;
+    }
+    case GRACTION.RCMAST_INSERT_DONE:
+    {
+      var rcmastInsert = state.rcmastInsert;
+      rcmastInsert.done=action.done;
+      var newData = update(state, {rcmastInsert: {$set: rcmastInsert}});
+      return newData;
+    }
+    case GRACTION.RCMAST_INSERT_FAILED:
+    {
+      var rcmastInsert = state.rcmastInsert;
+      rcmastInsert.failed=action.failed;
+      var newData = update(state, {rcmastInsert: {$set: rcmastInsert}});
+      return newData;
+    }
+
     case GRACTION.SET_LOGID:
     {
       if ('development'==process.env.NODE_ENV) {
@@ -44,6 +76,11 @@ export default function reducer( state = {}, action) {
     {
       var newData = update(state, {goButton: {$set: action.goButton}});
     //  return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
+      return newData;
+    }
+    case GRACTION.SET_RCITEM:
+    {
+      var newData = update(state, {rcitem: {$set: action.rcitem}});
       return newData;
     }
     case GRACTION.SET_RCMAST:

@@ -25,6 +25,62 @@ export function prime() {
   }
 }
 
+
+export function rcitemInsert() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`GRACTIONS.rcitemInsert()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    GRAPI.rcitemInsert(disp,getSt);
+  };
+}
+
+export function rcitemInsertDone(done) {
+  return {
+    type: GRACTION.RCITEM_INSERT_DONE,
+    done:done
+  };
+}
+
+export function rcitemInsertFailed(failed) {
+  return {
+    type: GRACTION.RCITEM_INSERT_FAILED,
+    failed:failed
+  };
+}
+
+
+
+export function rcmastInsert() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`GRACTIONS.rcmastInsert()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    GRAPI.rcmastInsert(disp,getSt);
+  };
+}
+
+export function rcmastInsertDone(done) {
+  return {
+    type: GRACTION.RCMAST_INSERT_DONE,
+    done:done
+  };
+}
+
+export function rcmastInsertFailed(failed) {
+  return {
+    type: GRACTION.RCMAST_INSERT_FAILED,
+    failed:failed
+  };
+}
+
+
 export function setCurrentReceiver(currentReceiver) {
   return {
     type: GRACTION.SET_CURRENT_RECEIVER,
@@ -53,6 +109,12 @@ export function setRCMast(rcmast) {
   };
 }
 
+export function setRCItem(rcitem) {
+  return {
+    type: GRACTION.SET_RCITEM,
+    rcitem:rcitem
+  };
+}
 
 export function setReceiverCount(receiverCount) {
   return {

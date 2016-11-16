@@ -1,5 +1,202 @@
 USE [Cribmaster]
 GO
+/*
+bpGRGenRCItem
+Generate a rcitem record for each podetail received since the last run of the generate receiver program.
+Link each record to the rcmast record with the same fpono and start fields.  There will be at most one
+rcmast record with fpono/start field combination generated in a single run of the program.  Although
+it is possible for another rcmast record with the same fpono/start fields to have been created in 
+previous runs.  This would require Nancy to have received items for a fpono, generating receivers, and 
+then receiving items and running the program again later in the day.
+	on rcm.fpono=pod.VendorPONumber
+	and rcm.start=pod.start
+-- fmeasure - will be set to EA.  We could change bpPORT sproc to ask Nancy what unit of measure
+-- she want's for each poitem created and make the process more complicated by creating the records
+-- in m2m without an fmeasure field and link m2m.btrcitem to m2m.poitem and retrieve the unit of 
+-- measure Nancy selected when the poitem was created.
+-- select distinct fmeasure from poitem order by fmeasure
+-- add to ssis create btMeasure
+
+*/
+create procedure [dbo].[bpGRGenRCItem] 
+AS
+SET NOCOUNT ON
+Declare @lastRun datetime
+select @lastRun=flastrun from btgrvars
+
+INSERT INTO [dbo].[btrcitem]
+           ([fitemno]
+           ,[fpartno]
+           ,[fpartrev]
+           ,[finvcost]
+           ,[fcategory]
+           ,[fcstatus]
+           ,[fiqtyinv]
+           ,[fjokey]
+           ,[fsokey]
+           ,[fsoitem]
+           ,[fsorelsno]
+           ,[fvqtyrecv]
+           ,[fqtyrecv]
+           ,[freceiver]
+           ,[frelsno]
+           ,[fvendno]
+           ,[fbinno]
+           ,[fexpdate]
+           ,[finspect]
+           ,[finvqty]
+           ,[flocation]
+           ,[flot]
+           ,[fmeasure]
+           ,[fpoitemno]
+           ,[fretcredit]
+           ,[ftype]
+           ,[fumvori]
+           ,[fqtyinsp]
+           ,[fauthorize]
+           ,[fucost]
+           ,[fllotreqd]
+           ,[flexpreqd]
+           ,[fctojoblot]
+           ,[fdiscount]
+           ,[fueurocost]
+           ,[futxncost]
+           ,[fucostonly]
+           ,[futxncston]
+           ,[fueurcston]
+           ,[flconvovrd]
+           ,[fcomments]
+           ,[fdescript]
+           ,[fac]
+           ,[sfac]
+           ,[FCORIGUM]
+           ,[fcudrev]
+           ,[FNORIGQTY]
+           ,[Iso]
+           ,[Ship_Link]
+           ,[ShsrceLink]
+           ,[fCINSTRUCT])
+		   --------START HERE
+--Declare @lastRun datetime
+--select @lastRun=flastrun from btgrvars
+select 
+---start debug
+--lv1.fpono,lv2.fpoitemno, lv1.freceiver,
+---end debug
+case 
+when (row_number() over (PARTITION BY freceiver order by lv2.fpoitemno )) > 99 then cast((row_number() over (PARTITION BY freceiver order by lv2.fpoitemno )) as char(3))
+when (row_number() over (PARTITION BY freceiver order by lv2.fpoitemno )) > 9 then '0' + cast((row_number() over (PARTITION BY freceiver order by lv2.fpoitemno )) as char(3))
+else '00' + cast((row_number() over (PARTITION BY freceiver order by lv2.fpoitemno )) as char(3))
+end	as fitemno,
+-- start debug
+--lv1.start,lv1.Received,
+-- end debug
+left(lv1.ItemDescription,25) fpartno,'NS' fpartrev,0.0 finvcost,
+fcategory,'' fcstatus,0.0 fiqtyinv,'' fjokey,'' fsokey,'' fsoitem,'' fsorelsno,
+podQuantity fvqtyrecv,podQuantity fqtyrecv, lv1.freceiver,'0' frelsno,fvendno,'' fbinno,
+'1900-01-01 00:00:00.000' fexpdate,'' finspect,0.0 finvqty,'' flocation,'' flot,'EA' fmeasure,
+lv2.fpoitemno,'' fretcredit,'P' ftype,'I' fumvori,0.0 fqtyinsp,'' fauthorize, lv1.cost fucost,
+0 fllotreqd,0 flexpreqd,'' fctojoblot,0.0 fdiscount,0.0 fueurocost,0.0 futxncost, 
+lv1.Cost fucostonly,0.0 futxncston,0.0 fueurcston,0 flconvovrd,'' fcomments, 
+case
+when lv1.fdescript is null then ''
+else fdescript
+end as fdescript,
+'Default' fac,'Default' sfac,'' FCORIGUM,'' fcudrev,0.0 FNORIGQTY,'' Iso,0 Ship_Link,
+0 ShsrceLink,'' fCINSTRUCT
+from
+(
+--	Declare @lastRun datetime
+--	select @lastRun=flastrun from btgrvars
+	-- we now have the receiver number for all items
+	select rcm.fpono,rcm.freceiver,
+	rcm.start,pod.Received,pod.ItemDescription,pod.fcategory,pod.Quantity podQuantity,
+	pod.fvendno,pod.Cost,fdescript
+	from(
+
+	select fpono,start,freceiver from btrcmast 
+	--order by fpono,start
+	)rcm
+	inner join 
+	(
+--		 Declare @lastRun datetime
+--		 select @lastRun=flastrun from btgrvars
+		-- select only the records not transfered yet
+		-- multiple records with the same itemdescription is possible only not with the same received time.
+		-- If an item was received at 10am another item could be received at 4pm with the same itemdescription and po.
+		-- in this case there could be 2 rcmast records for the same itemdescription and the same vendorponumber,start id.
+		select comments,description2 fdescript,VendorPONumber,DATEADD(DD, DATEDIFF(DD, 0, received), 0) start,Quantity, itemdescription,
+		pod.VendorNumber, fvendno, id, received,UDF_POCATEGORY fcategory,Cost
+		from PODETAIL pod
+		inner join 
+		(
+			select VendorNumber,UDFM2MVENDORNUMBER fvendno from vendor 
+		)vn1
+		on pod.VendorNumber = vn1.VendorNumber
+		where Received > @lastRun
+--		order by VendorPONumber,ItemDescription
+		--170
+	) pod
+	on rcm.fpono=pod.VendorPONumber
+	and rcm.start=pod.start
+--	order by VendorPONumber,ItemDescription
+	--170
+	--More because podetail can have multiple records with the same itemdescription because of partial shipments
+)lv1
+inner join
+(
+	-- get the fitemnumber we assigned to each item when creating the m2m poitem records
+	-- for all the po(s) that have any items received since the last run of the gen rcv program
+	-- we need retrieve all the podetail records and partion them to determine the fpoitem number
+	-- generated from the bpPORT sproc.
+	-- Declare @lastRun datetime
+	-- select @lastRun=flastrun from btgrvars
+	select lv1.VendorPONumber fpono, lv2.*
+	from
+	(
+		select distinct vendorponumber from	PODETAIL
+		where Received > @lastRun
+		--88
+	)lv1
+	inner join
+	(
+		-- Declare @lastRun datetime
+		-- select @lastRun=flastrun from btgrvars
+		select VendorPONumber,
+			case 
+			when (row_number() over (PARTITION BY PONumber order by ItemDescription )) > 99 then cast((row_number() over (PARTITION BY PONumber order by ItemDescription )) as char(3))
+			when (row_number() over (PARTITION BY PONumber order by ItemDescription )) > 9 then ' ' + cast((row_number() over (PARTITION BY PONumber order by ItemDescription )) as char(3))
+			else '  ' + cast((row_number() over (PARTITION BY PONumber order by ItemDescription )) as char(3))
+			end	as fpoitemno,
+			ItemDescription 
+		from 
+		(
+			 --Declare @lastRun datetime
+			 --select @lastRun=flastrun from btgrvars
+			-- there will be multiple podetail records with the same itemdescription when a partial shipment is received
+			-- but when the poitem record was created in m2m only 1 record with the itemdescription was made
+			-- we need to retrieve all of the podetail records for a po so we can accurately assign the same fpoitemno 
+			-- that we did when bpPORT sproc created the poitem entries.
+			select distinct ponumber,vendorponumber,itemdescription from PODETAIL
+		)pod
+	) lv2
+	on 
+	lv1.VendorPONumber=lv2.VendorPONumber
+	--235
+	--order by lv2.VendorPONumber,lv2.fitemno
+)lv2
+on 
+lv1.fpono=lv2.fpono and
+lv1.ItemDescription=lv2.ItemDescription
+order by lv1.fpono,lv1.start,lv2.fpoitemno
+--170 one for each distinct fpono,start,itemdescription 
+
+select * 
+from 
+btrcitem
+order by freceiver,fitemno
+GO
+
 
 /*
 bpGRDevGenRCMast

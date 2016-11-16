@@ -51,6 +51,7 @@ const initialState = {
 		state:GRSTATE.NOT_PRIMED,
 		status:'',
 		rcmast:[{}],
+		rcmastInsert:{done:false,failed:false},
 		reason:'',
 		receiverCount:0
 	},
