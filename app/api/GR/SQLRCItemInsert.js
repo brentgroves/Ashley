@@ -146,7 +146,10 @@ function execSQL1(disp,getSt){
       });
       if(allInsSucceded){
         dispatch({ type:GRACTION.RCITEM_INSERT_FAILED, failed:false });
+      }else{
+        dispatch({ type:GRACTION.RCITEM_INSERT_FAILED, failed:true });
       }
+
       dispatch({ type:GRACTION.RCITEM_INSERT_DONE, done:true });
 
     }else{

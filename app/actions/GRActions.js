@@ -17,6 +17,18 @@ export function init() {
   };
 }
 
+export function m2mGenReceivers() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`GRACTIONS.rcmastInsert()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    GRAPI.m2mGenReceivers(disp,getSt);
+  };
+}
+
 export function prime() {
  return (dispatch,getState) => {
     var disp = dispatch;
@@ -25,18 +37,6 @@ export function prime() {
   }
 }
 
-
-export function rcitemInsert() {
-  if ('development'==process.env.NODE_ENV) {
-    console.log(`GRACTIONS.rcitemInsert()->top.`);
-  }
-
- return (dispatch,getState) => {
-    var disp = dispatch;
-    var getSt = getState;
-    GRAPI.rcitemInsert(disp,getSt);
-  };
-}
 
 export function rcitemInsertDone(done) {
   return {
@@ -54,17 +54,6 @@ export function rcitemInsertFailed(failed) {
 
 
 
-export function rcmastInsert() {
-  if ('development'==process.env.NODE_ENV) {
-    console.log(`GRACTIONS.rcmastInsert()->top.`);
-  }
-
- return (dispatch,getState) => {
-    var disp = dispatch;
-    var getSt = getState;
-    GRAPI.rcmastInsert(disp,getSt);
-  };
-}
 
 export function rcmastInsertDone(done) {
   return {

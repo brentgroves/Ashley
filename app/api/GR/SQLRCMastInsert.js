@@ -123,6 +123,8 @@ function execSQL1(disp,getSt){
       });
       if(allInsSucceded){
         dispatch({ type:GRACTION.RCMAST_INSERT_FAILED, failed:false });
+      }else{
+        dispatch({ type:GRACTION.RCMAST_INSERT_FAILED, failed:true });
       }
       dispatch({ type:GRACTION.RCMAST_INSERT_DONE, done:true });
 

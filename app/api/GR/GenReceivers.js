@@ -8,11 +8,12 @@ import * as GRSTATE from "../../actions/GRState.js"
 import * as MISC from "../Misc.js"
 import * as PROGRESSBUTTON from "../../actions/ProgressButtonConst.js"
 import * as SQLPRIMEDB from "../SQLPrimeDB.js"
+import * as SQLRCITEMINSERT from "./SQLRCItemInsert.js"
+import * as SQLRCMASTINSERT from "./SQLRCMastInsert.js"
 import * as SQLSETCURRENTRECEIVER from "./SQLSetCurrentReceiver.js"
 import * as SQLSETRCMAST from "./SQLSetRCMast.js"
 import * as SQLSETRECEIVERCOUNT from "./SQLSetReceiverCount.js"
 import * as SQLSETSHIPVIA from "./SQLSetShipVia.js"
-import * as SQLRCMASTINSERT from "./SQLRCMastInsert.js"
 
 
 export async function prime(disp,getSt){
@@ -57,72 +58,98 @@ export async function prime(disp,getSt){
 }
 
 
-export async function rcitemInsert(disp,getSt) {
+export async function m2mGenReceivers(disp,getSt) {
 //  var that = this;
   var dispatch = disp;
   var getState = getSt;
+  var continueProcess=true;
 
   var maxCnt=10;
   var cnt=0;
   if ('development'==process.env.NODE_ENV) {
-    console.log(`rcitemInsert()->top.`);
+    console.log(`m2mGenReceivers()->top.`);
   }
 
   dispatch((dispatch,getState) => {
     var disp = dispatch;
     var getSt = getState;
-    SQLRCITEMINSERT.sql1(disp,getSt);
+    SQLPRIMEDB.sql1(disp,getSt);
   });
 
   cnt=0;
-  while(!getState().GenReceivers.rcitemInsert.done){
+  while(!getState().Common.primed){
     if(++cnt>maxCnt ){
       break;
     }else{
       await MISC.sleep(2000);
     }
   }
-  if(getState().GenReceivers.rcitemInsert.failed){
+  if(!getState().Common.primed){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLRCITEMINSERT.sql1() FAILED.`);
+      console.log(`primeDB FAILED.`);
     }
+    continueProcess=false;
+    dispatch({ type:GRACTION.SET_REASON, reason:`primeDB FAILED Stop Gen Receivers process. ` });
+    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
+    dispatch({ type:GRACTION.SET_STATUS, status:'Can not connect to Made2Manage or Cribmaster...' });
   }else{
- //   dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.RCMAST_INSERT_READY });
-  }
-
-}
-
-export async function rcmastInsert(disp,getSt) {
-//  var that = this;
-  var dispatch = disp;
-  var getState = getSt;
-
-  var maxCnt=10;
-  var cnt=0;
-  if ('development'==process.env.NODE_ENV) {
-    console.log(`rcmastInsert()->top.`);
-  }
-
-  dispatch((dispatch,getState) => {
-    var disp = dispatch;
-    var getSt = getState;
-    SQLRCMASTINSERT.sql1(disp,getSt);
-  });
-
-  cnt=0;
-  while(!getState().GenReceivers.rcmastInsert.done){
-    if(++cnt>maxCnt ){
-      break;
-    }else{
-      await MISC.sleep(2000);
-    }
-  }
-  if(getState().GenReceivers.rcmastInsert.failed){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLRCMASTINSERT.sql1() FAILED.`);
+      console.log(`prime Success.`);
     }
-  }else{
-//    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.RCMAST_INSERT_READY });
+  }
+
+  if(continueProcess){
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
+      SQLRCMASTINSERT.sql1(disp,getSt);
+    });
+
+    cnt=0;
+    while(!getState().GenReceivers.rcmastInsert.done){
+      if(++cnt>maxCnt ){
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+    if(getState().GenReceivers.rcmastInsert.failed ||
+      !getState().GenReceivers.rcmastInsert.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLRCMASTINSERT.sql1() FAILED.`);
+      }
+      continueProcess=false;
+    }
+  }
+
+  if(continueProcess){
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
+      SQLRCITEMINSERT.sql1(disp,getSt);
+    });
+    cnt=0;
+    while(!getState().GenReceivers.rcitemInsert.done){
+      if(++cnt>maxCnt ){
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+
+    if(getState().GenReceivers.rcitemInsert.failed || 
+      !getState().GenReceivers.rcmastInsert.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLRCITEMINSERT.sql1() FAILED.`);
+      }
+      continueProcess=false;
+    }
+   
+  }
+
+  // THE END
+  if(continueProcess){
+    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
   }
 
 }

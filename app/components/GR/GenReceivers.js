@@ -121,7 +121,7 @@ export default class GenReceivers extends Component {
         <Col >
           <Jumbotron  >
             <h1 style={{textAlign: 'center'}}>Ready to Save</h1>
-            <p style={{textAlign: 'center'}}>You have entered a packing list number and
+            <p >You have entered a packing list number and
             selected a freight carrier for every receiver. Press the
             'save' button to create receiver(s) in Made2Manage.</p>
           </Jumbotron>
@@ -249,7 +249,7 @@ export default class GenReceivers extends Component {
 
       <Row>
         <Col xs={5} >&nbsp;</Col>
-        <Col xs={1}><Button  onClick={this.props.rcmastInsert} bsSize="large" bsStyle="info" disabled>Save</Button></Col>
+        <Col xs={1}><Button  onClick={this.props.m2mGenReceivers} bsSize="large" bsStyle="info" disabled>Save</Button></Col>
         <Col xs={1}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
         <Col xs={5}>&nbsp;</Col>
       </Row>
@@ -269,7 +269,7 @@ export default class GenReceivers extends Component {
 
       <Row>
         <Col xs={5} >&nbsp;</Col>
-        <Col xs={1}><Button  onClick={this.props.rcmastInsert} bsSize="large" bsStyle="info" >Save</Button></Col>
+        <Col xs={1}><Button  onClick={this.props.m2mGenReceivers} bsSize="large" bsStyle="info" >Save</Button></Col>
         <Col xs={1}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
         <Col xs={5}>&nbsp;</Col>
       </Row>
