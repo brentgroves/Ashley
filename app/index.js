@@ -50,7 +50,11 @@ const initialState = {
 		shipVia:[{}],
 		state:GRSTATE.NOT_PRIMED,
 		status:'',
+		rcitem:[{}],
+		rcitemInsert:{done:false,failed:false},
+		rcitemUpdate:{done:false,failed:false},
 		rcmast:[{}],
+		rcmastRange:{start:0,end:0},
 		rcmastInsert:{done:false,failed:false},
 		reason:'',
 		receiverCount:0

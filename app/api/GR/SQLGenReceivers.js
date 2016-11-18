@@ -20,7 +20,7 @@ export async function sql1(disp,getSt){
   var getState = getSt;
   var state = getState(); 
   if ('development'==process.env.NODE_ENV) {
-    console.log(`SQLSetRCMast=> top`);
+    console.log(`SQLGenReceivers=> top`);
   }
 
 
@@ -30,7 +30,7 @@ export async function sql1(disp,getSt){
 
   while(!isDone() && !didFail()){
     if(++cnt>15){
-      dispatch({ type:GRACTION.SET_REASON, reason:`SetSQLRCMast.sql1() Timed Out or Failed.` });
+      dispatch({ type:GRACTION.SET_REASON, reason:`SQLGenReceivers.sql1() Timed Out or Failed.` });
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
       break;
     }else{
@@ -40,18 +40,18 @@ export async function sql1(disp,getSt){
 
   if(isDone()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSetRCMast.sql1(): Completed`)
+      console.log(`SQLGenReceivers.sql1(): Completed`)
     }
 
   }else{
     if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSetRCMast.sql1(): Did NOT Complete`)
+      console.log(`SQLGenReceivers.sql1(): Did NOT Complete`)
     }
   }
 
   if(didFail()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSetRCMast.sql1(): Failed`)
+      console.log(`SQLGenReceivers.sql1(): Failed`)
     }
 
   }else{
@@ -105,7 +105,7 @@ function execSQL1(disp,getSt){
   var dispatch = disp;
   var getState=getSt;
   if ('development'==process.env.NODE_ENV) {
-    console.log(`SQLSetRCMast.execSQL1() top=>${sql1Cnt}`);
+    console.log(`SQLGenReceivers.execSQL1() top=>${sql1Cnt}`);
   }
 
 
@@ -113,7 +113,7 @@ function execSQL1(disp,getSt){
     // ... error checks
     if(null==err){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLSetRCMast.execSQL1() Connection Sucess`);
+        console.log(`SQLGenReceivers.execSQL1() Connection Sucess`);
       }
 
       let sproc;
@@ -133,7 +133,7 @@ function execSQL1(disp,getSt){
         // ... error checks
         if(null==err){
           if ('development'==process.env.NODE_ENV) {
-            console.log(`SQLSetRCMast.execSQL1() Sucess`);
+            console.log(`SQLGenReceivers.execSQL1() Sucess`);
 /*            console.log(recordsets.length); // count of recordsets returned by the procedure
             console.log(recordsets[0].length); // count of rows contained in first recordset
             console.log(returnValue); // procedure return value
@@ -150,12 +150,12 @@ function execSQL1(disp,getSt){
         }else {
           if(++sql1Cnt<ATTEMPTS) {
             if ('development'==process.env.NODE_ENV) {
-              console.log(`SQLSetRCMast.execSQL1().query:  ${err.message}` );
+              console.log(`SQLGenReceivers.execSQL1().query:  ${err.message}` );
               console.log(`sql1Cnt = ${sql1Cnt}`);
             }
           }else{
             if ('development'==process.env.NODE_ENV) {
-              console.log(`SQLSetRCMast.execSQL1() err:  ${err.message}` );
+              console.log(`SQLGenReceivers.execSQL1() err:  ${err.message}` );
             }
             dispatch({ type:GRACTION.SET_REASON, reason:err.message });
             dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
@@ -166,12 +166,12 @@ function execSQL1(disp,getSt){
     }else{
       if(++sql1Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLSetRCMast.Connection: ${err.message}` );
+          console.log(`SQLGenReceivers.Connection: ${err.message}` );
           console.log(`sql1Cnt = ${sql1Cnt}`);
         }
       }else{
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLSetRCMast.Connection: ${err.message}` );
+          console.log(`SQLGenReceivers.Connection: ${err.message}` );
         }
         dispatch({ type:GRACTION.SET_REASON, reason:err.message });
         dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
@@ -183,13 +183,13 @@ function execSQL1(disp,getSt){
   connection.on('error', function(err) {
     if(++sql1Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLSetRCMast.connection.on(error): ${err.message}` );
+        console.log(`SQLGenReceivers.connection.on(error): ${err.message}` );
         console.log(`sql1Cnt = ${sql1Cnt}`);
       }
 
     }else{
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLSetRCMast.connection.on(error): ${err.message}` );
+        console.log(`SQLGenReceivers.connection.on(error): ${err.message}` );
       }
       dispatch({ type:GRACTION.SET_REASON, reason:err.message });
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });

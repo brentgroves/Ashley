@@ -7,6 +7,20 @@ import update from 'react-addons-update';
 
 export default function reducer( state = {}, action) {
   switch (action.type) {
+    case GRACTION.CLOSE_POS_RECEIVED_DONE:
+    {
+      var closePOsReceived = state.closePOsReceived;
+      closePOsReceived.done=action.done;
+      var newData = update(state, {closePOsReceived: {$set: closePOsReceived}});
+      return newData;
+    }
+    case GRACTION.CLOSE_POS_RECEIVED_FAILED:
+    {
+      var closePOsReceived = state.closePOsReceived;
+      closePOsReceived.failed=action.failed;
+      var newData = update(state, {closePOsReceived: {$set: closePOsReceived}});
+      return newData;
+    }
     case GRACTION.INIT:
     {
       if ('development'==process.env.NODE_ENV) {
@@ -15,14 +29,17 @@ export default function reducer( state = {}, action) {
       var newData = update(state, 
         { 
           chk0: {$set: CHK.UNKNOWN},
+          closePOsReceived:{$set:{done:false,failed:false}},
           currentReceiver:{$set:0},
           goButton:{$set:PROGRESSBUTTON.READY},
           logId:{$set:0},
           receiverCount:{$set:0},
           rcitem:{$set:[{}]},
           rcitemInsert:{$set:{done:false,failed:false}},
+          rcitemUpdate:{$set:{done:false,failed:false}},
           rcmast:{$set:[{}]},
           rcmastInsert:{$set:{done:false,failed:false}},
+          rcmastRange:{$set:{start:0,failed:0}},
           reason:{$set:''},
           shipVia:{$set:[{}]},
           state:{$set: GRSTATE.NOT_PRIMED},
@@ -30,6 +47,7 @@ export default function reducer( state = {}, action) {
         });
       return newData;
     }
+
     case GRACTION.RCITEM_INSERT_DONE:
     {
       var rcitemInsert = state.rcitemInsert;
@@ -42,6 +60,20 @@ export default function reducer( state = {}, action) {
       var rcitemInsert = state.rcitemInsert;
       rcitemInsert.failed=action.failed;
       var newData = update(state, {rcitemInsert: {$set: rcitemInsert}});
+      return newData;
+    }
+    case GRACTION.RCITEM_UPDATE_DONE:
+    {
+      var rcitemUpdate = state.rcitemUpdate;
+      rcitemUpdate.done=action.done;
+      var newData = update(state, {rcitemUpdate: {$set: rcitemUpdate}});
+      return newData;
+    }
+    case GRACTION.RCITEM_UPDATE_FAILED:
+    {
+      var rcitemUpdate = state.rcitemUpdate;
+      rcitemUpdate.failed=action.failed;
+      var newData = update(state, {rcitemUpdate: {$set: rcitemUpdate}});
       return newData;
     }
     case GRACTION.RCMAST_INSERT_DONE:
@@ -86,6 +118,11 @@ export default function reducer( state = {}, action) {
     case GRACTION.SET_RCMAST:
     {
       var newData = update(state, {rcmast: {$set: action.rcmast}});
+      return newData;
+    }
+    case GRACTION.SET_RCMAST_RANGE:
+    {
+      var newData = update(state, {rcmastRange: {$set: action.rcmastRange}});
       return newData;
     }
     case GRACTION.UPDATE_RCMAST_FPACKLIST:

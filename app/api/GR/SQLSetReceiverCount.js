@@ -30,7 +30,7 @@ export async function sql1(disp,getSt){
 
   while(!isDone() && !didFail()){
     if(++cnt>15){
-      dispatch({ type:GRACTION.SET_REASON, reason:`SetSQLReceiverCount.sql1() Timed Out or Failed.` });
+      dispatch({ type:GRACTION.SET_REASON, reason:`SQLSetReceiverCount.sql1() Timed Out or Failed.` });
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
       break;
     }else{
@@ -51,7 +51,7 @@ export async function sql1(disp,getSt){
 
   if(didFail()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSetCurrentReceiver.sql1(): Failed`)
+      console.log(`SQLSetReceiverCount.sql1(): Failed`)
     }
 
   }else{

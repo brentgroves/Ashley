@@ -11,6 +11,20 @@ export function cancelApp() {
   };
 }
 
+export function closePOsReceivedDone(done) {
+  return {
+    type: GRACTION.CLOSE_POS_RECEIVED_DONE,
+    done:done
+  };
+}
+
+export function closePOsReceivedFailed(failed) {
+  return {
+    type: GRACTION.CLOSE_POS_RECEIVED_FAILED,
+    failed:failed
+  };
+}
+
 export function init() {
   return {
     type: GRACTION.INIT
@@ -19,7 +33,7 @@ export function init() {
 
 export function m2mGenReceivers() {
   if ('development'==process.env.NODE_ENV) {
-    console.log(`GRACTIONS.rcmastInsert()->top.`);
+    console.log(`GRACTIONS.m2mGenReceivers()->top.`);
   }
 
  return (dispatch,getState) => {
@@ -70,6 +84,21 @@ export function rcmastInsertFailed(failed) {
 }
 
 
+export function rcitemUpdateDone(done) {
+  return {
+    type: GRACTION.RCITEM_UPDATE_DONE,
+    done:done
+  };
+}
+
+export function rcitemUpdateFailed(failed) {
+  return {
+    type: GRACTION.RCITEM_UPDATE_FAILED,
+    failed:failed
+  };
+}
+
+
 export function setCurrentReceiver(currentReceiver) {
   return {
     type: GRACTION.SET_CURRENT_RECEIVER,
@@ -95,6 +124,13 @@ export function setRCMast(rcmast) {
   return {
     type: GRACTION.SET_RCMAST,
     rcmast:rcmast
+  };
+}
+
+export function SetRCMastRange(rcmast) {
+  return {
+    type: GRACTION.SET_RCMAST_RANGE,
+    rcmastRange:rcmastRange
   };
 }
 

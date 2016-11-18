@@ -7,11 +7,13 @@ import * as GRACTION from "../../actions/GRConst.js"
 import * as GRSTATE from "../../actions/GRState.js"
 import * as MISC from "../Misc.js"
 import * as PROGRESSBUTTON from "../../actions/ProgressButtonConst.js"
+import * as SQLCLOSEPOSRECEIVED from "./SQLClosePOsReceived.js"
+import * as SQLGENRECEIVERS from "./SQLGenReceivers.js"
 import * as SQLPRIMEDB from "../SQLPrimeDB.js"
 import * as SQLRCITEMINSERT from "./SQLRCItemInsert.js"
+import * as SQLRCITEMUPDATE from "./SQLRCItemUpdate.js"
 import * as SQLRCMASTINSERT from "./SQLRCMastInsert.js"
 import * as SQLSETCURRENTRECEIVER from "./SQLSetCurrentReceiver.js"
-import * as SQLSETRCMAST from "./SQLSetRCMast.js"
 import * as SQLSETRECEIVERCOUNT from "./SQLSetReceiverCount.js"
 import * as SQLSETSHIPVIA from "./SQLSetShipVia.js"
 
@@ -89,7 +91,7 @@ export async function m2mGenReceivers(disp,getSt) {
       console.log(`primeDB FAILED.`);
     }
     continueProcess=false;
-    dispatch({ type:GRACTION.SET_REASON, reason:`primeDB FAILED Stop Gen Receivers process. ` });
+    dispatch({ type:GRACTION.SET_REASON, reason:`primeDB FAILED. ` });
     dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
     dispatch({ type:GRACTION.SET_STATUS, status:'Can not connect to Made2Manage or Cribmaster...' });
   }else{
@@ -141,6 +143,56 @@ export async function m2mGenReceivers(disp,getSt) {
       !getState().GenReceivers.rcmastInsert.done){
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLRCITEMINSERT.sql1() FAILED.`);
+      }
+      continueProcess=false;
+    }
+   
+  }
+
+  if(continueProcess){
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
+      SQLRCITEMUPDATE.sql1(disp,getSt);
+    });
+    cnt=0;
+    while(!getState().GenReceivers.rcitemUpdate.done){
+      if(++cnt>maxCnt ){
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+
+    if(getState().GenReceivers.rcitemUpdate.failed || 
+      !getState().GenReceivers.rcitemUpdate.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLRCITEMUPDATE.sql1() FAILED.`);
+      }
+      continueProcess=false;
+    }
+   
+  }
+
+  if(continueProcess){
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
+      SQLCLOSEPOSRECEIVED.sql1(disp,getSt);
+    });
+    cnt=0;
+    while(!getState().GenReceivers.closePOsReceived.done){
+      if(++cnt>maxCnt ){
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+
+    if(getState().GenReceivers.closePOsReceived.failed || 
+      !getState().GenReceivers.closePOsReceived.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLCLOSEPOSRECEIVED.sql1() FAILED.`);
       }
       continueProcess=false;
     }
@@ -223,13 +275,12 @@ export async function start(disp,getSt,prime) {
     }
   }
 
-
   if(continueProcess&&SQLSETRECEIVERCOUNT.continueGR()){
     if(getState().GenReceivers.receiverCount>0){
       SQLSETCURRENTRECEIVER.sql1(dispatch,getState);
     }else{
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLSETRECEIVERCOUNT count =0.`);
+        console.log(`SQLRCMASTRANGE count =0.`);
       }
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.UPTODATE });
       continueProcess=false;
@@ -249,6 +300,10 @@ export async function start(disp,getSt,prime) {
 
 
   if(continueProcess&&SQLSETCURRENTRECEIVER.continueGR()){
+    let rcmastRange={};
+    rcmastRange.start=getState().GenReceivers.currentReceiver;
+    rcmastRange.end=rcmastRange.start+getState().GenReceivers.receiverCount-1;
+    dispatch({ type:GRACTION.SET_RCMAST_RANGE, rcmastRange:rcmastRange});
     SQLSETSHIPVIA.sql1(dispatch,getState);
   }else{
     if ('development'==process.env.NODE_ENV) {
@@ -270,7 +325,7 @@ export async function start(disp,getSt,prime) {
 
 
   if(continueProcess&&SQLSETSHIPVIA.continueGR()){
-    SQLSETRCMAST.sql1(dispatch,getState);
+    SQLGENRECEIVERS.sql1(dispatch,getState);
   }else{
     if ('development'==process.env.NODE_ENV) {
       console.log(`SQLSETSHIPVIA not successful or did not run.`);
@@ -280,8 +335,8 @@ export async function start(disp,getSt,prime) {
 
   cnt=0;
   maxCnt=10;
-  while(continueProcess && !SQLSETRCMAST.isDone()){
-    if(++cnt>maxCnt || SQLSETRCMAST.didFail()){
+  while(continueProcess && !SQLGENRECEIVERS.isDone()){
+    if(++cnt>maxCnt || SQLGENRECEIVERS.didFail()){
       continueProcess=false;
       break;
     }else{
@@ -290,12 +345,12 @@ export async function start(disp,getSt,prime) {
   }
 
 
-  if(continueProcess&&SQLSETRCMAST.continueGR()){
+  if(continueProcess&&SQLGENRECEIVERS.continueGR()){
     dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.RCMAST_INSERT_NOT_READY });
 //   RCMAST_INSERT dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
   }else{
     if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSETRCMAST not successful or did not run.`);
+      console.log(`SQLGENRECEIVERS not successful or did not run.`);
     }
     continueProcess=false;
   }
