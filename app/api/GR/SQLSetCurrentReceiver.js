@@ -18,7 +18,6 @@ export async function sql1(disp,getSt){
 //  var that = this;
   var dispatch = disp;
   var getState = getSt;
-  var state = getState(); 
   if ('development'==process.env.NODE_ENV) {
     console.log(`SQLSetCurrentReceiver=> top`);
   }
@@ -26,7 +25,7 @@ export async function sql1(disp,getSt){
 
   var cnt=0;
   init();
-  execSQL1(dispatch);
+  execSQL1(dispatch,getState);
 
   while(!isDone() && !didFail()){
     if(++cnt>15){
@@ -101,8 +100,9 @@ export function continueGR(){
 
 
 
-function execSQL1(disp){
+function execSQL1(disp,getSt){
   var dispatch = disp;
+  var getState=getSt;
   if ('development'==process.env.NODE_ENV) {
     console.log(`SQLSetCurrentReceiver.execSQL1() top=>${sql1Cnt}`);
   }
@@ -115,43 +115,33 @@ function execSQL1(disp){
         console.log(`SQLSetCurrentReceiver.execSQL1() Connection Sucess`);
       }
 
-      let qry;
+      let sproc;
 
       if (MISC.PROD===true) {
-        qry = `
-          SELECT RTRIM(FCNUMBER) fcnumber FROM SYSEQU WHERE fcclass = 'RCMAST.FRECEIVER'
+        sproc = `bpGRSetCurrentReceiverDev'
           `;
       }else{
-        qry = `
-          SELECT RTRIM(FCNUMBER) fcnumber FROM btSYSEQU WHERE fcclass = 'RCMAST.FRECEIVER'
-          `;
+        sproc = `bpGRSetCurrentReceiver`;
       }
 
-
+      let receiverCount=getState().GenReceivers.receiverCount;
       var request = new sql.Request(connection); 
-      request.query(qry, function(err, recordset) {
+      request.input('receiverCount', sql.Int,receiverCount);
+      request.output('currentReceiver', sql.Char(6));
+
+      request.execute(sproc, function(err, recordset) {
         // ... error checks
         if(null==err){
           if ('development'==process.env.NODE_ENV) {
             console.log(`SQLSetCurrentReceiver.execSQL1() Sucess`);
           }
-          if(recordset.length!==0){
-            let currentReceiver=parseInt(recordset[0].fcnumber);
-            if ('development'==process.env.NODE_ENV) {
-              console.log("SQLSetCurrentReceiver.execSQL1() had records.");
-              console.dir(recordset[0].fcnumber);
-              console.log(`currentReceiver=>${currentReceiver}`);
-            }
-            dispatch({ type:GRACTION.SET_CURRENT_RECEIVER, currentReceiver:currentReceiver});
-            contGR=true;
-          }else{
-            if ('development'==process.env.NODE_ENV) {
-              console.log(`SQLSetCurrentReceiver.execSQL1() err: Could not retrieve fcnumber.` );
-            }
-            dispatch({ type:GRACTION.SET_REASON, reason:'Could not retrieve fcnumber.' });
-            dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-            sql1Failed=true;
+          let currentReceiver=request.parameters.currentReceiver.value;
+          if ('development'==process.env.NODE_ENV) {
+            console.log("SQLSetCurrentReceiver.execSQL1() had records.");
+            console.log(`currentReceiver=>${currentReceiver}`);
           }
+          dispatch({ type:GRACTION.SET_CURRENT_RECEIVER, currentReceiver:currentReceiver});
+          contGR=true;
           sql1Done=true;
         }else {
           if(++sql1Cnt<ATTEMPTS) {

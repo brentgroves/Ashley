@@ -1,5 +1,55 @@
-USE [Cribmaster]
+USE [m2mdata01]
 GO
+
+
+--//////////////////////////////////////////////
+-- user sends in the number of receivers to be generated
+-- sproc returns the starting receiver number and updates
+-- sysequ with the new current receiver number
+--//////////////////////////////////////////////
+create procedure [dbo].[bpGRSetCurrentReceiverDev]
+@receiverCount as int,
+@currentReceiver as char(6) OUTPUT
+as
+begin
+--declare @currentReceiver char(6)
+--declare @receiverCount int
+--set @receiverCount = 1
+declare @nextReceiver int
+
+SELECT @currentReceiver=Cast(RTRIM(FCNUMBER) as char(6)) FROM btSYSEQU WHERE fcclass = 'RCMAST.FRECEIVER'
+set @nextReceiver=cast(@currentReceiver as int) +@receiverCount
+--select @currentReceiver,@nextReceiver
+update btSysequ
+set fcnumber = cast(@nextReceiver as char(25))
+--SELECT FCNUMBER FROM btSYSEQU WHERE fcclass = 'RCMAST.FRECEIVER'
+end
+
+GO
+
+
+--//////////////////////////////////////////////
+-- user sends in the number of receivers to be generated
+-- sproc returns the starting receiver number and updates
+-- sysequ with the new current receiver number
+--//////////////////////////////////////////////
+create procedure bpGRSetCurrentReceiver
+@receiverCount as int,
+@currentReceiver as char(6) OUTPUT
+as
+begin
+--declare @currentReceiver char(6)
+--declare @receiverCount int
+--set @receiverCount = 1
+declare @nextReceiver int
+
+SELECT @currentReceiver=Cast(RTRIM(FCNUMBER) as char(6)) FROM SYSEQU WHERE fcclass = 'RCMAST.FRECEIVER'
+set @nextReceiver=cast(@currentReceiver as int) +@receiverCount
+--select @currentReceiver,@nextReceiver
+update Sysequ
+set fcnumber = cast(@nextReceiver as char(25))
+--SELECT FCNUMBER FROM btSYSEQU WHERE fcclass = 'RCMAST.FRECEIVER'
+end
 
 --//////////////////////////////////
 -- Close PO(s) that all poitem(s) have been completely received
