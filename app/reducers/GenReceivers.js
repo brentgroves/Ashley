@@ -21,6 +21,37 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {closePOsReceived: {$set: closePOsReceived}});
       return newData;
     }
+
+    case GRACTION.CURRENT_RECEIVER_DONE:
+    {
+      var bpGRSetCurrentReceiver = state.bpGRSetCurrentReceiver;
+      bpGRSetCurrentReceiver.done=action.done;
+      var newData = update(state, {bpGRSetCurrentReceiver: {$set: bpGRSetCurrentReceiver}});
+      return newData;
+    }
+    case GRACTION.CURRENT_RECEIVER_FAILED:
+    {
+      var bpGRSetCurrentReceiver = state.bpGRSetCurrentReceiver;
+      bpGRSetCurrentReceiver.failed=action.failed;
+      var newData = update(state, {bpGRSetCurrentReceiver: {$set: bpGRSetCurrentReceiver}});
+      return newData;
+    }
+
+    case GRACTION.LOG_INSERT_DONE:
+    {
+      var logInsert = state.logInsert;
+      logInsert.done=action.done;
+      var newData = update(state, {logInsert: {$set: logInsert}});
+      return newData;
+    }
+    case GRACTION.LOG_INSERT_FAILED:
+    {
+      var logInsert = state.logInsert;
+      logInsert.failed=action.failed;
+      var newData = update(state, {logInsert: {$set: logInsert}});
+      return newData;
+    }
+
     case GRACTION.INIT:
     {
       if ('development'==process.env.NODE_ENV) {
@@ -28,10 +59,13 @@ export default function reducer( state = {}, action) {
       }
       var newData = update(state, 
         { 
+          bpGRSetCurrentReceiver:{$set:{done:false,failed:false}},
+          bpGRReceiverCount:{$set:{done:false,failed:false}},
           chk0: {$set: CHK.UNKNOWN},
           closePOsReceived:{$set:{done:false,failed:false}},
           currentReceiver:{$set:0},
           goButton:{$set:PROGRESSBUTTON.READY},
+          logInsert:{$set:{done:false,failed:false}},
           logId:{$set:0},
           receiverCount:{$set:0},
           rcitem:{$set:[{}]},
@@ -42,6 +76,8 @@ export default function reducer( state = {}, action) {
           rcmastRange:{$set:{start:0,failed:0}},
           reason:{$set:''},
           shipVia:{$set:[{}]},
+          shipViaQry:{$set:{done:false,failed:false}},
+          sqlExec:{$set:{done:false,failed:false}},
           state:{$set: GRSTATE.NOT_PRIMED},
           status:{$set: ''}
         });
@@ -88,6 +124,21 @@ export default function reducer( state = {}, action) {
       var rcmastInsert = state.rcmastInsert;
       rcmastInsert.failed=action.failed;
       var newData = update(state, {rcmastInsert: {$set: rcmastInsert}});
+      return newData;
+    }
+
+    case GRACTION.RECEIVER_COUNT_DONE:
+    {
+      var bpGRReceiverCount = state.bpGRReceiverCount;
+      bpGRReceiverCount.done=action.done;
+      var newData = update(state, {bpGRReceiverCount: {$set: bpGRReceiverCount}});
+      return newData;
+    }
+    case GRACTION.RECEIVER_COUNT_FAILED:
+    {
+      var bpGRReceiverCount = state.bpGRReceiverCount;
+      bpGRReceiverCount.failed=action.failed;
+      var newData = update(state, {bpGRReceiverCount: {$set: bpGRReceiverCount}});
       return newData;
     }
 
@@ -160,6 +211,38 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {status: {$set: action.status}});
       return newData;
     }
+
+    case GRACTION.SHIP_VIA_DONE:
+    {
+      var shipViaQry = state.shipViaQry;
+      shipViaQry.done=action.done;
+      var newData = update(state, {shipViaQry: {$set: shipViaQry}});
+      return newData;
+    }
+    case GRACTION.SHIP_VIA_FAILED:
+    {
+      var shipViaQry = state.shipViaQry;
+      rshipViaQry.failed=action.failed;
+      var newData = update(state, {shipViaQry: {$set: shipViaQry}});
+      return newData;
+    }
+
+
+    case GRACTION.SQL_EXEC_DONE:
+    {
+      var sqlExec = state.sqlExec;
+      sqlExec.done=action.done;
+      var newData = update(state, {sqlExec: {$set: sqlExec}});
+      return newData;
+    }
+    case GRACTION.SQL_EXEC_FAILED:
+    {
+      var sqlExec = state.sqlExec;
+      sqlExec.failed=action.failed;
+      var newData = update(state, {sqlExec: {$set: sqlExec}});
+      return newData;
+    }
+
     default:
       return state;
   }

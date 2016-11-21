@@ -8,6 +8,8 @@ import * as GRSTATE from "../../actions/GRState.js"
 import * as MISC from "../Misc.js"
 import * as PROGRESSBUTTON from "../../actions/ProgressButtonConst.js"
 import * as SQLCLOSEPOSRECEIVED from "./SQLClosePOsReceived.js"
+import * as SQLEXEC from "./SQLExec.js"
+import * as SQLLOGINSERT from "./SQLLogInsert.js"
 import * as SQLGENRECEIVERS from "./SQLGenReceivers.js"
 import * as SQLPRIMEDB from "../SQLPrimeDB.js"
 import * as SQLRCITEMINSERT from "./SQLRCItemInsert.js"
@@ -207,77 +209,107 @@ export async function m2mGenReceivers(disp,getSt) {
 }
 
 
-export async function start(disp,getSt,prime) {
+export async function start(disp,getSt) {
 //  var that = this;
   var dispatch = disp;
   var getState = getSt;
   var continueProcess=true;
-  var isFirstPass=false;
 
-  // will already be started if called by Update functions.
-  if(GRSTATE.STARTED != getState().GenReceivers.state){
-    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.STARTED });
-    dispatch({ type:GRACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.LOADING });
-    isFirstPass=true;
-  }
-
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.STARTED });
+  dispatch({ type:GRACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.LOADING });
   dispatch({ type:GRACTION.SET_STATUS, status:'' });
-//    dispatch({ type:GR.SET_STATUS, status:'Started PO Request Transfer process...' });
 
-
+  dispatch((dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    SQLPRIMEDB.sql1(disp,getSt);
+  });
+  
   var maxCnt=10;
   var cnt=0;
+  while(!getState().Common.primed){
+    if(++cnt>maxCnt ){
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+  if(!getState().Common.primed){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`primeDB FAILED.`);
+    }
+    continueProcess=false;
+    dispatch({ type:GRACTION.SET_REASON, reason:`primeDB FAILED. ` });
+    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
+    dispatch({ type:GRACTION.SET_STATUS, status:'Can not connect to Made2Manage or Cribmaster...' });
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`prime Success.`);
+    }
+  }
 
-  if(prime){
-    //SQLPRIMEDB.sql1(dispatch,getState);
+  if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
-      SQLPRIMEDB.sql1(disp,getSt);
+      SQLLOGINSERT.sql1(disp,getSt);
     });
-
     cnt=0;
-    while(!getState().Common.primed){
+    maxCnt=10;
+    while(!getState().GenReceivers.logInsert.done){
       if(++cnt>maxCnt ){
         break;
       }else{
         await MISC.sleep(2000);
       }
     }
-    if(!getState().Common.primed){
+
+    if(getState().GenReceivers.logInsert.failed || 
+      !getState().GenReceivers.logInsert.done){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`primeDB FAILED Stop Gen Receivers process.`);
+        console.log(`SQLLOGINSERT.sql1() FAILED.`);
       }
       continueProcess=false;
-      dispatch({ type:GRACTION.SET_REASON, reason:`primeDB FAILED Stop Gen Receivers process. ` });
-      dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-      dispatch({ type:GRACTION.SET_STATUS, status:'Can not connect to Made2Manage or Cribmaster...' });
-    }else{
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`prime Success continue Gen Receivers process.`);
+    }
+   
+  }
+
+
+  if(continueProcess ){
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
+      SQLSETRECEIVERCOUNT.sql1(dispatch,getState);
+    });
+
+    cnt=0;
+    maxCnt=10;
+    while(!getState().GenReceivers.bpGRReceiverCount.done){
+      if(++cnt>maxCnt){
+        continueProcess=false;
+        break;
+      }else{
+        await MISC.sleep(2000);
       }
+    }
+
+    if(getState().GenReceivers.bpGRReceiverCount.failed || 
+      !getState().GenReceivers.bpGRReceiverCount.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLSETRECEIVERCOUNT.sql1() FAILED.`);
+      }
+      continueProcess=false;
     }
   }
 
- // DONE WITH FIRSTPASS PROCESSING AT THIS POINT
-  if(continueProcess){
-    SQLSETRECEIVERCOUNT.sql1(dispatch,getState);
-  }
 
-  cnt=0;
-  maxCnt=10;
-  while(continueProcess && !SQLSETRECEIVERCOUNT.isDone()){
-    if(++cnt>maxCnt || SQLSETRECEIVERCOUNT.didFail()){
-      continueProcess=false;
-      break;
-    }else{
-      await MISC.sleep(2000);
-    }
-  }
-
-  if(continueProcess&&SQLSETRECEIVERCOUNT.continueGR()){
+  if(continueProcess ){
     if(getState().GenReceivers.receiverCount>0){
-      SQLSETCURRENTRECEIVER.sql1(dispatch,getState);
+      dispatch((dispatch,getState) => {
+        var disp = dispatch;
+        var getSt = getState;
+        SQLSETCURRENTRECEIVER.sql1(dispatch,getState);
+      });
     }else{
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLRCMASTRANGE count =0.`);
@@ -285,53 +317,101 @@ export async function start(disp,getSt,prime) {
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.UPTODATE });
       continueProcess=false;
     }
-  }
 
-  cnt=0;
-  maxCnt=10;
-  while(continueProcess && !SQLSETCURRENTRECEIVER.isDone()){
-    if(++cnt>maxCnt || SQLSETCURRENTRECEIVER.didFail()){
-      continueProcess=false;
-      break;
-    }else{
-      await MISC.sleep(2000);
+    if(continueProcess){
+      cnt=0;
+      maxCnt=10;
+      while(!getState().GenReceivers.bpGRSetCurrentReceiver.done){
+        if(++cnt>maxCnt){
+          continueProcess=false;
+          break;
+        }else{
+          await MISC.sleep(2000);
+        }
+      }
+
+      if(getState().GenReceivers.bpGRSetCurrentReceiver.failed || 
+        !getState().GenReceivers.bpGRSetCurrentReceiver.done){
+        if ('development'==process.env.NODE_ENV) {
+          console.log(`SQLSETCURRENTRECEIVER.sql1() FAILED.`);
+        }
+        continueProcess=false;
+      }
     }
   }
 
 
-  if(continueProcess&&SQLSETCURRENTRECEIVER.continueGR()){
+  if(continueProcess){
     let rcmastRange={};
-    rcmastRange.start=getState().GenReceivers.currentReceiver;
+    rcmastRange.start=parseInt(getState().GenReceivers.currentReceiver);
     rcmastRange.end=rcmastRange.start+getState().GenReceivers.receiverCount-1;
     dispatch({ type:GRACTION.SET_RCMAST_RANGE, rcmastRange:rcmastRange});
-    SQLSETSHIPVIA.sql1(dispatch,getState);
-  }else{
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSETCURRENTRECEIVER not successful or did not run.`);
-    }
-    continueProcess=false;
-  }
+    let logId=getState().GenReceivers.logId;
 
-  cnt=0;
-  maxCnt=10;
-  while(continueProcess && !SQLSETSHIPVIA.isDone()){
-    if(++cnt>maxCnt || SQLSETSHIPVIA.didFail()){
+    let sqlStatement = `
+      update btGRLog
+      set rcvStart = ${rcmastRange.start}
+      ,rcvEnd = ${rcmastRange.end}
+      where id = ${logId};    
+    `
+
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
+      SQLEXEC.sql1(dispatch,getState,CONNECT.cribDefTO,sqlStatement);
+    });
+
+   //   SQLSETSHIPVIA.sql1(dispatch,getState);
+
+    cnt=0;
+    maxCnt=10;
+    while(!getState().GenReceivers.sqlExec.done){
+      if(++cnt>maxCnt){
+        continueProcess=false;
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+
+    if(getState().GenReceivers.sqlExec.failed || 
+      !getState().GenReceivers.sqlExec.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLEXEC.sql1() FAILED.`);
+      }
       continueProcess=false;
-      break;
-    }else{
-      await MISC.sleep(2000);
+    }
+
+
+  }
+
+  if(continueProcess){
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
+      SQLSETSHIPVIA.sql1(dispatch,getState);
+    });
+
+    cnt=0;
+    maxCnt=10;
+    while(!getState().GenReceivers.shipViaQry.done){
+      if(++cnt>maxCnt){
+        continueProcess=false;
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+
+    if(getState().GenReceivers.shipViaQry.failed || 
+      !getState().GenReceivers.shipViaQry.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLSETSHIPVIA not successful.`);
+      }
+      continueProcess=false;
     }
   }
 
-
-  if(continueProcess&&SQLSETSHIPVIA.continueGR()){
-    SQLGENRECEIVERS.sql1(dispatch,getState);
-  }else{
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSETSHIPVIA not successful or did not run.`);
-    }
-    continueProcess=false;
-  }
 
   cnt=0;
   maxCnt=10;
@@ -354,7 +434,15 @@ export async function start(disp,getSt,prime) {
     }
     continueProcess=false;
   }
-
+/*
+    let sql=`
+      update [dbo].[btPORTLog]
+      set fPOMastStart=${poMastRange.postart},
+      fPOMastEnd=${poMastRange.poend}
+      where id=${logId}
+    `;
+    PORTSQLEXEC.sql1(dispatch,getState,sql);
+*/
   return;
 
 } // poUpdate

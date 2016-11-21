@@ -24,7 +24,7 @@ export default class GenReceivers extends Component {
 
   constructor(props) {
     super(props);
-    this.props.prime(true);
+    this.props.prime();
     this.state = {
       loading: false
     };

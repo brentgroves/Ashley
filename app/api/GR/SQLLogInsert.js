@@ -1,4 +1,3 @@
-
 var sql = require('mssql');
 import * as GRACTION from "../../actions/GRConst.js"
 import * as GRSTATE from "../../actions/GRState.js"
@@ -16,7 +15,7 @@ export async function sql1(disp,getSt){
   var dispatch = disp;
   var getState = getSt;
   if ('development'==process.env.NODE_ENV) {
-    console.log(`SQLSetCurrentReceiver=> top`);
+    console.log(`SQLLogInsert()->top.`);
   }
 
 
@@ -24,88 +23,82 @@ export async function sql1(disp,getSt){
   init(dispatch);
   execSQL1(dispatch,getState);
 
-
-function init(){
-  sql1Cnt=0;               
-  dispatch({ type:GRACTION.CURRENT_RECEIVER_FAILED, failed:false });
-  dispatch({ type:GRACTION.CURRENT_RECEIVER_DONE, done:false });
 }
 
-
+function init(dispatch){
+  sql1Cnt=0;
+  dispatch({ type:GRACTION.LOG_INSERT_FAILED, failed:false });
+  dispatch({ type:GRACTION.LOG_INSERT_DONE, done:false });
+}
 
 
 function execSQL1(disp,getSt){
   var dispatch = disp;
-  var getState=getSt;
+  var getState = getSt;
+
   if ('development'==process.env.NODE_ENV) {
-    console.log(`SQLSetCurrentReceiver.execSQL1() top=>${sql1Cnt}`);
+    console.log(`SQLLogInsert.execSQL1() top=>${sql1Cnt}`);
   }
 
 
-  var connection = new sql.Connection(CONNECT.m2mDefTO, function(err) {
+  var connection = new sql.Connection(CONNECT.cribDefTO, function(err) {
     // ... error checks
     if(null==err){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLSetCurrentReceiver.execSQL1() Connection Sucess`);
+        console.log(`SQLLogInsert.execSQL1() Connection Sucess`);
       }
 
       let sproc;
 
       if (MISC.PROD===true) {
-        sproc = `bpGRSetCurrentReceiver'
-          `;
+        sproc = `bpGRLogInsert`;
       }else{
-        sproc = `bpGRSetCurrentReceiverDev`;
+        // not using a separate dev log
+        sproc = `bpGRLogInsert`;
       }
 
-      let receiverCount=getState().GenReceivers.receiverCount;
       var request = new sql.Request(connection); 
-      request.input('receiverCount', sql.Int,receiverCount);
-      request.output('currentReceiver', sql.Char(6));
-
-      request.execute(sproc, function(err, recordset) {
+      request.output('id', sql.Int);
+      request.execute(sproc, function(err, recordsets, returnValue, affected) {
         // ... error checks
         if(null==err){
+          // ... error checks
           if ('development'==process.env.NODE_ENV) {
-            console.log(`SQLSetCurrentReceiver.execSQL1() Sucess`);
+            console.log(`SQLLogInsert.execSQL1() Sucess`);
           }
-          let currentReceiver=request.parameters.currentReceiver.value;
-          if ('development'==process.env.NODE_ENV) {
-            console.log("SQLSetCurrentReceiver.execSQL1() had records.");
-            console.log(`currentReceiver=>${currentReceiver}`);
-          }
-          dispatch({ type:GRACTION.SET_CURRENT_RECEIVER, currentReceiver:currentReceiver});
+          let logId = request.parameters.id.value;
+          dispatch({ type:GRACTION.SET_LOGID, logId:logId });
         }else {
           if(++sql1Cnt<ATTEMPTS) {
             if ('development'==process.env.NODE_ENV) {
-              console.log(`SQLSetCurrentReceiver.execSQL1().query:  ${err.message}` );
+              console.log(`SQLLogInsert.execSQL1().query:  ${err.message}` );
               console.log(`sql1Cnt = ${sql1Cnt}`);
             }
           }else{
             if ('development'==process.env.NODE_ENV) {
-              console.log(`SQLSetCurrentReceiver.execSQL1() err:  ${err.message}` );
+              console.log(`SQLLogInsert.execSQL1():  ${err.message}` );
             }
             dispatch({ type:GRACTION.SET_REASON, reason:err.message });
             dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-            dispatch({ type:GRACTION.CURRENT_RECEIVER_FAILED, failed:true });
+            dispatch({ type:GRACTION.LOG_INSERT_FAILED, failed:true });
           }
         }
-        dispatch({ type:GRACTION.CURRENT_RECEIVER_DONE, done:true });
-
       });
+      dispatch({ type:GRACTION.LOG_INSERT_DONE, done:true });
     }else{
       if(++sql1Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLSetCurrentReceiver.Connection: ${err.message}` );
+          console.log(`SQLLogInsert.Connection: ${err.message}` );
           console.log(`sql1Cnt = ${sql1Cnt}`);
         }
       }else{
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLSetCurrentReceiver.Connection: ${err.message}` );
+          console.log(`SQLLogInsert.Connection: ${err.message}` );
         }
+
         dispatch({ type:GRACTION.SET_REASON, reason:err.message });
         dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-        dispatch({ type:GRACTION.CURRENT_RECEIVER_FAILED, failed:true });
+        dispatch({ type:GRACTION.LOG_INSERT_FAILED, failed:true });
       }
     }
   });
@@ -113,17 +106,18 @@ function execSQL1(disp,getSt){
   connection.on('error', function(err) {
     if(++sql1Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLSetCurrentReceiver.connection.on(error): ${err.message}` );
+        console.log(`SQLLogInsert.connection.on(error): ${err.message}` );
         console.log(`sql1Cnt = ${sql1Cnt}`);
       }
 
     }else{
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLSetCurrentReceiver.connection.on(error): ${err.message}` );
+        console.log(`SQLLogInsert.connection.on(error): ${err.message}` );
       }
+
       dispatch({ type:GRACTION.SET_REASON, reason:err.message });
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-      dispatch({ type:GRACTION.CURRENT_RECEIVER_FAILED, failed:true });
+      dispatch({ type:GRACTION.LOG_INSERT_FAILED, failed:true });
     }
   });
 }

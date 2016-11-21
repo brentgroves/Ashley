@@ -6,10 +6,7 @@ import * as CONNECT from "../SQLConst.js"
 import * as MISC from "../Misc.js"
 
 
-var sql1Done=false;
 var sql1Cnt=0;
-var sql1Failed=false;
-var contGR=false;
 const ATTEMPTS=1;
 
 
@@ -20,85 +17,19 @@ export async function sql1(disp,getSt){
   var getState = getSt;
   var state = getState(); 
   if ('development'==process.env.NODE_ENV) {
-    console.log(`SQLSetCurrentReceiver=> top`);
+    console.log(`SQLSetShipVia=> top`);
   }
-
 
   var cnt=0;
-  init();
+  init(dispatch);
   execSQL1(dispatch);
-
-  while(!isDone() && !didFail()){
-    if(++cnt>15){
-      dispatch({ type:GRACTION.SET_REASON, reason:`SetSQLShipVia.sql1() Timed Out or Failed.` });
-      dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-      break;
-    }else{
-      await MISC.sleep(2000);
-    }
-  }
-
-  if(isDone()){
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSetShipVia.sql1(): Completed`)
-    }
-
-  }else{
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSetShipVia.sql1(): Did NOT Complete`)
-    }
-  }
-
-  if(didFail()){
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSetShipVia.sql1(): Failed`)
-    }
-
-  }else{
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLSetShipVia.sql1(): Suceeded`)
-    }
-  }
-
 }
 
 function init(){
-  sql1Done=false;
-  sql1Cnt=0;
-  sql1Failed=false;
-  contGR=false;
+  sql1Cnt=0;               
+  dispatch({ type:GRACTION.SHIP_VIA_FAILED, failed:false });
+  dispatch({ type:GRACTION.SHIP_VIA_DONE, done:false });
 }
-
-export function isDone(){
-  if(
-    (true==sql1Done)
-    )
-  {
-    return true;
-  } else{
-    return false;
-  }
-}
-
-export function didFail(){
-  if(
-    (true==sql1Failed)
-    )
-  {
-    return true;
-  } else{
-    return false;
-  }
-}
-export function continueGR(){
-  if(true==contGR)
-  {
-    return true;
-  } else{
-    return false;
-  }
-}
-
 
 
 function execSQL1(disp){
@@ -157,16 +88,15 @@ function execSQL1(disp){
             });
 
             dispatch({ type:GRACTION.SET_SHIP_VIA, shipVia:shipVia});
-            contGR=true;
           }else{
             if ('development'==process.env.NODE_ENV) {
               console.log(`SQLSetShipVia.execSQL1() err: Could not retrieve ffrtcarr.` );
             }
             dispatch({ type:GRACTION.SET_REASON, reason:'Could not retrieve ffrtcarr.' });
             dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-            sql1Failed=true;
+            dispatch({ type:GRACTION.SHIP_VIA_FAILED, failed:true });
           }
-          sql1Done=true;
+          dispatch({ type:GRACTION.SHIP_VIA_DONE, done:true });
         }else {
           if(++sql1Cnt<ATTEMPTS) {
             if ('development'==process.env.NODE_ENV) {
@@ -179,7 +109,7 @@ function execSQL1(disp){
             }
             dispatch({ type:GRACTION.SET_REASON, reason:err.message });
             dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-            sql1Failed=true;
+            dispatch({ type:GRACTION.SHIP_VIA_FAILED, failed:true });
           }
         }
       });
@@ -195,7 +125,7 @@ function execSQL1(disp){
         }
         dispatch({ type:GRACTION.SET_REASON, reason:err.message });
         dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-        sql1Failed=true;
+        dispatch({ type:GRACTION.SHIP_VIA_FAILED, failed:true });
       }
     }
   });
@@ -213,7 +143,7 @@ function execSQL1(disp){
       }
       dispatch({ type:GRACTION.SET_REASON, reason:err.message });
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-      sql1Failed=true;
+      dispatch({ type:GRACTION.SHIP_VIA_FAILED, failed:true });
     }
   });
 }

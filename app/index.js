@@ -43,13 +43,13 @@ const initialState = {
 	},
 
 	GenReceivers:{ 
+		bpGRSetCurrentReceiver:{done:false,failed:false},
+		bpGRReceiverCount:{done:false,failed:false},
 		chk0:CHK.UNKNOWN,
 		currentReceiver:0,
 		goButton:PROGRESSBUTTON.READY, 
 		logId:0,
-		shipVia:[{}],
-		state:GRSTATE.NOT_PRIMED,
-		status:'',
+		logInsert:{done:false,failed:false},
 		rcitem:[{}],
 		rcitemInsert:{done:false,failed:false},
 		rcitemUpdate:{done:false,failed:false},
@@ -57,7 +57,12 @@ const initialState = {
 		rcmastRange:{start:0,end:0},
 		rcmastInsert:{done:false,failed:false},
 		reason:'',
-		receiverCount:0
+		receiverCount:0,
+		shipVia:[{}],
+		state:GRSTATE.NOT_PRIMED,
+		status:'',
+		shipViaQry:{done:false,failed:false},
+		sqlExec:{done:false,failed:false}
 	},
 	Common:{ 
 		primed:false

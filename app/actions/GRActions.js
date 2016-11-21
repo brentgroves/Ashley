@@ -25,6 +25,35 @@ export function closePOsReceivedFailed(failed) {
   };
 }
 
+export function currentReceiverDone(done) {
+  return {
+    type: GRACTION.CURRENT_RECEIVER_DONE,
+    done:done
+  };
+}
+
+export function currentReceiverFailed(failed) {
+  return {
+    type: GRACTION.CURRENT_RECEIVER_FAILED,
+    failed:failed
+  };
+}
+
+
+export function logInsertDone(done) {
+  return {
+    type: GRACTION.LOG_INSERT_DONE,
+    done:done
+  };
+}
+
+export function logInsertFailed(failed) {
+  return {
+    type: GRACTION.LOG_INSERT_FAILED,
+    failed:failed
+  };
+}
+
 export function init() {
   return {
     type: GRACTION.INIT
@@ -51,6 +80,19 @@ export function prime() {
   }
 }
 
+export function receiverCountDone(done) {
+  return {
+    type: GRACTION.RECEIVER_COUNT_DONE,
+    done:done
+  };
+}
+
+export function receiverCountFailed(failed) {
+  return {
+    type: GRACTION.RECEIVER_COUNT_FAILED,
+    failed:failed
+  };
+}
 
 export function rcitemInsertDone(done) {
   return {
@@ -166,6 +208,20 @@ export function setStatus(status) {
   return {
     type: GRACTION.SET_STATUS,
     status: status
+  };
+}
+
+export function shipViaDone(done) {
+  return {
+    type: GRACTION.SHIP_VIA_DONE,
+    done:done
+  };
+}
+
+export function shipViaFailed(failed) {
+  return {
+    type: GRACTION.SHIP_VIA_FAILED,
+    failed:failed
   };
 }
 
