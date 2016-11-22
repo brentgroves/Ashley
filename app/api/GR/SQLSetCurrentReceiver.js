@@ -23,9 +23,9 @@ export async function sql1(disp,getSt){
   var cnt=0;
   init(dispatch);
   execSQL1(dispatch,getState);
+}
 
-
-function init(){
+function init(dispatch){
   sql1Cnt=0;               
   dispatch({ type:GRACTION.CURRENT_RECEIVER_FAILED, failed:false });
   dispatch({ type:GRACTION.CURRENT_RECEIVER_DONE, done:false });

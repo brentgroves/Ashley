@@ -25,7 +25,7 @@ export async function sql1(disp,getSt){
   execSQL1(dispatch);
 }
 
-function init(){
+function init(dispatch){
   sql1Cnt=0;               
   dispatch({ type:GRACTION.SHIP_VIA_FAILED, failed:false });
   dispatch({ type:GRACTION.SHIP_VIA_DONE, done:false });

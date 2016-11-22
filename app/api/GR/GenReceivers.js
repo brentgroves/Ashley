@@ -208,6 +208,17 @@ export async function m2mGenReceivers(disp,getSt) {
 
 }
 
+/* TESTING
+Question
+1) Does Nancys receivers need to be a part of the inventory movement report
+-- No but they do need to get into the received goods report
+-- The received goods uses rcmast/rcitem so they should be ok
+
+steps
+1. receive items  - rcmast,rcitem,po
+2. if raw parts the inventory movement happens
+3. these trans are recorded in the intran table
+*/
 
 export async function start(disp,getSt) {
 //  var that = this;
@@ -248,6 +259,7 @@ export async function start(disp,getSt) {
     }
   }
 
+
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -270,16 +282,18 @@ export async function start(disp,getSt) {
         console.log(`SQLLOGINSERT.sql1() FAILED.`);
       }
       continueProcess=false;
+    }else{
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLLOGINSERT.sql1() Success.`);
+      }
     }
-   
   }
-
 
   if(continueProcess ){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
-      SQLSETRECEIVERCOUNT.sql1(dispatch,getState);
+      SQLSETRECEIVERCOUNT.sql1(dispatch,getState,CONNECT.cribDefTO);
     });
 
     cnt=0;
@@ -299,9 +313,12 @@ export async function start(disp,getSt) {
         console.log(`SQLSETRECEIVERCOUNT.sql1() FAILED.`);
       }
       continueProcess=false;
+    }else{
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLSETRECEIVERCOUNT.sql1() Success.`);
+      }
     }
   }
-
 
   if(continueProcess ){
     if(getState().GenReceivers.receiverCount>0){
@@ -336,10 +353,13 @@ export async function start(disp,getSt) {
           console.log(`SQLSETCURRENTRECEIVER.sql1() FAILED.`);
         }
         continueProcess=false;
+      }else{
+        if ('development'==process.env.NODE_ENV) {
+          console.log(`SQLSETCURRENTRECEIVER.sql1() Success.`);
+        }
       }
     }
   }
-
 
   if(continueProcess){
     let rcmastRange={};
@@ -377,13 +397,17 @@ export async function start(disp,getSt) {
     if(getState().GenReceivers.sqlExec.failed || 
       !getState().GenReceivers.sqlExec.done){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLEXEC.sql1() FAILED.`);
+        console.log(`SQLEXEC.sql1() update btGRLog set rcvStart FAILED.`);
       }
       continueProcess=false;
+    }else{
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLEXEC.sql1() update btGRLog set rcvStart Success.`);
+      }
     }
-
-
   }
+
+
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -409,40 +433,49 @@ export async function start(disp,getSt) {
         console.log(`SQLSETSHIPVIA not successful.`);
       }
       continueProcess=false;
-    }
-  }
-
-
-  cnt=0;
-  maxCnt=10;
-  while(continueProcess && !SQLGENRECEIVERS.isDone()){
-    if(++cnt>maxCnt || SQLGENRECEIVERS.didFail()){
-      continueProcess=false;
-      break;
     }else{
-      await MISC.sleep(2000);
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLSETSHIPVIA Success.`);
+      }
     }
+
   }
 
 
-  if(continueProcess&&SQLGENRECEIVERS.continueGR()){
+  if(continueProcess){
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
+      SQLGENRECEIVERS.sql1(dispatch,getState);
+    });
+
+    while(!getState().GenReceivers.bpGRGenReceivers.done){
+      if(++cnt>maxCnt){
+        continueProcess=false;
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+
+    if(getState().GenReceivers.bpGRGenReceivers.failed || 
+      !getState().GenReceivers.bpGRGenReceivers.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLGENRECEIVERS not successful.`);
+      }
+      continueProcess=false;
+    }else{
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLGENRECEIVERS Success.`);
+      }
+    }
+  }
+
+  // DEBUG
+  if(continueProcess){
     dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.RCMAST_INSERT_NOT_READY });
-//   RCMAST_INSERT dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
-  }else{
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`SQLGENRECEIVERS not successful or did not run.`);
-    }
-    continueProcess=false;
   }
-/*
-    let sql=`
-      update [dbo].[btPORTLog]
-      set fPOMastStart=${poMastRange.postart},
-      fPOMastEnd=${poMastRange.poend}
-      where id=${logId}
-    `;
-    PORTSQLEXEC.sql1(dispatch,getState,sql);
-*/
+
   return;
 
 } // poUpdate

@@ -43,6 +43,7 @@ const initialState = {
 	},
 
 	GenReceivers:{ 
+		bpGRGenReceivers:{done:false,failed:false},
 		bpGRSetCurrentReceiver:{done:false,failed:false},
 		bpGRReceiverCount:{done:false,failed:false},
 		chk0:CHK.UNKNOWN,

@@ -14,14 +14,13 @@ export async function sql1(disp,getSt){
 //  var that = this;
   var dispatch = disp;
   var getState = getSt;
-  var state = getState(); 
   if ('development'==process.env.NODE_ENV) {
     console.log(`SQLSetReceiverCount=> top`);
   }
 
   var cnt=0;
   init(dispatch);
-  execSQL1(dispatch,getState,dbConnect,sqlStatement);
+  execSQL1(dispatch,getState);
 
 
 }
@@ -54,7 +53,6 @@ function execSQL1(disp){
       if (MISC.PROD===true) {
         sproc = `bpGRReceiverCount`; 
       }else{
-        // Dont want to use bpGRDevReceiverCount
         sproc = `bpGRReceiverCountDev`; 
       }
 

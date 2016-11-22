@@ -40,6 +40,21 @@ export function currentReceiverFailed(failed) {
 }
 
 
+export function genReceiversDone(done) {
+  return {
+    type: GRACTION.GEN_RECEIVERS_DONE,
+    done:done
+  };
+}
+
+export function genReceiversFailed(failed) {
+  return {
+    type: GRACTION.GEN_RECEIVERS_FAILED,
+    failed:failed
+  };
+}
+
+
 export function logInsertDone(done) {
   return {
     type: GRACTION.LOG_INSERT_DONE,

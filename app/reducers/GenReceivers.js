@@ -37,6 +37,21 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
+    case GRACTION.GEN_RECEIVERS_DONE:
+    {
+      var bpGRGenReceivers = state.bpGRGenReceivers;
+      bpGRGenReceivers.done=action.done;
+      var newData = update(state, {bpGRGenReceivers: {$set: bpGRGenReceivers}});
+      return newData;
+    }
+    case GRACTION.GEN_RECEIVERS_FAILED:
+    {
+      var bpGRGenReceivers = state.bpGRGenReceivers;
+      bpGRGenReceivers.failed=action.failed;
+      var newData = update(state, {bpGRGenReceivers: {$set: bpGRGenReceivers}});
+      return newData;
+    }
+
     case GRACTION.LOG_INSERT_DONE:
     {
       var logInsert = state.logInsert;
@@ -59,6 +74,7 @@ export default function reducer( state = {}, action) {
       }
       var newData = update(state, 
         { 
+          bpGRGenReceivers:{$set:{done:false,failed:false}},
           bpGRSetCurrentReceiver:{$set:{done:false,failed:false}},
           bpGRReceiverCount:{$set:{done:false,failed:false}},
           chk0: {$set: CHK.UNKNOWN},
@@ -176,11 +192,6 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {rcmastRange: {$set: action.rcmastRange}});
       return newData;
     }
-    case GRACTION.UPDATE_RCMAST_FPACKLIST:
-    {
-      var newData = update(state, {rcmast: {$set: action.rcmast}});
-      return newData;
-    }
     
     case GRACTION.SET_REASON:
     {
@@ -212,8 +223,9 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
+
     case GRACTION.SHIP_VIA_DONE:
-    {
+    {                        
       var shipViaQry = state.shipViaQry;
       shipViaQry.done=action.done;
       var newData = update(state, {shipViaQry: {$set: shipViaQry}});
@@ -222,7 +234,7 @@ export default function reducer( state = {}, action) {
     case GRACTION.SHIP_VIA_FAILED:
     {
       var shipViaQry = state.shipViaQry;
-      rshipViaQry.failed=action.failed;
+      shipViaQry.failed=action.failed;
       var newData = update(state, {shipViaQry: {$set: shipViaQry}});
       return newData;
     }
@@ -240,6 +252,11 @@ export default function reducer( state = {}, action) {
       var sqlExec = state.sqlExec;
       sqlExec.failed=action.failed;
       var newData = update(state, {sqlExec: {$set: sqlExec}});
+      return newData;
+    }
+    case GRACTION.UPDATE_RCMAST_FPACKLIST:
+    {
+      var newData = update(state, {rcmast: {$set: action.rcmast}});
       return newData;
     }
 
