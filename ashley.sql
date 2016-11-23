@@ -1,3 +1,190 @@
+--//////////////////////////////////
+-- Close PO(s) that all poitem(s) have been completely received
+--//////////////////////////////////////////
+create procedure [dbo].[bpGRClosePOsReceived]
+@rcvStart as char(6), 
+@rcvEnd as char(6) 
+as
+update pomast
+set 
+foldstatus = fstatus,
+fstatus = 'CLOSED',
+fchangeby = 'Ashley',
+freasoncng ='Automatic closure.',
+fcngdate = GETDATE()
+WHERE fpono
+in 
+(
+	select fpono
+	from
+	(
+		select fpono,fItemno,fpartno,fordqty,fqtyrecvSum,
+		case
+			when fordqty <> fqtyrecvSum then 1
+			else 0
+		end notComplete
+		from
+		(
+			select poi.fpono,poi.fitemno,poi.fpartno,poi.fordqty,
+			case
+				when recv.fqtyrecvSum is null then 0.0
+				else recv.fqtyrecvSum
+			end fqtyrecvSum
+			from
+			(
+				-- get all the fpono(s) that we created receivers for
+				select rcm.fpono,poi.fitemno,poi.fpartno,poi.fordqty
+				from
+				(
+					select distinct fpono from rcmast 
+					where freceiver >= @rcvStart and freceiver <= @rcvEnd
+					/* start debug 
+					where fpono in 
+					(
+					'121302',
+					'121340',
+					'121345',
+					'121359',
+					'121371',
+					'121387',--open
+					'121375',--open
+					'121346',--open
+					'121316'--open
+					 
+					)
+					end debug */
+				)rcm
+				inner join
+				poitem poi
+				on rcm.fpono=poi.fpono
+				--order by rcm.fpono,poi.fitemno
+				-- 21
+			) poi
+			left outer join
+			(
+
+				-- all items received for poitem 
+				select fpono,fpoitemno,count(*) poitemCnt, sum(fqtyrecv) fqtyrecvSum
+				from
+				(
+					select rcm.fpono,rci.fpoitemno, rcm.freceiver,rci.fitemno rcvItemno,rci.fpartno,rci.fqtyrecv
+					from 
+					rcmast rcm
+					inner join
+					rcitem rci
+					on rcm.freceiver=rci.freceiver
+					where rcm.freceiver >= @rcvStart and rcm.freceiver <= @rcvEnd
+
+					/* start debug 
+					where fpono in 
+					(
+					'121302',
+					'121340',
+					'121345',
+					'121359',
+					'121371',
+					'121387',--open
+					'121375',--open
+					'121346',--open
+					'121316'--open
+					)
+					end debug */
+					--order by fpono,fpoitemno
+					--27
+				)api
+				group by fpono,fpoitemno
+				--order by fpono,fpoitemno
+
+			) recv
+			on
+			poi.fpono=recv.fpono and
+			poi.fitemno=recv.fpoitemno
+			--21
+		) ncmp
+	) mxc
+	group by fpono
+	having max(notComplete) = 0
+)
+
+--Generate a receiver from a podetail 
+INSERT INTO [dbo].[btrcitem]
+--INSERT INTO [dbo].[rcitem]
+           ([fitemno]
+           ,[fpartno]
+           ,[fpartrev]
+           ,[finvcost]
+           ,[fcategory]
+           ,[fcstatus]
+           ,[fiqtyinv]
+           ,[fjokey]
+           ,[fsokey]
+           ,[fsoitem]
+           ,[fsorelsno]
+           ,[fvqtyrecv]
+           ,[fqtyrecv]
+           ,[freceiver]
+           ,[frelsno]
+           ,[fvendno]
+           ,[fbinno]
+           ,[fexpdate]
+           ,[finspect]
+           ,[finvqty]
+           ,[flocation]
+           ,[flot]
+           ,[fmeasure]
+           ,[fpoitemno]
+           ,[fretcredit]
+           ,[ftype]
+           ,[fumvori]
+           ,[fqtyinsp]
+           ,[fauthorize]
+           ,[fucost]
+           ,[fllotreqd]
+           ,[flexpreqd]
+           ,[fctojoblot]
+           ,[fdiscount]
+           ,[fueurocost]
+           ,[futxncost]
+           ,[fucostonly]
+           ,[futxncston]
+           ,[fueurcston]
+           ,[flconvovrd]
+           ,[fcomments]
+           ,[fdescript]
+           ,[fac]
+           ,[sfac]
+           ,[FCORIGUM]
+           ,[fcudrev]
+           ,[FNORIGQTY]
+           ,[Iso]
+           ,[Ship_Link]
+           ,[ShsrceLink]
+           ,[fCINSTRUCT])
+		   --------START HERE
+select 
+fitemno,fpartno,'NS' fpartrev,0.0 finvcost,fcategory,'' fcstatus,0.0 fiqtyinv,
+fjokey,fsokey,'' fsoitem,'' fsorelsno,fordqty fvqtyrecv,fordqty fqtyrecv, 
+freceiver,frelsno,fvendno,'' fbinno,'1900-01-01 00:00:00.000' fexpdate,finspect,
+0.0 finvqty,'' flocation,'' flot,fmeasure,fitemno fpoitemno,'' fretcredit,ftype,
+'I' fumvori,0.0 fqtyinsp,'' fauthorize,fucost,0 fllotreqd,0 flexpreqd,'' fctojoblot,
+fdiscount,fueurocost,futxncost,fucostonly,futxncston,fueurcston,0 flconvovrd,fcomments, 
+fdescript,fac,fac sfac,'' FCORIGUM,fcudrev,0.0 FNORIGQTY,'' Iso,0 Ship_Link,0 ShsrceLink,'' fCINSTRUCT
+from
+(
+	select pom.fpono,rcm.fporev,poi.fucost,poi.fucostonly,poi.fmeasure,poi.fitemno,rcm.freceiver,
+	rcm.start, rcm.fdaterecv Received, poi.fpartno,poi.fcategory,poi.fordqty,pom.fvendno,
+	poi.fdescript,poi.fcudrev,poi.fac,fjokey,fsokey,frelsno,finspect,ftype,fdiscount,
+	fueurocost,futxncost,futxncston,fueurcston,fcomments
+	from 
+	pomast pom
+	inner join
+	rcmast rcm
+	on pom.fpono=rcm.fpono
+	inner join
+	poitem poi
+	on pom.fpono=poi.fpono
+	where pom.fpono='121610'
+)lv1
 USE [m2mdata01]
 GO
 
@@ -265,6 +452,291 @@ INNER JOIN
 ) T2
 on T1.freceiver= T2.freceiver and
 T1.fitemno = T2.rcvItemno
+
+USE [m2mdata01]
+GO
+
+/****** Object:  StoredProcedure [dbo].[bpGRRCMastInsertDev]    Script Date: 11/23/2016 8:52:42 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+--/////////////////////////////////////////////////////////////////////
+-- Insert the receiver(s) generated by Cribmaster
+--/////////////////////////////////////////////////////////////////////
+create procedure [dbo].[bpGRRCMastInsertDev] 
+@fclandcost as char(1),
+@frmano as char(25),
+@fporev as char(2),
+@fcstatus as char(1),
+@fdaterecv as datetime,
+@fpono as char(6),
+@freceiver as char(6),
+@fvendno as char(6),
+@faccptby as char(3),
+@fbilllad as char(18),
+@fcompany as varchar(35),
+@ffrtcarr as char(20),
+@fpacklist as char(15),
+@fretship as char(1),
+@fshipwgt as numeric(11, 2),
+@ftype as char(1),
+@start as datetime,
+@fprinted as bit,
+@flothrupd as bit,
+@fccurid as char(3),
+@fcfactor as M2MMoney,
+@fdcurdate as datetime,
+@fdeurodate as datetime,
+@feurofctr as M2MMoney,
+@flpremcv as bit,
+@docstatus as char(10),
+@frmacreator as varchar(25)
+AS
+BEGIN
+insert into btrcmast
+(
+fclandcost,frmano,fporev,fcstatus,fdaterecv,fpono,freceiver,fvendno,faccptby,
+fbilllad,fcompany,ffrtcarr,fpacklist,fretship,fshipwgt,ftype,start,fprinted,
+flothrupd,fccurid,fcfactor,fdcurdate,fdeurodate,feurofctr,flpremcv,docstatus,frmacreator
+)
+values
+(
+@fclandcost,@frmano,@fporev,@fcstatus,@fdaterecv,@fpono,@freceiver,@fvendno,@faccptby,
+@fbilllad,@fcompany,@ffrtcarr,@fpacklist,@fretship,@fshipwgt,@ftype,@start,@fprinted,
+@flothrupd,@fccurid,@fcfactor,@fdcurdate,@fdeurodate,@feurofctr,@flpremcv,@docstatus,
+@frmacreator
+)
+END
+
+GO
+USE [m2mdata01]
+GO
+
+/****** Object:  StoredProcedure [dbo].[bpGRRCMastInsertDev]    Script Date: 11/23/2016 8:52:42 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+--/////////////////////////////////////////////////////////////////////
+-- Insert the receiver(s) generated by Cribmaster
+--/////////////////////////////////////////////////////////////////////
+create procedure [dbo].[bpGRRCMastInsert] 
+@fclandcost as char(1),
+@frmano as char(25),
+@fporev as char(2),
+@fcstatus as char(1),
+@fdaterecv as datetime,
+@fpono as char(6),
+@freceiver as char(6),
+@fvendno as char(6),
+@faccptby as char(3),
+@fbilllad as char(18),
+@fcompany as varchar(35),
+@ffrtcarr as char(20),
+@fpacklist as char(15),
+@fretship as char(1),
+@fshipwgt as numeric(11, 2),
+@ftype as char(1),
+@start as datetime,
+@fprinted as bit,
+@flothrupd as bit,
+@fccurid as char(3),
+@fcfactor as M2MMoney,
+@fdcurdate as datetime,
+@fdeurodate as datetime,
+@feurofctr as M2MMoney,
+@flpremcv as bit,
+@docstatus as char(10),
+@frmacreator as varchar(25)
+AS
+BEGIN
+insert into rcmast
+(
+fclandcost,frmano,fporev,fcstatus,fdaterecv,fpono,freceiver,fvendno,faccptby,
+fbilllad,fcompany,ffrtcarr,fpacklist,fretship,fshipwgt,ftype,start,fprinted,
+flothrupd,fccurid,fcfactor,fdcurdate,fdeurodate,feurofctr,flpremcv,docstatus,frmacreator
+)
+values
+(
+@fclandcost,@frmano,@fporev,@fcstatus,@fdaterecv,@fpono,@freceiver,@fvendno,@faccptby,
+@fbilllad,@fcompany,@ffrtcarr,@fpacklist,@fretship,@fshipwgt,@ftype,@start,@fprinted,
+@flothrupd,@fccurid,@fcfactor,@fdcurdate,@fdeurodate,@feurofctr,@flpremcv,@docstatus,
+@frmacreator
+)
+END
+
+GO
+
+
+
+
+
+USE [m2mdata01]
+GO
+
+/****** Object:  StoredProcedure [dbo].[bpGRRCItemInsertDev]    Script Date: 11/23/2016 8:52:06 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+--/////////////////////////////////////////////////////////////////////
+-- Insert a receiver item record generated from Cribmaster via Ashley
+--/////////////////////////////////////////////////////////////////////
+create procedure [dbo].[bpGRRCItemInsertDev] 
+@fitemno as char(3),
+@fpartno as char(25),
+@fpartrev as char(3),
+@finvcost as M2MMoney,
+@fcategory as char(8),
+@fcstatus as char(1),
+@fiqtyinv as numeric(15, 5),
+@fjokey as char(10),
+@fsokey as char(6),
+@fsoitem as char(3),
+@fsorelsno as char(3),
+@fvqtyrecv as numeric(15, 5),
+@fqtyrecv as numeric(15, 5),
+@freceiver as char(6),
+@frelsno as char(3),
+@fvendno as char(6),
+@fbinno as char(14),
+@fexpdate as datetime,
+@finspect as char(1),
+@finvqty as numeric(15, 5),
+@flocation as char(14),
+@flot as char(20),
+@fmeasure as char(3),
+@fpoitemno as char(3),
+@fretcredit as char(1),
+@ftype char(1),
+@fumvori char(1),
+@fqtyinsp numeric(15, 5),
+@fauthorize as char(20),
+@fucost as M2MMoney,
+@fllotreqd as bit,
+@flexpreqd as bit,
+@fctojoblot as char(20),
+@fdiscount as numeric(5, 1),
+@fueurocost as M2MMoney,
+@futxncost as M2MMoney,
+@fucostonly as M2MMoney,
+@futxncston as M2MMoney,
+@fueurcston as M2MMoney,
+@flconvovrd as bit,
+@fcomments as text,
+@fdescript as text,
+@fac as M2MFacility,
+@sfac as M2MFacility,
+@FCORIGUM as char(3),
+@fcudrev as char(3),
+@FNORIGQTY as numeric(18, 5),
+@Iso as char(10),
+@Ship_Link as int,
+@ShsrceLink as int,
+@fCINSTRUCT as char(2)
+AS
+BEGIN
+insert into btrcitem
+(
+fitemno,fpartno,fpartrev,finvcost,fcategory,fcstatus,fiqtyinv,fjokey,fsokey,fsoitem,fsorelsno,fvqtyrecv,
+fqtyrecv,freceiver,frelsno,fvendno,fbinno,fexpdate,finspect,finvqty,flocation,flot,fmeasure,fpoitemno,
+fretcredit,ftype,fumvori,fqtyinsp,fauthorize,fucost,fllotreqd,flexpreqd,fctojoblot,fdiscount,fueurocost,
+futxncost,fucostonly,futxncston,fueurcston,flconvovrd,fcomments,fdescript,fac,sfac,FCORIGUM,fcudrev,FNORIGQTY,
+Iso,Ship_Link,ShsrceLink,fCINSTRUCT
+)
+values
+(
+@fitemno,@fpartno,@fpartrev,@finvcost,@fcategory,@fcstatus,@fiqtyinv,@fjokey,@fsokey,@fsoitem,@fsorelsno,@fvqtyrecv,
+@fqtyrecv,@freceiver,@frelsno,@fvendno,@fbinno,@fexpdate,@finspect,@finvqty,@flocation,@flot,@fmeasure,@fpoitemno,
+@fretcredit,@ftype,@fumvori,@fqtyinsp,@fauthorize,@fucost,@fllotreqd,@flexpreqd,@fctojoblot,@fdiscount,@fueurocost,
+@futxncost,@fucostonly,@futxncston,@fueurcston,@flconvovrd,@fcomments,@fdescript,@fac,@sfac,@FCORIGUM,@fcudrev,@FNORIGQTY,
+@Iso,@Ship_Link,@ShsrceLink,@fCINSTRUCT
+)
+END
+GO
+
+
+--/////////////////////////////////////////////////////////////////////
+-- Insert a receiver item record generated from Cribmaster via Ashley
+--/////////////////////////////////////////////////////////////////////
+create procedure [dbo].[bpGRRCItemInsert] 
+@fitemno as char(3),
+@fpartno as char(25),
+@fpartrev as char(3),
+@finvcost as M2MMoney,
+@fcategory as char(8),
+@fcstatus as char(1),
+@fiqtyinv as numeric(15, 5),
+@fjokey as char(10),
+@fsokey as char(6),
+@fsoitem as char(3),
+@fsorelsno as char(3),
+@fvqtyrecv as numeric(15, 5),
+@fqtyrecv as numeric(15, 5),
+@freceiver as char(6),
+@frelsno as char(3),
+@fvendno as char(6),
+@fbinno as char(14),
+@fexpdate as datetime,
+@finspect as char(1),
+@finvqty as numeric(15, 5),
+@flocation as char(14),
+@flot as char(20),
+@fmeasure as char(3),
+@fpoitemno as char(3),
+@fretcredit as char(1),
+@ftype char(1),
+@fumvori char(1),
+@fqtyinsp numeric(15, 5),
+@fauthorize as char(20),
+@fucost as M2MMoney,
+@fllotreqd as bit,
+@flexpreqd as bit,
+@fctojoblot as char(20),
+@fdiscount as numeric(5, 1),
+@fueurocost as M2MMoney,
+@futxncost as M2MMoney,
+@fucostonly as M2MMoney,
+@futxncston as M2MMoney,
+@fueurcston as M2MMoney,
+@flconvovrd as bit,
+@fcomments as text,
+@fdescript as text,
+@fac as M2MFacility,
+@sfac as M2MFacility,
+@FCORIGUM as char(3),
+@fcudrev as char(3),
+@FNORIGQTY as numeric(18, 5),
+@Iso as char(10),
+@Ship_Link as int,
+@ShsrceLink as int,
+@fCINSTRUCT as char(2)
+AS
+BEGIN
+insert into rcitem
+(
+fitemno,fpartno,fpartrev,finvcost,fcategory,fcstatus,fiqtyinv,fjokey,fsokey,fsoitem,fsorelsno,fvqtyrecv,
+fqtyrecv,freceiver,frelsno,fvendno,fbinno,fexpdate,finspect,finvqty,flocation,flot,fmeasure,fpoitemno,
+fretcredit,ftype,fumvori,fqtyinsp,fauthorize,fucost,fllotreqd,flexpreqd,fctojoblot,fdiscount,fueurocost,
+futxncost,fucostonly,futxncston,fueurcston,flconvovrd,fcomments,fdescript,fac,sfac,FCORIGUM,fcudrev,FNORIGQTY,
+Iso,Ship_Link,ShsrceLink,fCINSTRUCT
+)
+values
+(
+@fitemno,@fpartno,@fpartrev,@finvcost,@fcategory,@fcstatus,@fiqtyinv,@fjokey,@fsokey,@fsoitem,@fsorelsno,@fvqtyrecv,
+@fqtyrecv,@freceiver,@frelsno,@fvendno,@fbinno,@fexpdate,@finspect,@finvqty,@flocation,@flot,@fmeasure,@fpoitemno,
+@fretcredit,@ftype,@fumvori,@fqtyinsp,@fauthorize,@fucost,@fllotreqd,@flexpreqd,@fctojoblot,@fdiscount,@fueurocost,
+@futxncost,@fucostonly,@futxncston,@fueurcston,@flconvovrd,@fcomments,@fdescript,@fac,@sfac,@FCORIGUM,@fcudrev,@FNORIGQTY,
+@Iso,@Ship_Link,@ShsrceLink,@fCINSTRUCT
+)
+END
 
 
 /*

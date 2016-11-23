@@ -144,9 +144,7 @@ function execSQL1(disp,getSt){
           }
         });
       });
-      if(allInsSucceded){
-        dispatch({ type:GRACTION.RCITEM_INSERT_FAILED, failed:false });
-      }else{
+      if(!allInsSucceded){
         dispatch({ type:GRACTION.RCITEM_INSERT_FAILED, failed:true });
       }
 
