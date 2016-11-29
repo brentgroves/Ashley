@@ -53,7 +53,9 @@ function execSQL1(disp){
       if (MISC.PROD===true) {
         sproc = `bpGRReceiverCount`; 
       }else{
-        sproc = `bpGRReceiverCountDev`; 
+        // STARTED TESTING WITH bpGRReceiverCount ON 11-29
+        sproc = `bpGRReceiverCount`; 
+//        sproc = `bpGRReceiverCountDev`; 
       }
 
 

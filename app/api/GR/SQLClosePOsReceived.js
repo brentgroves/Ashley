@@ -57,9 +57,12 @@ function execSQL1(disp,getSt){
       }
 
       var request = new sql.Request(connection); 
+      /* start function test */
+//      request.input('rcvStart', sql.Char(6), '284155');
+//      request.input('rcvEnd', sql.Char(6), '285839');
+      /* end function test */
       request.input('rcvStart', sql.Char(6), rcmastRange.start);
       request.input('rcvEnd', sql.Char(6), rcmastRange.end);
-
       request.execute(sproc, function(err, recordsets, returnValue) {
         // ... error checks
         if(null==err){

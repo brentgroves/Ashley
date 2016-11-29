@@ -125,6 +125,8 @@ export async function m2mGenReceivers(disp,getSt) {
       continueProcess=false;
     }
   }
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+  continueProcess=false;
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -175,12 +177,6 @@ export async function m2mGenReceivers(disp,getSt) {
    
   }
 
-JUST UPDATED bpGRClosePOsReceived AND bpGRClosePOsReceivedDev
-1. review it.
-2. generate test data from crib that has:
-    a. multiple receivers for a poitems.
-    b. pomast that should be closed.
-    c. pomast that should remain open.
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -264,7 +260,6 @@ export async function start(disp,getSt) {
     }
   }
 
-
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -324,6 +319,7 @@ export async function start(disp,getSt) {
       }
     }
   }
+
 
   if(continueProcess ){
     if(getState().GenReceivers.receiverCount>0){
@@ -413,7 +409,6 @@ export async function start(disp,getSt) {
   }
 
 
-
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -446,7 +441,6 @@ export async function start(disp,getSt) {
 
   }
 
-
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -476,7 +470,6 @@ export async function start(disp,getSt) {
     }
   }
 
-  // DEBUG
   if(continueProcess){
     dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.RCMAST_INSERT_NOT_READY });
   }

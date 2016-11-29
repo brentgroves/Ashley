@@ -56,7 +56,9 @@ function execSQL1(disp,getSt){
       if (MISC.PROD===true) {
         sproc = `bpGRGenReceivers`;
       }else{
-        sproc = `bpGRGenReceiversDev`;
+        // STARTED USING bpGRGenReceivers ON 11-29
+        sproc = `bpGRGenReceivers`;
+//        sproc = `bpGRGenReceiversDev`;
       }
 
       let currentReceiver = getState().GenReceivers.currentReceiver;

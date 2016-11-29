@@ -9,7 +9,7 @@ var sql1Cnt=0;
 const ATTEMPTS=1;
 
 
-
+// tested 11-29
 export async function sql1(disp,getSt){
 //  var that = this;
   var dispatch = disp;
