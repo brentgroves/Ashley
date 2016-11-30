@@ -15,6 +15,7 @@ import * as SQLPRIMEDB from "../SQLPrimeDB.js"
 import * as SQLRCITEMINSERT from "./SQLRCItemInsert.js"
 import * as SQLRCITEMUPDATE from "./SQLRCItemUpdate.js"
 import * as SQLRCMASTINSERT from "./SQLRCMastInsert.js"
+import * as SQLFINISH from "./SQLFinish.js"
 import * as SQLSETCURRENTRECEIVER from "./SQLSetCurrentReceiver.js"
 import * as SQLSETRECEIVERCOUNT from "./SQLSetReceiverCount.js"
 import * as SQLSETSHIPVIA from "./SQLSetShipVia.js"
@@ -125,8 +126,7 @@ export async function m2mGenReceivers(disp,getSt) {
       continueProcess=false;
     }
   }
-  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
-  continueProcess=false;
+
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -151,6 +151,7 @@ export async function m2mGenReceivers(disp,getSt) {
       continueProcess=false;
     }
   }
+
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -201,6 +202,34 @@ export async function m2mGenReceivers(disp,getSt) {
     }
    
   }
+
+  if(continueProcess){
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
+      SQLFINISH.sql1(disp,getSt);
+    });
+    cnt=0;
+    while(!getState().GenReceivers.finish.done){
+      if(++cnt>maxCnt ){
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+
+    if(getState().GenReceivers.finish.failed || 
+      !getState().GenReceivers.finish.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLFINISH.sql1() FAILED.`);
+      }
+      continueProcess=false;
+    }
+   
+  }
+
+//  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+//  continueProcess=false;
 
   // THE END
   if(continueProcess){

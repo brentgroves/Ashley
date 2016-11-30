@@ -44,10 +44,11 @@ const initialState = {
 
 	GenReceivers:{ 
 		bpGRGenReceivers:{done:false,failed:false},
-		bpGRSetCurrentReceiver:{done:false,failed:false},
 		bpGRReceiverCount:{done:false,failed:false},
+		bpGRSetCurrentReceiver:{done:false,failed:false},
 		chk0:CHK.UNKNOWN,
 		currentReceiver:0,
+		finish:{done:false,failed:false},
 		goButton:PROGRESSBUTTON.READY, 
 		logId:0,
 		logInsert:{done:false,failed:false},

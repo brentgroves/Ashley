@@ -39,7 +39,19 @@ export function currentReceiverFailed(failed) {
   };
 }
 
+export function finishDone(done) {
+  return {
+    type: GRACTION.FINISH_DONE,
+    done:done
+  };
+}
 
+export function finishFailed(failed) {
+  return {
+    type: GRACTION.FINISH_FAILED,
+    failed:failed
+  };
+}
 export function genReceiversDone(done) {
   return {
     type: GRACTION.GEN_RECEIVERS_DONE,
@@ -108,6 +120,8 @@ export function receiverCountFailed(failed) {
     failed:failed
   };
 }
+
+
 
 export function rcitemInsertDone(done) {
   return {

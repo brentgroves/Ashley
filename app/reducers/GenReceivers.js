@@ -75,11 +75,13 @@ export default function reducer( state = {}, action) {
       var newData = update(state, 
         { 
           bpGRGenReceivers:{$set:{done:false,failed:false}},
-          bpGRSetCurrentReceiver:{$set:{done:false,failed:false}},
           bpGRReceiverCount:{$set:{done:false,failed:false}},
+          finish:{$set:{done:false,failed:false}},
+          bpGRSetCurrentReceiver:{$set:{done:false,failed:false}},
           chk0: {$set: CHK.UNKNOWN},
           closePOsReceived:{$set:{done:false,failed:false}},
           currentReceiver:{$set:0},
+          finish:{$set:{done:false,failed:false}},
           goButton:{$set:PROGRESSBUTTON.READY},
           logInsert:{$set:{done:false,failed:false}},
           logId:{$set:0},
@@ -89,7 +91,7 @@ export default function reducer( state = {}, action) {
           rcitemUpdate:{$set:{done:false,failed:false}},
           rcmast:{$set:[{}]},
           rcmastInsert:{$set:{done:false,failed:false}},
-          rcmastRange:{$set:{start:0,failed:0}},
+          rcmastRange:{$set:{start:0,end:0}},
           reason:{$set:''},
           shipVia:{$set:[{}]},
           shipViaQry:{$set:{done:false,failed:false}},
@@ -155,6 +157,21 @@ export default function reducer( state = {}, action) {
       var bpGRReceiverCount = state.bpGRReceiverCount;
       bpGRReceiverCount.failed=action.failed;
       var newData = update(state, {bpGRReceiverCount: {$set: bpGRReceiverCount}});
+      return newData;
+    }
+
+    case GRACTION.FINISH_DONE:
+    {
+      var finish = state.finish;
+      finish.done=action.done;
+      var newData = update(state, {finish: {$set: finish}});
+      return newData;
+    }
+    case GRACTION.FINISH_FAILED:
+    {
+      var finish = state.finish;
+      finish.failed=action.failed;
+      var newData = update(state, {finish: {$set: finish}});
       return newData;
     }
 
