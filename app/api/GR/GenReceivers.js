@@ -4,12 +4,16 @@ const {dialog} = require('electron').remote;
 
 import * as CONNECT from "../SQLConst.js"
 import * as GRACTION from "../../actions/GRConst.js"
+import * as GRLIMITS from "../../actions/GRLimits.js"
 import * as GRSTATE from "../../actions/GRState.js"
+import * as GRSTEPS from "../../actions/GRSteps.js"
 import * as MISC from "../Misc.js"
 import * as PROGRESSBUTTON from "../../actions/ProgressButtonConst.js"
-import * as SQLCLOSEPOSRECEIVED from "./SQLClosePOsReceived.js"
+import * as SQLPOSTATUSUPDATE from "./SQLPOStatusUpdate.js"
 import * as SQLEXEC from "./SQLExec.js"
+import * as SQLLOGENTRYLASTSET from "./SQLLogEntryLastSet.js"
 import * as SQLLOGINSERT from "./SQLLogInsert.js"
+import * as SQLLOGSTEPSET from "./SQLLogStepSet.js"
 import * as SQLGENRECEIVERS from "./SQLGenReceivers.js"
 import * as SQLPRIMEDB from "../SQLPrimeDB.js"
 import * as SQLRCITEMINSERT from "./SQLRCItemInsert.js"
@@ -107,6 +111,30 @@ export async function m2mGenReceivers(disp,getSt) {
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
+      SQLLOGSTEPSET.sql1(disp,getSt,GRSTEPS.STEP_20_RECEIVER_INSERT_M2M);
+    });
+
+    cnt=0;
+    while(!getState().GenReceivers.bpGRLogStepSet.done){
+      if(++cnt>maxCnt ){
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+    if(getState().GenReceivers.bpGRLogStepSet.failed ||
+      !getState().GenReceivers.bpGRLogStepSet.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLLOGSTEPSET.sql1() FAILED.`);
+      }
+      continueProcess=false;
+    }
+  }
+
+  if(continueProcess){
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
       SQLRCMASTINSERT.sql1(disp,getSt);
     });
 
@@ -182,10 +210,34 @@ export async function m2mGenReceivers(disp,getSt) {
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
-      SQLCLOSEPOSRECEIVED.sql1(disp,getSt);
+      SQLLOGSTEPSET.sql1(disp,getSt,GRSTEPS.STEP_30_PO_STATUS_UPDATE);
+    });
+
+    cnt=0;
+    while(!getState().GenReceivers.bpGRLogStepSet.done){
+      if(++cnt>maxCnt ){
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+    if(getState().GenReceivers.bpGRLogStepSet.failed ||
+      !getState().GenReceivers.bpGRLogStepSet.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLLOGSTEPSET.sql1() FAILED.`);
+      }
+      continueProcess=false;
+    }
+  }
+
+  if(continueProcess){
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
+      SQLPOSTATUSUPDATE.sql1(disp,getSt);
     });
     cnt=0;
-    while(!getState().GenReceivers.closePOsReceived.done){
+    while(!getState().GenReceivers.bpGRPOStatusUpdate.done){
       if(++cnt>maxCnt ){
         break;
       }else{
@@ -193,15 +245,16 @@ export async function m2mGenReceivers(disp,getSt) {
       }
     }
 
-    if(getState().GenReceivers.closePOsReceived.failed || 
-      !getState().GenReceivers.closePOsReceived.done){
+    if(getState().GenReceivers.bpGRPOStatusUpdate.failed || 
+      !getState().GenReceivers.bpGRPOStatusUpdate.done){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLCLOSEPOSRECEIVED.sql1() FAILED.`);
+        console.log(`SQLPOSTATUSUPDATE.sql1() FAILED.`);
       }
       continueProcess=false;
     }
    
   }
+
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -293,6 +346,38 @@ export async function start(disp,getSt) {
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
+      SQLLOGENTRYLASTSET.sql1(disp,getSt);
+    });
+    cnt=0;
+    maxCnt=10;
+    while(!getState().GenReceivers.bpGRGetLogEntryLast.done){
+      if(++cnt>maxCnt ){
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+
+    if(getState().GenReceivers.bpGRGetLogEntryLast.failed || 
+      !getState().GenReceivers.bpGRGetLogEntryLast.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLLOGENTRYLASTSET.sql1() FAILED.`);
+      }
+      continueProcess=false;
+    }else{
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLLOGENTRYLASTSET.sql1() Success.`);
+      }
+    }
+  }
+
+ dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+ continueProcess=false;
+
+  if(continueProcess){
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
       SQLLOGINSERT.sql1(disp,getSt);
     });
     cnt=0;
@@ -351,17 +436,24 @@ export async function start(disp,getSt) {
 
 
   if(continueProcess ){
-    if(getState().GenReceivers.receiverCount>0){
+    if(getState().GenReceivers.receiverCount>0 &&
+       getState().GenReceivers.receiverCount<=GRLIMITS.MAX_RECEIVERS){
       dispatch((dispatch,getState) => {
         var disp = dispatch;
         var getSt = getState;
         SQLSETCURRENTRECEIVER.sql1(dispatch,getState);
       });
-    }else{
+    }else if(0==getState().GenReceivers.receiverCount){
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLRCMASTRANGE count =0.`);
       }
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.UPTODATE });
+      continueProcess=false;
+    }else{
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLRCMASTRANGE count >= MAX_RECEIVERS.`);
+      }
+      dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.OUT_OF_RANGE });
       continueProcess=false;
     }
 

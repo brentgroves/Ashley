@@ -11,16 +11,16 @@ export function cancelApp() {
   };
 }
 
-export function closePOsReceivedDone(done) {
+export function poStatusUpdateDone(done) {
   return {
-    type: GRACTION.CLOSE_POS_RECEIVED_DONE,
+    type: GRACTION.PO_STATUS_UPDATE_DONE,
     done:done
   };
 }
 
-export function closePOsReceivedFailed(failed) {
+export function poStatusUpdateFailed(failed) {
   return {
-    type: GRACTION.CLOSE_POS_RECEIVED_FAILED,
+    type: GRACTION.PO_STATUS_UPDATE_FAILED,
     failed:failed
   };
 }
@@ -66,6 +66,20 @@ export function genReceiversFailed(failed) {
   };
 }
 
+export function logEntryLastyDone(done) {
+  return {
+    type: GRACTION.LOG_ENTRY_LAST_DONE,
+    done:done
+  };
+}
+
+export function logEntryLastFailed(failed) {
+  return {
+    type: GRACTION.LOG_ENTRY_LAST_FAILED,
+    failed:failed
+  };
+}
+
 
 export function logInsertDone(done) {
   return {
@@ -80,6 +94,21 @@ export function logInsertFailed(failed) {
     failed:failed
   };
 }
+
+export function logStepSetDone(done) {
+  return {
+    type: GRACTION.LOG_STEP_SET_DONE,
+    done:done
+  };
+}
+
+export function logStepSetFailed(failed) {
+  return {
+    type: GRACTION.LOG_STEP_SET_FAILED,
+    failed:failed
+  };
+}
+
 
 export function init() {
   return {
@@ -181,6 +210,14 @@ export function setGoButton(goButton) {
   return {
     type: GRACTION.SET_GO_BUTTON,
     goButton: goButton
+  };
+}
+
+
+export function setLogEntryLast(logEntryLast) {
+  return {
+    type: GRACTION.SET_LOG_ENTRY_LAST,
+    logEntryLast: logEntryLast
   };
 }
 

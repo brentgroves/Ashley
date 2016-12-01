@@ -14,6 +14,8 @@ export const RCMAST_INSERT_READY = 'RCMAST_INSERT_READY'
 
 // state 80 - FAILED
 export const UPTODATE = 'UPTODATE';
+// state 85 - receivers > MAXRECIEVERS -- OUTOFRANGE
+export const OUT_OF_RANGE = 'OUT_OF_RANGE';
 // state 90 - FAILED
 export const FAILURE = 'FAILURE';
 // state 100 - Completed successfully

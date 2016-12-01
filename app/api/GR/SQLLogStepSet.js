@@ -9,98 +9,96 @@ var sql1Cnt=0;
 const ATTEMPTS=1;
 
 
-
-export async function sql1(disp,getSt){
+// tested 11-29
+export async function sql1(disp,getSt,currentStep){
 //  var that = this;
   var dispatch = disp;
   var getState = getSt;
+  var step=currentStep;
   if ('development'==process.env.NODE_ENV) {
-    console.log(`SQLClosePOsReceived()->top.`);
+    console.log(`SQLLogStepSet()->top.`);
   }
 
 
   var cnt=0;
   init(dispatch);
-  execSQL1(dispatch,getState);
+  execSQL1(dispatch,getState,step);
 
 }
 
 function init(dispatch){
   sql1Cnt=0;
-  dispatch({ type:GRACTION.CLOSE_POS_RECEIVED_FAILED, failed:false });
-  dispatch({ type:GRACTION.CLOSE_POS_RECEIVED_DONE, done:false });
+  dispatch({ type:GRACTION.LOG_STEP_SET_FAILED, failed:false });
+  dispatch({ type:GRACTION.LOG_STEP_SET_DONE, done:false });
 }
 
 
-function execSQL1(disp,getSt){
+function execSQL1(disp,getSt,currentStep){
   var dispatch = disp;
   var getState = getSt;
+  var step=currentStep;
 
   if ('development'==process.env.NODE_ENV) {
-    console.log(`SQLClosePOsReceived.execSQL1() top=>${sql1Cnt}`);
+    console.log(`SQLLogStepSet.execSQL1() top=>${sql1Cnt}`);
   }
 
-  var connection = new sql.Connection(CONNECT.m2mDefTO, function(err) {
+
+  var connection = new sql.Connection(CONNECT.cribDefTO, function(err) {
     // ... error checks
     if(null==err){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLClosePOsReceived.execSQL1() Connection Sucess`);
+        console.log(`SQLLogStepSet.execSQL1() Connection Sucess`);
       }
-      var rcmastRange = getState().GenReceivers.rcmastRange;
 
       let sproc;
 
       if (MISC.PROD===true) {
-        sproc = `bpGRClosePOsReceived`;
+        sproc = `bpGRLogStepSet`;
       }else{
-        sproc = `bpGRClosePOsReceivedDev`;
+        // not using a separate dev log
+        sproc = `bpGRLogStepSet`;
       }
 
       var request = new sql.Request(connection); 
-      /* start function test */
-//      request.input('rcvStart', sql.Char(6), '284155');
-//      request.input('rcvEnd', sql.Char(6), '285839');
-      /* end function test */
-      request.input('rcvStart', sql.Char(6), rcmastRange.start);
-      request.input('rcvEnd', sql.Char(6), rcmastRange.end);
-      request.execute(sproc, function(err, recordsets, returnValue) {
+      request.input('step', sql.VarChar(50),step);
+      request.execute(sproc, function(err, recordsets, returnValue, affected) {
         // ... error checks
         if(null==err){
           // ... error checks
           if ('development'==process.env.NODE_ENV) {
-            console.log(`SQLClosePOsReceived.execSQL1() Sucess`);
+            console.log(`SQLLogStepSet.execSQL1() Sucess`);
           }
         }else {
           if(++sql1Cnt<ATTEMPTS) {
             if ('development'==process.env.NODE_ENV) {
-              console.log(`SQLClosePOsReceived.execSQL1().query:  ${err.message}` );
+              console.log(`SQLLogStepSet.execSQL1().query:  ${err.message}` );
               console.log(`sql1Cnt = ${sql1Cnt}`);
             }
           }else{
             if ('development'==process.env.NODE_ENV) {
-              console.log(`SQLClosePOsReceived.execSQL1():  ${err.message}` );
+              console.log(`SQLLogStepSet.execSQL1():  ${err.message}` );
             }
             dispatch({ type:GRACTION.SET_REASON, reason:err.message });
             dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-            dispatch({ type:GRACTION.CLOSE_POS_RECEIVED_FAILED, failed:true });
+            dispatch({ type:GRACTION.LOG_STEP_SET_FAILED, failed:true });
           }
         }
       });
-      dispatch({ type:GRACTION.CLOSE_POS_RECEIVED_DONE, done:true });
+      dispatch({ type:GRACTION.LOG_STEP_SET_DONE, done:true });
     }else{
       if(++sql1Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLClosePOsReceived.Connection: ${err.message}` );
+          console.log(`SQLLogStepSet.Connection: ${err.message}` );
           console.log(`sql1Cnt = ${sql1Cnt}`);
         }
       }else{
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLClosePOsReceived.Connection: ${err.message}` );
+          console.log(`SQLLogStepSet.Connection: ${err.message}` );
         }
 
         dispatch({ type:GRACTION.SET_REASON, reason:err.message });
         dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-        dispatch({ type:GRACTION.CLOSE_POS_RECEIVED_FAILED, failed:true });
+        dispatch({ type:GRACTION.LOG_STEP_SET_FAILED, failed:true });
       }
     }
   });
@@ -108,18 +106,18 @@ function execSQL1(disp,getSt){
   connection.on('error', function(err) {
     if(++sql1Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLClosePOsReceived.connection.on(error): ${err.message}` );
+        console.log(`SQLLogStepSet.connection.on(error): ${err.message}` );
         console.log(`sql1Cnt = ${sql1Cnt}`);
       }
 
     }else{
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLClosePOsReceived.connection.on(error): ${err.message}` );
+        console.log(`SQLLogStepSet.connection.on(error): ${err.message}` );
       }
 
       dispatch({ type:GRACTION.SET_REASON, reason:err.message });
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-      dispatch({ type:GRACTION.CLOSE_POS_RECEIVED_FAILED, failed:true });
+      dispatch({ type:GRACTION.LOG_STEP_SET_FAILED, failed:true });
     }
   });
 }

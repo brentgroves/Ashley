@@ -7,21 +7,6 @@ import update from 'react-addons-update';
 
 export default function reducer( state = {}, action) {
   switch (action.type) {
-    case GRACTION.CLOSE_POS_RECEIVED_DONE:
-    {
-      var closePOsReceived = state.closePOsReceived;
-      closePOsReceived.done=action.done;
-      var newData = update(state, {closePOsReceived: {$set: closePOsReceived}});
-      return newData;
-    }
-    case GRACTION.CLOSE_POS_RECEIVED_FAILED:
-    {
-      var closePOsReceived = state.closePOsReceived;
-      closePOsReceived.failed=action.failed;
-      var newData = update(state, {closePOsReceived: {$set: closePOsReceived}});
-      return newData;
-    }
-
     case GRACTION.CURRENT_RECEIVER_DONE:
     {
       var bpGRSetCurrentReceiver = state.bpGRSetCurrentReceiver;
@@ -52,6 +37,21 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
+    case GRACTION.LOG_ENTRY_LAST_DONE:
+    {
+      var bpGRGetLogEntryLast = state.bpGRGetLogEntryLast;
+      bpGRGetLogEntryLast.done=action.done;
+      var newData = update(state, {bpGRGetLogEntryLast: {$set: bpGRGetLogEntryLast}});
+      return newData;
+    }
+    case GRACTION.LOG_ENTRY_LAST_FAILED:
+    {
+      var bpGRGetLogEntryLast = state.bpGRGetLogEntryLast;
+      bpGRGetLogEntryLast.failed=action.failed;
+      var newData = update(state, {bpGRGetLogEntryLast: {$set: bpGRGetLogEntryLast}});
+      return newData;
+    }
+
     case GRACTION.LOG_INSERT_DONE:
     {
       var logInsert = state.logInsert;
@@ -67,6 +67,21 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
+    case GRACTION.LOG_STEP_SET_DONE:
+    {
+      var bpGRLogStepSet = state.bpGRLogStepSet;
+      bpGRLogStepSet.done=action.done;
+      var newData = update(state, {bpGRLogStepSet: {$set: bpGRLogStepSet}});
+      return newData;
+    }
+    case GRACTION.LOG_STEP_SET_FAILED:
+    {
+      var bpGRLogStepSet = state.bpGRLogStepSet;
+      bpGRLogStepSet.failed=action.failed;
+      var newData = update(state, {bpGRLogStepSet: {$set: bpGRLogStepSet}});
+      return newData;
+    }
+
     case GRACTION.INIT:
     {
       if ('development'==process.env.NODE_ENV) {
@@ -75,6 +90,9 @@ export default function reducer( state = {}, action) {
       var newData = update(state, 
         { 
           bpGRGenReceivers:{$set:{done:false,failed:false}},
+          bpGRGetLogEntryLast:{$set:{done:false,failed:false}},
+          bpGRLogStepSet:{$set:{done:false,failed:false}},
+          bpGRPOStatusUpdate:{$set:{done:false,failed:false}},
           bpGRReceiverCount:{$set:{done:false,failed:false}},
           finish:{$set:{done:false,failed:false}},
           bpGRSetCurrentReceiver:{$set:{done:false,failed:false}},
@@ -84,6 +102,7 @@ export default function reducer( state = {}, action) {
           finish:{$set:{done:false,failed:false}},
           goButton:{$set:PROGRESSBUTTON.READY},
           logInsert:{$set:{done:false,failed:false}},
+          logEntryLast:{$set:[{}]},
           logId:{$set:0},
           receiverCount:{$set:0},
           rcitem:{$set:[{}]},
@@ -99,6 +118,21 @@ export default function reducer( state = {}, action) {
           state:{$set: GRSTATE.NOT_PRIMED},
           status:{$set: ''}
         });
+      return newData;
+    }
+    
+    case GRACTION.PO_STATUS_UPDATE_DONE:
+    {
+      var bpGRPOStatusUpdate = state.bpGRPOStatusUpdate;
+      bpGRPOStatusUpdate.done=action.done;
+      var newData = update(state, {bpGRPOStatusUpdate: {$set: bpGRPOStatusUpdate}});
+      return newData;
+    }
+    case GRACTION.PO_STATUS_UPDATE_FAILED:
+    {
+      var bpGRPOStatusUpdate = state.bpGRPOStatusUpdate;
+      bpGRPOStatusUpdate.failed=action.failed;
+      var newData = update(state, {bpGRPOStatusUpdate: {$set: bpGRPOStatusUpdate}});
       return newData;
     }
 
@@ -174,15 +208,6 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {finish: {$set: finish}});
       return newData;
     }
-
-    case GRACTION.SET_LOGID:
-    {
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`set logId`);
-      }
-      var newData = update(state, {logId: {$set: action.logId}});
-      return newData;
-    }
     case GRACTION.SET_CURRENT_RECEIVER:
     {
       var newData = update(state, {currentReceiver: {$set: action.currentReceiver}});
@@ -192,6 +217,23 @@ export default function reducer( state = {}, action) {
     {
       var newData = update(state, {goButton: {$set: action.goButton}});
     //  return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
+      return newData;
+    }
+
+    case GRACTION.SET_LOG_ENTRY_LAST:
+    {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set logEntryLast`);
+      }
+      var newData = update(state, {logEntryLast: {$set: action.logEntryLast}});
+      return newData;
+    }
+    case GRACTION.SET_LOGID:
+    {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set logId`);
+      }
+      var newData = update(state, {logId: {$set: action.logId}});
       return newData;
     }
     case GRACTION.SET_RCITEM:

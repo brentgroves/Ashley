@@ -1,3 +1,30 @@
+/*
+bpGRGetLogEntryLast
+Retreive the latest log entry
+*/
+create procedure [dbo].[bpGRGetLogEntryLast] 
+	@id as int output,
+	@fStart as datetime output,
+	@fStep as varchar(50) output,
+	@rcvStart as char(6) output,
+	@rcvEnd as char(6) output,
+	@fEnd as datetime output
+AS
+
+Declare @maxId integer
+select @maxId=max(id) from btGRLog 
+select 
+	@id=id,
+	@fStart=fStart,
+	@fStep=fStep,
+	@rcvStart=rcvStart,
+	@rcvEnd=rcvEnd,
+	@fEnd=fEnd
+from btGRLog
+where id = @maxId 
+
+GO
+
 USE [Cribmaster]
 GO
 
@@ -10,11 +37,11 @@ GO
 
 SET ANSI_PADDING ON
 GO
-
 create TABLE [dbo].[btGRLog](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[VerCol] [timestamp] NOT NULL,
 	[fStart] [datetime] NOT NULL,
+	[fStep] [varchar](50) NOT NULL,
 	[rcvStart] [char](6) NULL,
 	[rcvEnd] [char](6) NULL,
 	[fEnd] [datetime] NULL
@@ -39,12 +66,12 @@ delete from btrcmast
 Declare @maxId integer
 select @maxId=max(id) from btGRLog 
 update btGRLog
-set fEnd = GETDATE()
+set fEnd = GETDATE(),
+fStep = 'STEP_40_FINISH'
 where id = @maxId 
 
 update btGRVars 
 set fLastRun = getdate()
-
 
 USE [Cribmaster]
 GO
@@ -1002,11 +1029,23 @@ GO
 USE [Cribmaster]
 GO
 
-/****** Object:  StoredProcedure [dbo].[bpGRGenReceiversDev]    Script Date: 11/29/2016 2:56:56 PM ******/
-SET ANSI_NULLS ON
+USE [Cribmaster]
+GO
+/*
+bpGRLogStepSet
+Sets the current step of this run of the Generate Receivers process
+*/
+create procedure [dbo].[bpGRLogStepSet] 
+	@step as varchar(50)
+AS
+
+Declare @maxId integer
+select @maxId=max(id) from btGRLog 
+update btGRLog
+set fStep = @step
+where id = @maxId 
 GO
 
-SET QUOTED_IDENTIFIER ON
 GO
 --TESTED 11-29
 /*
@@ -1019,16 +1058,12 @@ create procedure [dbo].[bpGRGenReceiversDev]
 AS
 exec bpGRGenRCMastDev @currentReceiver
 exec bpGRGenRCItemDev 
-
+exec bpGRLogStepSet 'STEP_10_GEN_RECEIVERS'
 
 GO
 
 
 USE [Cribmaster]
-GO
-
-/****** Object:  StoredProcedure [dbo].[bpGRGenReceivers]    Script Date: 11/29/2016 2:57:12 PM ******/
-SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
@@ -1044,7 +1079,7 @@ create procedure [dbo].[bpGRGenReceivers]
 AS
 exec bpGRGenRCMast @currentReceiver
 exec bpGRGenRCItem 
-
+exec bpGRLogStepSet 'STEP_10_GEN_RECEIVERS'
 GO
 
 USE [Cribmaster]
@@ -1409,20 +1444,18 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
--- TESTED 11-29
 create procedure [dbo].[bpGRLogInsert]
 @id int output
 AS
 BEGIN
  SET NOCOUNT ON
 	INSERT INTO [dbo].[btGRLog]
-			   (fStart)
+			   (fStart,fStep)
 		 VALUES
-			   (GETDATE())
+			   (GETDATE(),'STEP_0_START')
 	select @id=max(id) from btGRLog
 end
 
-GO
 
 --//////////////////////////////////
 --DELETE EVERYTHING BELOW THIS LINE WHEN FINISHED TESTING

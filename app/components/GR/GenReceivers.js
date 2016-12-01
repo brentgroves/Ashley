@@ -71,6 +71,20 @@ export default class GenReceivers extends Component {
         </Col>
       </Row>
   } else if(
+            (GRSTATE.OUT_OF_RANGE==this.props.GenR.state)
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron  >
+            <h1 style={{textAlign: 'center'}}>Out Of Range</h1>
+            <p style={{padding: '0px'}}>There are are more than 50 receivers to generate.  Ask 'IT' if you would like to override this condition check.</p>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(
             (GRSTATE.UPTODATE==this.props.GenR.state)
             ){
     jumboTronTxt=
@@ -78,9 +92,9 @@ export default class GenReceivers extends Component {
         <Col xs={1}>&nbsp;</Col>
         <Col >
           <Jumbotron  >
-            <h1 style={{textAlign: 'center'}}>UpToDate</h1>
+            <h1 style={{textAlign: 'center'}}>Up-To-Date</h1>
             <p style={{padding: '0px',textAlign:'center'}}>There are currently 'NO' PO Items needing received into Made2Manage.</p>
-           
+           <br/>
           </Jumbotron>
         </Col>
       </Row>
@@ -218,8 +232,8 @@ export default class GenReceivers extends Component {
   }
 
   if(
-      (GRSTATE.FAILURE==this.props.GenR.state)
-
+      (GRSTATE.FAILURE==this.props.GenR.state) ||
+      (GRSTATE.OUT_OF_RANGE==this.props.GenR.state)
     )
   {
     cancelBtn = 
