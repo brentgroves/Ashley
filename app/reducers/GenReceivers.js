@@ -37,6 +37,21 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
+    case GRACTION.LOG_END_DONE:
+    {
+      var bpGRLogEnd = state.bpGRLogEnd;
+      bpGRLogEnd.done=action.done;
+      var newData = update(state, {bpGRLogEnd: {$set: bpGRLogEnd}});
+      return newData;
+    }
+    case GRACTION.LOG_END_FAILED:
+    {
+      var bpGRLogEnd = state.bpGRLogEnd;
+      bpGRLogEnd.failed=action.failed;
+      var newData = update(state, {bpGRLogEnd: {$set: bpGRLogEnd}});
+      return newData;
+    }
+
     case GRACTION.LOG_ENTRY_LAST_DONE:
     {
       var bpGRGetLogEntryLast = state.bpGRGetLogEntryLast;
@@ -90,10 +105,13 @@ export default function reducer( state = {}, action) {
       var newData = update(state, 
         { 
           bpGRGenReceivers:{$set:{done:false,failed:false}},
+          bpGRLogEnd:{$set:{done:false,failed:false}},
           bpGRGetLogEntryLast:{$set:{done:false,failed:false}},
           bpGRLogStepSet:{$set:{done:false,failed:false}},
           bpGRPOStatusUpdate:{$set:{done:false,failed:false}},
           bpGRReceiverCount:{$set:{done:false,failed:false}},
+          bpGRReceiversCribDelete:{$set:{done:false,failed:false}},
+          bpGRReceiversM2mDelete:{$set:{done:false,failed:false}},
           finish:{$set:{done:false,failed:false}},
           bpGRSetCurrentReceiver:{$set:{done:false,failed:false}},
           chk0: {$set: CHK.UNKNOWN},
@@ -111,6 +129,7 @@ export default function reducer( state = {}, action) {
           rcmast:{$set:[{}]},
           rcmastInsert:{$set:{done:false,failed:false}},
           rcmastRange:{$set:{start:0,end:0}},
+          rollback:{$set:{done:false,failed:false}},
           reason:{$set:''},
           shipVia:{$set:[{}]},
           shipViaQry:{$set:{done:false,failed:false}},
@@ -193,6 +212,52 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {bpGRReceiverCount: {$set: bpGRReceiverCount}});
       return newData;
     }
+
+    case GRACTION.RECEIVERS_CRIB_DELETE_DONE:
+    {
+      var bpGRReceiversCribDelete = state.bpGRReceiversCribDelete;
+      bpGRReceiversCribDelete.done=action.done;
+      var newData = update(state, {bpGRReceiversCribDelete: {$set: bpGRReceiversCribDelete}});
+      return newData;
+    }
+    case GRACTION.RECEIVERS_CRIB_DELETE_FAILED:
+    {
+      var bpGRReceiversCribDelete = state.bpGRReceiversCribDelete;
+      bpGRReceiversCribDelete.failed=action.failed;
+      var newData = update(state, {bpGRReceiversCribDelete: {$set: bpGRReceiversCribDelete}});
+      return newData;
+    }
+
+    case GRACTION.RECEIVERS_M2M_DELETE_DONE:
+    {
+      var bpGRReceiversM2mDelete = state.bpGRReceiversM2mDelete;
+      bpGRReceiversM2mDelete.done=action.done;
+      var newData = update(state, {bpGRReceiversM2mDelete: {$set: bpGRReceiversM2mDelete}});
+      return newData;
+    }
+    case GRACTION.RECEIVERS_M2M_DELETE_FAILED:
+    {
+      var bpGRReceiversM2mDelete = state.bpGRReceiversM2mDelete;
+      bpGRReceiversM2mDelete.failed=action.failed;
+      var newData = update(state, {bpGRReceiversM2mDelete: {$set: bpGRReceiversM2mDelete}});
+      return newData;
+    }
+
+    case GRACTION.ROLLBACK_DONE:
+    {
+      var rollback = state.rollback;
+      rollback.done=action.done;
+      var newData = update(state, {rollback: {$set: rollback}});
+      return newData;
+    }
+    case GRACTION.ROLLBACK_FAILED:
+    {
+      var rollback = state.rollback;
+      rollback.failed=action.failed;
+      var newData = update(state, {rollback: {$set: rollback}});
+      return newData;
+    }
+
 
     case GRACTION.FINISH_DONE:
     {

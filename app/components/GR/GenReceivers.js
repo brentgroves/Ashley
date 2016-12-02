@@ -79,7 +79,7 @@ export default class GenReceivers extends Component {
         <Col >
           <Jumbotron  >
             <h1 style={{textAlign: 'center'}}>Out Of Range</h1>
-            <p style={{padding: '0px'}}>There are are more than 50 receivers to generate.  Ask 'IT' if you would like to override this condition check.</p>
+            <p style={{padding: '0px'}}>There are are more than 50 receivers to generate or rollback.  Ask 'IT' if you would like to override this condition check.</p>
             <br/>
           </Jumbotron>
         </Col>

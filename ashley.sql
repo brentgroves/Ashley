@@ -1,4 +1,39 @@
 /*
+bpGRReceiversM2mDelete
+Delete rcmast/rcitem records in a given range
+*/
+create procedure [dbo].[bpGRReceiversM2mDeleteDev] 
+@rcvStart as char(6), 
+@rcvEnd as char(6) 
+AS
+delete from btrcmast
+where freceiver > = @rcvStart
+and freceiver < = @rcvEnd
+delete from btrcitem 
+where freceiver > = @rcvStart
+and freceiver < = @rcvEnd
+
+--//////////////////////////////////////////
+-- update last log entry with ending datetime
+--//////////////////////////////////////////
+create procedure [dbo].[bpGRLogEnd]
+as
+Declare @maxId integer
+select @maxId=max(id) from btGRLog 
+update btGRLog
+set fEnd = GETDATE()
+where id = @maxId 
+/*
+bpGRReceiversCribDelete
+Delete all rcmast/rcitem records
+*/
+create procedure [dbo].[bpGRReceiversCribDelete] 
+AS
+delete from btrcmast
+delete from btrcitem
+
+
+/*
 bpGRGetLogEntryLast
 Retreive the latest log entry
 */

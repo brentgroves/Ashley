@@ -10,75 +10,55 @@ const ATTEMPTS=1;
 
 
 
-export async function sql1(disp,getSt,rollbck){
+export async function sql1(disp,getSt){
 //  var that = this;
   var dispatch = disp;
   var getState = getSt;
-  var rollback = rollbck;
   if ('development'==process.env.NODE_ENV) {
-    console.log(`SQLPOStatusUpdate()->top.`);
+    console.log(`SQLReceiversM2mDelete()->top.`);
   }
 
 
   var cnt=0;
   init(dispatch);
-  execSQL1(dispatch,getState,rollback);
+  execSQL1(dispatch,getState);
 
 }
+
 
 function init(dispatch){
   sql1Cnt=0;
-  dispatch({ type:GRACTION.PO_STATUS_UPDATE_FAILED, failed:false });
-  dispatch({ type:GRACTION.PO_STATUS_UPDATE_DONE, done:false });
+  dispatch({ type:GRACTION.RECEIVERS_M2M_DELETE_FAILED, failed:false });
+  dispatch({ type:GRACTION.RECEIVERS_M2M_DELETE_DONE, done:false });
 }
 
 
-function execSQL1(disp,getSt,rollbck){
+function execSQL1(disp,getSt){
   var dispatch = disp;
   var getState = getSt;
-  var rollback = rollbck;
 
   if ('development'==process.env.NODE_ENV) {
-    console.log(`SQLPOStatusUpdate.execSQL1() top=>${sql1Cnt}`);
+    console.log(`SQLReceiversM2mDelete.execSQL1() top=>${sql1Cnt}`);
   }
 
   var connection = new sql.Connection(CONNECT.m2mDefTO, function(err) {
     // ... error checks
     if(null==err){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLPOStatusUpdate.execSQL1() Connection Sucess`);
+        console.log(`SQLReceiversM2mDelete.execSQL1() Connection Sucess`);
       }
-
       let sproc;
 
       if (MISC.PROD===true) {
-        sproc = `bpGRPOStatusUpdate`;
+        sproc = `bpGRReceiversM2mDelete`;
       }else{
-        sproc = `bpGRPOStatusUpdateDev`;
+        sproc = `bpGRReceiversM2mDeleteDev`;
       }
+
+      var rcvStart = getState().GenReceivers.logEntryLast.rcvStart;
+      var rcvEnd = getState().GenReceivers.logEntryLast.rcvEnd;
 
       var request = new sql.Request(connection); 
-      /* start function test */
-//      request.input('rcvStart', sql.Char(6), '284155');
-//      request.input('rcvEnd', sql.Char(6), '285839');
-      /* end function test */
-      var rcvStart;
-      var rcvEnd;
-      if(rollback){
-        rcvStart = getState().GenReceivers.logEntryLast.rcvStart;
-        rcvEnd = getState().GenReceivers.logEntryLast.rcvEnd;
-      }else{
-        let rcmastRange = getState().GenReceivers.rcmastRange;
-        rcvStart=rcmastRange.start;
-        rcvEnd=rcmastRange.end;
-      }
-
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`rcvStart ${rcvStart}`);
-        console.log(`rcvEnd ${rcvEnd}`);
-        console.log(`rollback=${true}`);
-      }
-
       request.input('rcvStart', sql.Char(6), rcvStart);
       request.input('rcvEnd', sql.Char(6), rcvEnd);
       request.execute(sproc, function(err, recordsets, returnValue) {
@@ -86,39 +66,39 @@ function execSQL1(disp,getSt,rollbck){
         if(null==err){
           // ... error checks
           if ('development'==process.env.NODE_ENV) {
-            console.log(`SQLPOStatusUpdate.execSQL1() Sucess`);
+            console.log(`SQLReceiversM2mDelete.execSQL1() Sucess`);
           }
         }else {
           if(++sql1Cnt<ATTEMPTS) {
             if ('development'==process.env.NODE_ENV) {
-              console.log(`SQLPOStatusUpdate.execSQL1().query:  ${err.message}` );
+              console.log(`SQLReceiversM2mDelete.execSQL1().query:  ${err.message}` );
               console.log(`sql1Cnt = ${sql1Cnt}`);
             }
           }else{
             if ('development'==process.env.NODE_ENV) {
-              console.log(`SQLPOStatusUpdate.execSQL1():  ${err.message}` );
+              console.log(`SQLReceiversM2mDelete.execSQL1():  ${err.message}` );
             }
             dispatch({ type:GRACTION.SET_REASON, reason:err.message });
             dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-            dispatch({ type:GRACTION.PO_STATUS_UPDATE_FAILED, failed:true });
+            dispatch({ type:GRACTION.RECEIVERS_M2M_DELETE_FAILED, failed:true });
           }
         }
       });
-      dispatch({ type:GRACTION.PO_STATUS_UPDATE_DONE, done:true });
+      dispatch({ type:GRACTION.RECEIVERS_M2M_DELETE_DONE, done:true });
     }else{
       if(++sql1Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLPOStatusUpdate.Connection: ${err.message}` );
+          console.log(`SQLReceiversM2mDelete.Connection: ${err.message}` );
           console.log(`sql1Cnt = ${sql1Cnt}`);
         }
       }else{
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLPOStatusUpdate.Connection: ${err.message}` );
+          console.log(`SQLReceiversM2mDelete.Connection: ${err.message}` );
         }
 
         dispatch({ type:GRACTION.SET_REASON, reason:err.message });
         dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-        dispatch({ type:GRACTION.PO_STATUS_UPDATE_FAILED, failed:true });
+        dispatch({ type:GRACTION.RECEIVERS_M2M_DELETE_FAILED, failed:true });
       }
     }
   });
@@ -126,18 +106,18 @@ function execSQL1(disp,getSt,rollbck){
   connection.on('error', function(err) {
     if(++sql1Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLPOStatusUpdate.connection.on(error): ${err.message}` );
+        console.log(`SQLReceiversM2mDelete.connection.on(error): ${err.message}` );
         console.log(`sql1Cnt = ${sql1Cnt}`);
       }
 
     }else{
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLPOStatusUpdate.connection.on(error): ${err.message}` );
+        console.log(`SQLReceiversM2mDelete.connection.on(error): ${err.message}` );
       }
 
       dispatch({ type:GRACTION.SET_REASON, reason:err.message });
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-      dispatch({ type:GRACTION.PO_STATUS_UPDATE_FAILED, failed:true });
+      dispatch({ type:GRACTION.RECEIVERS_M2M_DELETE_FAILED, failed:true });
     }
   });
 }

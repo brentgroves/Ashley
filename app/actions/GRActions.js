@@ -66,7 +66,21 @@ export function genReceiversFailed(failed) {
   };
 }
 
-export function logEntryLastyDone(done) {
+export function logEndDone(done) {
+  return {
+    type: GRACTION.LOG_END_DONE,
+    done:done
+  };
+}
+
+export function logEndFailed(failed) {
+  return {
+    type: GRACTION.LOG_END_FAILED,
+    failed:failed
+  };
+}
+
+export function logEntryLastDone(done) {
   return {
     type: GRACTION.LOG_ENTRY_LAST_DONE,
     done:done
@@ -198,6 +212,19 @@ export function rcitemUpdateFailed(failed) {
   };
 }
 
+export function rollbackDone(done) {
+  return {
+    type: GRACTION.ROLLBACK_DONE,
+    done:done
+  };
+}
+
+export function rollbackFailed(failed) {
+  return {
+    type: GRACTION.ROLLBACK_FAILED,
+    failed:failed
+  };
+}
 
 export function setCurrentReceiver(currentReceiver) {
   return {

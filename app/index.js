@@ -44,10 +44,13 @@ const initialState = {
 
 	GenReceivers:{ 
 		bpGRGenReceivers:{done:false,failed:false},
+		bpGRLogEnd:{done:false,failed:false},
 		bpGRGetLogEntryLast:{done:false,failed:false},
 		bpGRLogStepSet:{done:false,failed:false},
 		bpGRPOStatusUpdate:{done:false,failed:false},
 		bpGRReceiverCount:{done:false,failed:false},
+		bpGRReceiversCribDelete:{done:false,failed:false},
+		bpGRReceiversM2mDelete:{done:false,failed:false},
 		bpGRSetCurrentReceiver:{done:false,failed:false},
 		chk0:CHK.UNKNOWN,
 		currentReceiver:0,
@@ -64,6 +67,7 @@ const initialState = {
 		rcmastInsert:{done:false,failed:false},
 		reason:'',
 		receiverCount:0,
+		rollback:{done:false,failed:false},
 		shipVia:[{}],
 		state:GRSTATE.NOT_PRIMED,
 		status:'',
