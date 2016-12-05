@@ -15,7 +15,7 @@ export async function sql1(disp,getSt){
   var dispatch = disp;
   var getState = getSt;
   if ('development'==process.env.NODE_ENV) {
-    console.log(`SQLReceiversM2mDelete()->top.`);
+    console.log(`SQLRCMastDelete()->top.`);
   }
 
 
@@ -28,8 +28,8 @@ export async function sql1(disp,getSt){
 
 function init(dispatch){
   sql1Cnt=0;
-  dispatch({ type:GRACTION.RECEIVERS_M2M_DELETE_FAILED, failed:false });
-  dispatch({ type:GRACTION.RECEIVERS_M2M_DELETE_DONE, done:false });
+  dispatch({ type:GRACTION.RCMAST_DELETE_FAILED, failed:false });
+  dispatch({ type:GRACTION.RCMAST_DELETE_DONE, done:false });
 }
 
 
@@ -38,21 +38,21 @@ function execSQL1(disp,getSt){
   var getState = getSt;
 
   if ('development'==process.env.NODE_ENV) {
-    console.log(`SQLReceiversM2mDelete.execSQL1() top=>${sql1Cnt}`);
+    console.log(`SQLRCMastDelete.execSQL1() top=>${sql1Cnt}`);
   }
 
   var connection = new sql.Connection(CONNECT.m2mDefTO, function(err) {
     // ... error checks
     if(null==err){
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLReceiversM2mDelete.execSQL1() Connection Sucess`);
+        console.log(`SQLRCMastDelete.execSQL1() Connection Sucess`);
       }
       let sproc;
 
       if (MISC.PROD===true) {
-        sproc = `bpGRReceiversM2mDelete`;
+        sproc = `bpGRRCMastDelete`;
       }else{
-        sproc = `bpGRReceiversM2mDeleteDev`;
+        sproc = `bpGRRCMastDeleteDev`;
       }
 
       var rcvStart = getState().GenReceivers.logEntryLast.rcvStart;
@@ -66,39 +66,39 @@ function execSQL1(disp,getSt){
         if(null==err){
           // ... error checks
           if ('development'==process.env.NODE_ENV) {
-            console.log(`SQLReceiversM2mDelete.execSQL1() Sucess`);
+            console.log(`SQLRCMastDelete.execSQL1() Sucess`);
           }
         }else {
           if(++sql1Cnt<ATTEMPTS) {
             if ('development'==process.env.NODE_ENV) {
-              console.log(`SQLReceiversM2mDelete.execSQL1().query:  ${err.message}` );
+              console.log(`SQLRCMastDelete.execSQL1().query:  ${err.message}` );
               console.log(`sql1Cnt = ${sql1Cnt}`);
             }
           }else{
             if ('development'==process.env.NODE_ENV) {
-              console.log(`SQLReceiversM2mDelete.execSQL1():  ${err.message}` );
+              console.log(`SQLRCMastDelete.execSQL1():  ${err.message}` );
             }
             dispatch({ type:GRACTION.SET_REASON, reason:err.message });
             dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-            dispatch({ type:GRACTION.RECEIVERS_M2M_DELETE_FAILED, failed:true });
+            dispatch({ type:GRACTION.RCMAST_DELETE_FAILED, failed:true });
           }
         }
       });
-      dispatch({ type:GRACTION.RECEIVERS_M2M_DELETE_DONE, done:true });
+      dispatch({ type:GRACTION.RCMAST_DELETE_DONE, done:true });
     }else{
       if(++sql1Cnt<ATTEMPTS) {
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLReceiversM2mDelete.Connection: ${err.message}` );
+          console.log(`SQLRCMastDelete.Connection: ${err.message}` );
           console.log(`sql1Cnt = ${sql1Cnt}`);
         }
       }else{
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLReceiversM2mDelete.Connection: ${err.message}` );
+          console.log(`SQLRCMastDelete.Connection: ${err.message}` );
         }
 
         dispatch({ type:GRACTION.SET_REASON, reason:err.message });
         dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-        dispatch({ type:GRACTION.RECEIVERS_M2M_DELETE_FAILED, failed:true });
+        dispatch({ type:GRACTION.RCMAST_DELETE_FAILED, failed:true });
       }
     }
   });
@@ -106,18 +106,18 @@ function execSQL1(disp,getSt){
   connection.on('error', function(err) {
     if(++sql1Cnt<ATTEMPTS) {
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLReceiversM2mDelete.connection.on(error): ${err.message}` );
+        console.log(`SQLRCMastDelete.connection.on(error): ${err.message}` );
         console.log(`sql1Cnt = ${sql1Cnt}`);
       }
 
     }else{
       if ('development'==process.env.NODE_ENV) {
-        console.log(`SQLReceiversM2mDelete.connection.on(error): ${err.message}` );
+        console.log(`SQLRCMastDelete.connection.on(error): ${err.message}` );
       }
 
       dispatch({ type:GRACTION.SET_REASON, reason:err.message });
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-      dispatch({ type:GRACTION.RECEIVERS_M2M_DELETE_FAILED, failed:true });
+      dispatch({ type:GRACTION.RCMAST_DELETE_FAILED, failed:true });
     }
   });
 }

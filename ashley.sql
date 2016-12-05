@@ -1,15 +1,110 @@
+--Generate a receiver from a podetail 
+INSERT INTO [dbo].[btrcitem]
+--INSERT INTO [dbo].[rcitem]
+           ([fitemno]
+           ,[fpartno]
+           ,[fpartrev]
+           ,[finvcost]
+           ,[fcategory]
+           ,[fcstatus]
+           ,[fiqtyinv]
+           ,[fjokey]
+           ,[fsokey]
+           ,[fsoitem]
+           ,[fsorelsno]
+           ,[fvqtyrecv]
+           ,[fqtyrecv]
+           ,[freceiver]
+           ,[frelsno]
+           ,[fvendno]
+           ,[fbinno]
+           ,[fexpdate]
+           ,[finspect]
+           ,[finvqty]
+           ,[flocation]
+           ,[flot]
+           ,[fmeasure]
+           ,[fpoitemno]
+           ,[fretcredit]
+           ,[ftype]
+           ,[fumvori]
+           ,[fqtyinsp]
+           ,[fauthorize]
+           ,[fucost]
+           ,[fllotreqd]
+           ,[flexpreqd]
+           ,[fctojoblot]
+           ,[fdiscount]
+           ,[fueurocost]
+           ,[futxncost]
+           ,[fucostonly]
+           ,[futxncston]
+           ,[fueurcston]
+           ,[flconvovrd]
+           ,[fcomments]
+           ,[fdescript]
+           ,[fac]
+           ,[sfac]
+           ,[FCORIGUM]
+           ,[fcudrev]
+           ,[FNORIGQTY]
+           ,[Iso]
+           ,[Ship_Link]
+           ,[ShsrceLink]
+           ,[fCINSTRUCT])
+		   --------START HERE
+select 
+fitemno,fpartno,'NS' fpartrev,0.0 finvcost,fcategory,'' fcstatus,0.0 fiqtyinv,
+fjokey,fsokey,'' fsoitem,'' fsorelsno,fordqty fvqtyrecv,fordqty fqtyrecv, 
+freceiver,frelsno,fvendno,'' fbinno,'1900-01-01 00:00:00.000' fexpdate,finspect,
+0.0 finvqty,'' flocation,'' flot,fmeasure,fitemno fpoitemno,'' fretcredit,ftype,
+'I' fumvori,0.0 fqtyinsp,'' fauthorize,fucost,0 fllotreqd,0 flexpreqd,'' fctojoblot,
+fdiscount,fueurocost,futxncost,fucostonly,futxncston,fueurcston,0 flconvovrd,fcomments, 
+fdescript,fac,fac sfac,'' FCORIGUM,fcudrev,0.0 FNORIGQTY,'' Iso,0 Ship_Link,0 ShsrceLink,'' fCINSTRUCT
+from
+(
+	select pom.fpono,rcm.fporev,poi.fucost,poi.fucostonly,poi.fmeasure,poi.fitemno,rcm.freceiver,
+	rcm.start, rcm.fdaterecv Received, poi.fpartno,poi.fcategory,poi.fordqty,pom.fvendno,
+	poi.fdescript,poi.fcudrev,poi.fac,fjokey,fsokey,frelsno,finspect,ftype,fdiscount,
+	fueurocost,futxncost,futxncston,fueurcston,fcomments
+	from 
+	pomast pom
+	inner join
+	rcmast rcm
+	on pom.fpono=rcm.fpono
+	inner join
+	poitem poi
+	on pom.fpono=poi.fpono
+	where pom.fpono='121610'
+)lv1
+USE [m2mdata01]
+GO
+
+USE [m2mdata01]
 /*
-bpGRReceiversM2mDelete
-Delete rcmast/rcitem records in a given range
+bpGRRCItemDelete
+Delete rcitem records in a given range
 */
-create procedure [dbo].[bpGRReceiversM2mDeleteDev] 
+create procedure [dbo].[bpGRRCItemDeleteDev] 
+@rcvStart as char(6), 
+@rcvEnd as char(6) 
+AS
+delete from btrcitem 
+where freceiver > = @rcvStart
+and freceiver < = @rcvEnd
+
+GO
+
+USE [m2mdata01]
+/*
+bpGRRCMastDelete
+Delete rcmast records in a given range
+*/
+create procedure [dbo].[bpGRRCMastDeleteDev] 
 @rcvStart as char(6), 
 @rcvEnd as char(6) 
 AS
 delete from btrcmast
-where freceiver > = @rcvStart
-and freceiver < = @rcvEnd
-delete from btrcitem 
 where freceiver > = @rcvStart
 and freceiver < = @rcvEnd
 

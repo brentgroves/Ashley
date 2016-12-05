@@ -111,7 +111,8 @@ export default function reducer( state = {}, action) {
           bpGRPOStatusUpdate:{$set:{done:false,failed:false}},
           bpGRReceiverCount:{$set:{done:false,failed:false}},
           bpGRReceiversCribDelete:{$set:{done:false,failed:false}},
-          bpGRReceiversM2mDelete:{$set:{done:false,failed:false}},
+          bpGRRCItemDelete:{$set:{done:false,failed:false}},
+          bpGRRCMastDelete:{$set:{done:false,failed:false}},
           finish:{$set:{done:false,failed:false}},
           bpGRSetCurrentReceiver:{$set:{done:false,failed:false}},
           chk0: {$set: CHK.UNKNOWN},
@@ -154,6 +155,20 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {bpGRPOStatusUpdate: {$set: bpGRPOStatusUpdate}});
       return newData;
     }
+    case GRACTION.RCITEM_DELETE_DONE:
+    {
+      var bpGRRCItemDelete = state.bpGRRCItemDelete;
+      bpGRRCItemDelete.done=action.done;
+      var newData = update(state, {bpGRRCItemDelete: {$set: bpGRRCItemDelete}});
+      return newData;
+    }
+    case GRACTION.RCITEM_DELETE_FAILED:
+    {
+      var bpGRRCItemDelete = state.bpGRRCItemDelete;
+      bpGRRCItemDelete.failed=action.failed;
+      var newData = update(state, {bpGRRCItemDelete: {$set: bpGRRCItemDelete}});
+      return newData;
+    }
 
     case GRACTION.RCITEM_INSERT_DONE:
     {
@@ -183,6 +198,22 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {rcitemUpdate: {$set: rcitemUpdate}});
       return newData;
     }
+
+    case GRACTION.RCMAST_DELETE_DONE:
+    {
+      var bpGRRCMastDelete = state.bpGRRCMastDelete;
+      bpGRRCMastDelete.done=action.done;
+      var newData = update(state, {bpGRRCMastDelete: {$set: bpGRRCMastDelete}});
+      return newData;
+    }
+    case GRACTION.RCMAST_DELETE_FAILED:
+    {
+      var bpGRRCMastDelete = state.bpGRRCMastDelete;
+      bpGRRCMastDelete.failed=action.failed;
+      var newData = update(state, {bpGRRCMastDelete: {$set: bpGRRCMastDelete}});
+      return newData;
+    }
+
     case GRACTION.RCMAST_INSERT_DONE:
     {
       var rcmastInsert = state.rcmastInsert;
@@ -225,21 +256,6 @@ export default function reducer( state = {}, action) {
       var bpGRReceiversCribDelete = state.bpGRReceiversCribDelete;
       bpGRReceiversCribDelete.failed=action.failed;
       var newData = update(state, {bpGRReceiversCribDelete: {$set: bpGRReceiversCribDelete}});
-      return newData;
-    }
-
-    case GRACTION.RECEIVERS_M2M_DELETE_DONE:
-    {
-      var bpGRReceiversM2mDelete = state.bpGRReceiversM2mDelete;
-      bpGRReceiversM2mDelete.done=action.done;
-      var newData = update(state, {bpGRReceiversM2mDelete: {$set: bpGRReceiversM2mDelete}});
-      return newData;
-    }
-    case GRACTION.RECEIVERS_M2M_DELETE_FAILED:
-    {
-      var bpGRReceiversM2mDelete = state.bpGRReceiversM2mDelete;
-      bpGRReceiversM2mDelete.failed=action.failed;
-      var newData = update(state, {bpGRReceiversM2mDelete: {$set: bpGRReceiversM2mDelete}});
       return newData;
     }
 

@@ -4,7 +4,7 @@ export const m2m = {
   password: 'buschecnc1',
 //  server: '192.168.254.36', // You can use 'localhost\\instance' to connect to named instance
   server: '10.1.2.19',//   server: 'busche-sql-1', // You can use 'localhost\\instance' to connect to named instance
-  database: 'm2mdata01',
+  database: 'm2mdata02',
   port: 1433,
 //    debug: true,
   options: {
@@ -20,7 +20,7 @@ export const m2mDefTO = {
   password: 'buschecnc1',
 //  server: '192.168.254.36', // You can use 'localhost\\instance' to connect to named instance
   server: '10.1.2.19',//   server: 'busche-sql-1', // You can use 'localhost\\instance' to connect to named instance
-  database: 'm2mdata01',
+  database: 'm2mdata02',
   port: 1433,
 //    debug: true,
   options: {

@@ -17,11 +17,12 @@ import * as SQLLOGINSERT from "./SQLLogInsert.js"
 import * as SQLLOGSTEPSET from "./SQLLogStepSet.js"
 import * as SQLGENRECEIVERS from "./SQLGenReceivers.js"
 import * as SQLPRIMEDB from "../SQLPrimeDB.js"
+import * as SQLRCITEMDELETE from "./SQLRCItemDelete.js"
 import * as SQLRCITEMINSERT from "./SQLRCItemInsert.js"
 import * as SQLRCITEMUPDATE from "./SQLRCItemUpdate.js"
+import * as SQLRCMASTDELETE from "./SQLRCMastDelete.js"
 import * as SQLRCMASTINSERT from "./SQLRCMastInsert.js"
 import * as SQLRECEIVERSCRIBDELETE from "./SQLReceiversCribDelete.js"
-import * as SQLRECEIVERSM2MDELETE from "./SQLReceiversM2mDelete.js"
 import * as SQLFINISH from "./SQLFinish.js"
 import * as SQLSETCURRENTRECEIVER from "./SQLSetCurrentReceiver.js"
 import * as SQLSETRECEIVERCOUNT from "./SQLSetReceiverCount.js"
@@ -233,6 +234,8 @@ export async function m2mGenReceivers(disp,getSt) {
     }
   }
 
+
+
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -349,11 +352,11 @@ export async function rollBack(disp,getSt) {
         dispatch((dispatch,getState) => {
           var disp = dispatch;
           var getSt = getState;
-          SQLRECEIVERSM2MDELETE.sql1(disp,getSt);
+          SQLRCITEMDELETE.sql1(disp,getSt);
         });
         cnt=0;
         maxCnt=10;
-        while(!getState().GenReceivers.bpGRReceiversM2mDelete.done){
+        while(!getState().GenReceivers.bpGRRCItemDelete.done){
           if(++cnt>maxCnt ){
             break;
           }else{
@@ -361,15 +364,15 @@ export async function rollBack(disp,getSt) {
           }
         }
 
-        if(getState().GenReceivers.bpGRReceiversM2mDelete.failed || 
-          !getState().GenReceivers.bpGRReceiversM2mDelete.done){
+        if(getState().GenReceivers.bpGRRCItemDelete.failed || 
+          !getState().GenReceivers.bpGRRCItemDelete.done){
           if ('development'==process.env.NODE_ENV) {
-            console.log(`SQLRECEIVERSM2MDELETE.sql1() FAILED.`);
+            console.log(`SQLRCITEMDELETE.sql1() FAILED.`);
           }
           continueProcess=false;
         }else{
           if ('development'==process.env.NODE_ENV) {
-            console.log(`SQLRECEIVERSM2MDELETE.sql1() Success.`);
+            console.log(`SQLRCITEMDELETE.sql1() Success.`);
           }
         }
       }
@@ -396,7 +399,37 @@ export async function rollBack(disp,getSt) {
           continueProcess=false;
         }
       }
+      if(continueProcess && 
+        ( (GRSTEPS.STEP_20_RECEIVER_INSERT_M2M==step) ||
+          (GRSTEPS.STEP_30_PO_STATUS_UPDATE==step)
+        )){
+        dispatch((dispatch,getState) => {
+          var disp = dispatch;
+          var getSt = getState;
+          SQLRCMASTDELETE.sql1(disp,getSt);
+        });
+        cnt=0;
+        maxCnt=10;
+        while(!getState().GenReceivers.bpGRRCMastDelete.done){
+          if(++cnt>maxCnt ){
+            break;
+          }else{
+            await MISC.sleep(2000);
+          }
+        }
 
+        if(getState().GenReceivers.bpGRRCMastDelete.failed || 
+          !getState().GenReceivers.bpGRRCMastDelete.done){
+          if ('development'==process.env.NODE_ENV) {
+            console.log(`SQLRCMASTDELETE.sql1() FAILED.`);
+          }
+          continueProcess=false;
+        }else{
+          if ('development'==process.env.NODE_ENV) {
+            console.log(`SQLRCMASTDELETE.sql1() Success.`);
+          }
+        }
+      }
       break;
     case GRSTEPS.STEP_40_FINISH:
       // nothing to do
@@ -593,6 +626,7 @@ export async function start(disp,getSt) {
     }
   }
 
+
   if(continueProcess ){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -624,7 +658,7 @@ export async function start(disp,getSt) {
     }
   }
 
-
+  var finish=false;
   if(continueProcess ){
     if(getState().GenReceivers.receiverCount>0 &&
        getState().GenReceivers.receiverCount<=GRLIMITS.MAX_RECEIVERS){
@@ -639,12 +673,45 @@ export async function start(disp,getSt) {
       }
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.UPTODATE });
       continueProcess=false;
+      finish=true;
     }else{
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLRCMASTRANGE count >= MAX_RECEIVERS.`);
       }
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.OUT_OF_RANGE });
       continueProcess=false;
+      finish=true;
+    }
+
+    // terminate log entry correctly for uptodate or outofrange states
+    if(finish){
+      // continueProcess is set to false already and state is set to UPTODATE
+      dispatch((dispatch,getState) => {
+        var disp = dispatch;
+        var getSt = getState;
+        SQLLOGEND.sql1(disp,getSt);
+      });
+      cnt=0;
+      maxCnt=10;
+      while(!getState().GenReceivers.bpGRLogEnd.done){
+        if(++cnt>maxCnt ){
+          break;
+        }else{
+          await MISC.sleep(2000);
+        }
+      }
+
+      if(getState().GenReceivers.bpGRLogEnd.failed || 
+        !getState().GenReceivers.bpGRLogEnd.done){
+        if ('development'==process.env.NODE_ENV) {
+          console.log(`SQLLOGEND.sql1() FAILED.`);
+        }
+        continueProcess=false;  // not needed - continueProcess already false;
+      }else{
+        if ('development'==process.env.NODE_ENV) {
+          console.log(`SQLLOGEND.sql1() Success.`);
+        }
+      }
     }
 
     if(continueProcess){
@@ -672,6 +739,11 @@ export async function start(disp,getSt) {
       }
     }
   }
+
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+  continueProcess=false;
+
+
 
   if(continueProcess){
     let rcmastRange={};
