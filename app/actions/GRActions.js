@@ -66,20 +66,6 @@ export function genReceiversFailed(failed) {
   };
 }
 
-export function logEndDone(done) {
-  return {
-    type: GRACTION.LOG_END_DONE,
-    done:done
-  };
-}
-
-export function logEndFailed(failed) {
-  return {
-    type: GRACTION.LOG_END_FAILED,
-    failed:failed
-  };
-}
-
 export function logEntryLastDone(done) {
   return {
     type: GRACTION.LOG_ENTRY_LAST_DONE,

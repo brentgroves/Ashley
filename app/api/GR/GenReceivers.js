@@ -11,7 +11,6 @@ import * as MISC from "../Misc.js"
 import * as PROGRESSBUTTON from "../../actions/ProgressButtonConst.js"
 import * as SQLPOSTATUSUPDATE from "./SQLPOStatusUpdate.js"
 import * as SQLEXEC from "./SQLExec.js"
-import * as SQLLOGEND from "./SQLLogEnd.js"
 import * as SQLLOGENTRYLASTSET from "./SQLLogEntryLastSet.js"
 import * as SQLLOGINSERT from "./SQLLogInsert.js"
 import * as SQLLOGSTEPSET from "./SQLLogStepSet.js"
@@ -135,6 +134,7 @@ export async function m2mGenReceivers(disp,getSt) {
     }
   }
 
+
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -210,6 +210,7 @@ export async function m2mGenReceivers(disp,getSt) {
    
   }
 
+
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -261,14 +262,17 @@ export async function m2mGenReceivers(disp,getSt) {
    
   }
 
+TEST POSTATUSUPDATE ROLLBACK and normal
+
   dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
   continueProcess=false;
+
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
-      SQLFINISH.sql1(disp,getSt);
+      SQLFINISH.sql1(disp,getSt,true,GRSTEPS.STEP_40_FINISH,true);
     });
     cnt=0;
     while(!getState().GenReceivers.finish.done){
@@ -299,64 +303,47 @@ export async function m2mGenReceivers(disp,getSt) {
 
 }
 
-export async function rollBack(disp,getSt) {
+export async function rollBack(disp,getSt,rcvCnt) {
   var dispatch=disp;
   var getState=getSt;
+  var rcvCount=rcvCnt;
   if ('development'==process.env.NODE_ENV) {
     console.log(`rollback ==> top.`);
   }
 
   dispatch({ type:GRACTION.ROLLBACK_DONE, done:false });
   dispatch({ type:GRACTION.ROLLBACK_FAILED, failed:false });
-  var cnt=0;
-  var maxCnt=10;
+
   var continueProcess=true;
-  var step = getState().GenReceivers.logEntryLast.fStep;
-  switch(step){
-    case GRSTEPS.STEP_0_START:
-      // nothing to do
-      break;
-    case GRSTEPS.STEP_10_GEN_RECEIVERS:
-    case GRSTEPS.STEP_20_RECEIVER_INSERT_M2M:
-    case GRSTEPS.STEP_30_PO_STATUS_UPDATE:
-      dispatch((dispatch,getState) => {
-        var disp = dispatch;
-        var getSt = getState;
-        SQLRECEIVERSCRIBDELETE.sql1(disp,getSt);
-      });
-      cnt=0;
-      maxCnt=10;
-      while(!getState().GenReceivers.bpGRReceiversCribDelete.done){
-        if(++cnt>maxCnt ){
-          break;
-        }else{
-          await MISC.sleep(2000);
-        }
-      }
 
-      if(getState().GenReceivers.bpGRReceiversCribDelete.failed || 
-        !getState().GenReceivers.bpGRReceiversCribDelete.done){
-        if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLRECEIVERSCRIBDELETE.sql1() FAILED.`);
-        }
-        continueProcess=false;
-      }else{
-        if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLRECEIVERSCRIBDELETE.sql1() Success.`);
-        }
-      }
-      if(continueProcess && 
-        ( (GRSTEPS.STEP_20_RECEIVER_INSERT_M2M==step) ||
-          (GRSTEPS.STEP_30_PO_STATUS_UPDATE==step)
-        )){
+  if(0!=rcvCount){
+    var cnt=0;
+    var maxCnt=10;
+    var step = getState().GenReceivers.logEntryLast.fStep;
+    switch(step){
+      // never should have STEP_0_START,STEP_3_UP_TO_DATE because rcvCount would be 0
+      // if STEP_5_ROLLBACK then SQLFINISH should have already updated 
+      // fStep and fEnd because they get updated by the same sql statement.
+      // if STEP_40_FINISH the same logic applies as for the STEP_5_ROLLBACK state.
+      // These states are only for included for completeness
+      case GRSTEPS.STEP_0_START:
+      case GRSTEPS.STEP_3_UP_TO_DATE:
+      case GRSTEPS.STEP_5_ROLLBACK:
+      case GRSTEPS.STEP_8_OUT_OF_RANGE:
+      case GRSTEPS.STEP_40_FINISH:
+        // nothing to do
+        break;
+      case GRSTEPS.STEP_10_GEN_RECEIVERS:
+      case GRSTEPS.STEP_20_RECEIVER_INSERT_M2M:
+      case GRSTEPS.STEP_30_PO_STATUS_UPDATE:
         dispatch((dispatch,getState) => {
           var disp = dispatch;
           var getSt = getState;
-          SQLRCITEMDELETE.sql1(disp,getSt);
+          SQLRECEIVERSCRIBDELETE.sql1(disp,getSt);
         });
         cnt=0;
         maxCnt=10;
-        while(!getState().GenReceivers.bpGRRCItemDelete.done){
+        while(!getState().GenReceivers.bpGRReceiversCribDelete.done){
           if(++cnt>maxCnt ){
             break;
           }else{
@@ -364,86 +351,114 @@ export async function rollBack(disp,getSt) {
           }
         }
 
-        if(getState().GenReceivers.bpGRRCItemDelete.failed || 
-          !getState().GenReceivers.bpGRRCItemDelete.done){
+        if(getState().GenReceivers.bpGRReceiversCribDelete.failed || 
+          !getState().GenReceivers.bpGRReceiversCribDelete.done){
           if ('development'==process.env.NODE_ENV) {
-            console.log(`SQLRCITEMDELETE.sql1() FAILED.`);
+            console.log(`SQLRECEIVERSCRIBDELETE.sql1() FAILED.`);
           }
           continueProcess=false;
         }else{
           if ('development'==process.env.NODE_ENV) {
-            console.log(`SQLRCITEMDELETE.sql1() Success.`);
+            console.log(`SQLRECEIVERSCRIBDELETE.sql1() Success.`);
           }
         }
-      }
-      if(continueProcess && (GRSTEPS.STEP_30_PO_STATUS_UPDATE==step)){
-        dispatch((dispatch,getState) => {
-          var disp = dispatch;
-          var getSt = getState;
-          SQLPOSTATUSUPDATE.sql1(disp,getSt,true);
-        });
-        cnt=0;
-        while(!getState().GenReceivers.bpGRPOStatusUpdate.done){
-          if(++cnt>maxCnt ){
-            break;
-          }else{
-            await MISC.sleep(2000);
+        if(continueProcess && 
+          ( (GRSTEPS.STEP_20_RECEIVER_INSERT_M2M==step) ||
+            (GRSTEPS.STEP_30_PO_STATUS_UPDATE==step)
+          )){
+          dispatch((dispatch,getState) => {
+            var disp = dispatch;
+            var getSt = getState;
+            SQLRCITEMDELETE.sql1(disp,getSt);
+          });
+          cnt=0;
+          maxCnt=10;
+          while(!getState().GenReceivers.bpGRRCItemDelete.done){
+            if(++cnt>maxCnt ){
+              break;
+            }else{
+              await MISC.sleep(2000);
+            }
           }
-        }
 
-        if(getState().GenReceivers.bpGRPOStatusUpdate.failed || 
-          !getState().GenReceivers.bpGRPOStatusUpdate.done){
-          if ('development'==process.env.NODE_ENV) {
-            console.log(`SQLPOSTATUSUPDATE.sql1() FAILED.`);
-          }
-          continueProcess=false;
-        }
-      }
-      if(continueProcess && 
-        ( (GRSTEPS.STEP_20_RECEIVER_INSERT_M2M==step) ||
-          (GRSTEPS.STEP_30_PO_STATUS_UPDATE==step)
-        )){
-        dispatch((dispatch,getState) => {
-          var disp = dispatch;
-          var getSt = getState;
-          SQLRCMASTDELETE.sql1(disp,getSt);
-        });
-        cnt=0;
-        maxCnt=10;
-        while(!getState().GenReceivers.bpGRRCMastDelete.done){
-          if(++cnt>maxCnt ){
-            break;
+          if(getState().GenReceivers.bpGRRCItemDelete.failed || 
+            !getState().GenReceivers.bpGRRCItemDelete.done){
+            if ('development'==process.env.NODE_ENV) {
+              console.log(`SQLRCITEMDELETE.sql1() FAILED.`);
+            }
+            continueProcess=false;
           }else{
-            await MISC.sleep(2000);
+            if ('development'==process.env.NODE_ENV) {
+              console.log(`SQLRCITEMDELETE.sql1() Success.`);
+            }
           }
         }
+        if(continueProcess && (GRSTEPS.STEP_30_PO_STATUS_UPDATE==step)){
+          dispatch((dispatch,getState) => {
+            var disp = dispatch;
+            var getSt = getState;
+            SQLPOSTATUSUPDATE.sql1(disp,getSt,true);
+          });
+          cnt=0;
+          while(!getState().GenReceivers.bpGRPOStatusUpdate.done){
+            if(++cnt>maxCnt ){
+              break;
+            }else{
+              await MISC.sleep(2000);
+            }
+          }
 
-        if(getState().GenReceivers.bpGRRCMastDelete.failed || 
-          !getState().GenReceivers.bpGRRCMastDelete.done){
-          if ('development'==process.env.NODE_ENV) {
-            console.log(`SQLRCMASTDELETE.sql1() FAILED.`);
-          }
-          continueProcess=false;
-        }else{
-          if ('development'==process.env.NODE_ENV) {
-            console.log(`SQLRCMASTDELETE.sql1() Success.`);
+          if(getState().GenReceivers.bpGRPOStatusUpdate.failed || 
+            !getState().GenReceivers.bpGRPOStatusUpdate.done){
+            if ('development'==process.env.NODE_ENV) {
+              console.log(`SQLPOSTATUSUPDATE.sql1() FAILED.`);
+            }
+            continueProcess=false;
           }
         }
-      }
-      break;
-    case GRSTEPS.STEP_40_FINISH:
-      // nothing to do
-      break;
+        if(continueProcess && 
+          ( (GRSTEPS.STEP_20_RECEIVER_INSERT_M2M==step) ||
+            (GRSTEPS.STEP_30_PO_STATUS_UPDATE==step)
+          )){
+          dispatch((dispatch,getState) => {
+            var disp = dispatch;
+            var getSt = getState;
+            SQLRCMASTDELETE.sql1(disp,getSt);
+          });
+          cnt=0;
+          maxCnt=10;
+          while(!getState().GenReceivers.bpGRRCMastDelete.done){
+            if(++cnt>maxCnt ){
+              break;
+            }else{
+              await MISC.sleep(2000);
+            }
+          }
+
+          if(getState().GenReceivers.bpGRRCMastDelete.failed || 
+            !getState().GenReceivers.bpGRRCMastDelete.done){
+            if ('development'==process.env.NODE_ENV) {
+              console.log(`SQLRCMASTDELETE.sql1() FAILED.`);
+            }
+            continueProcess=false;
+          }else{
+            if ('development'==process.env.NODE_ENV) {
+              console.log(`SQLRCMASTDELETE.sql1() Success.`);
+            }
+          }
+        }
+        break;
+    }
   }
   if(continueProcess){
       dispatch((dispatch,getState) => {
         var disp = dispatch;
         var getSt = getState;
-        SQLLOGEND.sql1(disp,getSt);
+        SQLFINISH.sql1(disp,getSt,false,GRSTEPS.STEP_5_ROLLBACK,false);
       });
       cnt=0;
       maxCnt=10;
-      while(!getState().GenReceivers.bpGRLogEnd.done){
+      while(!getState().GenReceivers.bpGRFinish.done){
         if(++cnt>maxCnt ){
           break;
         }else{
@@ -451,15 +466,15 @@ export async function rollBack(disp,getSt) {
         }
       }
 
-      if(getState().GenReceivers.bpGRLogEnd.failed || 
-        !getState().GenReceivers.bpGRLogEnd.done){
+      if(getState().GenReceivers.bpGRFinish.failed || 
+        !getState().GenReceivers.bpGRFinish.done){
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLLOGEND.sql1() FAILED.`);
+          console.log(`SQLFINISH.sql1() FAILED.`);
         }
         continueProcess=false;
       }else{
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLLOGEND.sql1() Success.`);
+          console.log(`SQLFINISH.sql1() Success.`);
         }
       }
 
@@ -553,16 +568,31 @@ export async function start(disp,getSt) {
     }
   }
 
-  if(null == getState().GenReceivers.logEntryLast.fEnd){
-    var rcvStart = getState().GenReceivers.logEntryLast.rcvStart;
-    var rcvEnd = getState().GenReceivers.logEntryLast.rcvEnd;
-    var receiverCount=rcvEnd-rcvStart+1;
-    if(receiverCount>0 &&
+  if(continueProcess && (null == getState().GenReceivers.logEntryLast.fEnd)){
+    var rcvStart=0;
+    var rcvEnd=0;
+    var receiverCount=0;
+    var failedBeforeReceiverCnt=false;
+    // Did the previous session fail before retrieving the receiver count?
+    if((null != getState().GenReceivers.logEntryLast.rcvStart) &&
+       (null != getState().GenReceivers.logEntryLast.rcvEnd)){
+
+      rcvStart = getState().GenReceivers.logEntryLast.rcvStart;
+      rcvEnd = getState().GenReceivers.logEntryLast.rcvEnd;
+      receiverCount=rcvEnd-rcvStart+1;
+    }else{
+      failedBeforeReceiverCnt=true;
+    }
+    // if receiverCount==0 still call rollback
+    // either we got the receiver count before the last session failed
+    // or we did not get the receiver count no matter which case
+    // the rollback will set fEnd and not update the lastRun.
+    if(receiverCount>=0 &&
        receiverCount<=GRLIMITS.MAX_RECEIVERS){
       dispatch((dispatch,getState) => {
         var disp = dispatch;
         var getSt = getState;
-        rollBack(disp,getSt);
+        rollBack(disp,getSt,receiverCount);
       });
       cnt=0;
       maxCnt=10;
@@ -589,7 +619,7 @@ export async function start(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`rollback receiver count >= MAX_RECEIVERS.`);
       }
-      dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.OUT_OF_RANGE });
+      dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.STEP_8_OUT_OF_RANGE });
       continueProcess=false;
     }
 
@@ -657,8 +687,11 @@ export async function start(disp,getSt) {
       }
     }
   }
-
+  // if the program fails at this point some receivers numbers will be
+  // skipped for good because the rollback function can really do nothing for this case
   var finish=false;
+  var logStep;
+  var lastRun;
   if(continueProcess ){
     if(getState().GenReceivers.receiverCount>0 &&
        getState().GenReceivers.receiverCount<=GRLIMITS.MAX_RECEIVERS){
@@ -673,6 +706,8 @@ export async function start(disp,getSt) {
       }
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.UPTODATE });
       continueProcess=false;
+      logStep=GRSTEPS.STEP_3_UP_TO_DATE
+      lastRun=true;
       finish=true;
     }else{
       if ('development'==process.env.NODE_ENV) {
@@ -680,20 +715,22 @@ export async function start(disp,getSt) {
       }
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.OUT_OF_RANGE });
       continueProcess=false;
+      logStep=GRSTEPS.STEP_8_OUT_OF_RANGE 
+      lastRun=false;
       finish=true;
     }
 
     // terminate log entry correctly for uptodate or outofrange states
     if(finish){
-      // continueProcess is set to false already and state is set to UPTODATE
+      // continueProcess is set to false already
       dispatch((dispatch,getState) => {
         var disp = dispatch;
         var getSt = getState;
-        SQLLOGEND.sql1(disp,getSt);
+        SQLFINISH.sql1(disp,getSt,false,logStep,lastRun);
       });
       cnt=0;
       maxCnt=10;
-      while(!getState().GenReceivers.bpGRLogEnd.done){
+      while(!getState().GenReceivers.bpGRFinish.done){
         if(++cnt>maxCnt ){
           break;
         }else{
@@ -701,18 +738,20 @@ export async function start(disp,getSt) {
         }
       }
 
-      if(getState().GenReceivers.bpGRLogEnd.failed || 
-        !getState().GenReceivers.bpGRLogEnd.done){
+      if(getState().GenReceivers.bpGRFinish.failed || 
+        !getState().GenReceivers.bpGRFinish.done){
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLLOGEND.sql1() FAILED.`);
+          console.log(`SQLFINISH.sql1() FAILED.`);
         }
         continueProcess=false;  // not needed - continueProcess already false;
       }else{
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLLOGEND.sql1() Success.`);
+          console.log(`SQLFINISH.sql1() Success.`);
         }
       }
     }
+
+
 
     if(continueProcess){
       cnt=0;
@@ -740,8 +779,6 @@ export async function start(disp,getSt) {
     }
   }
 
-  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
-  continueProcess=false;
 
 
 

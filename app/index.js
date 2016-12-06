@@ -43,8 +43,8 @@ const initialState = {
 	},
 
 	GenReceivers:{ 
+		bpGRFinish:{done:false,failed:false},
 		bpGRGenReceivers:{done:false,failed:false},
-		bpGRLogEnd:{done:false,failed:false},
 		bpGRGetLogEntryLast:{done:false,failed:false},
 		bpGRLogStepSet:{done:false,failed:false},
 		bpGRPOStatusUpdate:{done:false,failed:false},
@@ -54,7 +54,6 @@ const initialState = {
 		bpGRSetCurrentReceiver:{done:false,failed:false},
 		chk0:CHK.UNKNOWN,
 		currentReceiver:0,
-		finish:{done:false,failed:false},
 		goButton:PROGRESSBUTTON.READY, 
 		logEntryLast:{},
 		logId:0,

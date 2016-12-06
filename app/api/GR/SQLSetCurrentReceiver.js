@@ -52,8 +52,7 @@ function execSQL1(disp,getSt){
       let sproc;
 
       if (MISC.PROD===true) {
-        sproc = `bpGRSetCurrentReceiver'
-          `;
+        sproc = `bpGRSetCurrentReceiver`;
       }else{
         sproc = `bpGRSetCurrentReceiverDev`;
       }

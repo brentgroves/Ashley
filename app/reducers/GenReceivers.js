@@ -22,6 +22,21 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
+    case GRACTION.FINISH_DONE:
+    {
+      var bpGRFinish = state.bpGRFinish;
+      bpGRFinish.done=action.done;
+      var newData = update(state, {bpGRFinish: {$set: bpGRFinish}});
+      return newData;
+    }
+    case GRACTION.FINISH_FAILED:
+    {
+      var bpGRFinish = state.bpGRFinish;
+      bpGRFinish.failed=action.failed;
+      var newData = update(state, {bpGRFinish: {$set: bpGRFinish}});
+      return newData;
+    }
+
     case GRACTION.GEN_RECEIVERS_DONE:
     {
       var bpGRGenReceivers = state.bpGRGenReceivers;
@@ -37,20 +52,6 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
-    case GRACTION.LOG_END_DONE:
-    {
-      var bpGRLogEnd = state.bpGRLogEnd;
-      bpGRLogEnd.done=action.done;
-      var newData = update(state, {bpGRLogEnd: {$set: bpGRLogEnd}});
-      return newData;
-    }
-    case GRACTION.LOG_END_FAILED:
-    {
-      var bpGRLogEnd = state.bpGRLogEnd;
-      bpGRLogEnd.failed=action.failed;
-      var newData = update(state, {bpGRLogEnd: {$set: bpGRLogEnd}});
-      return newData;
-    }
 
     case GRACTION.LOG_ENTRY_LAST_DONE:
     {
@@ -104,8 +105,8 @@ export default function reducer( state = {}, action) {
       }
       var newData = update(state, 
         { 
+          bpGRFinish:{$set:{done:false,failed:false}},
           bpGRGenReceivers:{$set:{done:false,failed:false}},
-          bpGRLogEnd:{$set:{done:false,failed:false}},
           bpGRGetLogEntryLast:{$set:{done:false,failed:false}},
           bpGRLogStepSet:{$set:{done:false,failed:false}},
           bpGRPOStatusUpdate:{$set:{done:false,failed:false}},
@@ -118,7 +119,6 @@ export default function reducer( state = {}, action) {
           chk0: {$set: CHK.UNKNOWN},
           closePOsReceived:{$set:{done:false,failed:false}},
           currentReceiver:{$set:0},
-          finish:{$set:{done:false,failed:false}},
           goButton:{$set:PROGRESSBUTTON.READY},
           logInsert:{$set:{done:false,failed:false}},
           logEntryLast:{$set:[{}]},
@@ -275,20 +275,6 @@ export default function reducer( state = {}, action) {
     }
 
 
-    case GRACTION.FINISH_DONE:
-    {
-      var finish = state.finish;
-      finish.done=action.done;
-      var newData = update(state, {finish: {$set: finish}});
-      return newData;
-    }
-    case GRACTION.FINISH_FAILED:
-    {
-      var finish = state.finish;
-      finish.failed=action.failed;
-      var newData = update(state, {finish: {$set: finish}});
-      return newData;
-    }
     case GRACTION.SET_CURRENT_RECEIVER:
     {
       var newData = update(state, {currentReceiver: {$set: action.currentReceiver}});
