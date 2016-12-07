@@ -262,10 +262,7 @@ export async function m2mGenReceivers(disp,getSt) {
    
   }
 
-TEST POSTATUSUPDATE ROLLBACK and normal
 
-  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
-  continueProcess=false;
 
 
   if(continueProcess){
@@ -275,7 +272,7 @@ TEST POSTATUSUPDATE ROLLBACK and normal
       SQLFINISH.sql1(disp,getSt,true,GRSTEPS.STEP_40_FINISH,true);
     });
     cnt=0;
-    while(!getState().GenReceivers.finish.done){
+    while(!getState().GenReceivers.bpGRFinish.done){
       if(++cnt>maxCnt ){
         break;
       }else{
@@ -283,8 +280,8 @@ TEST POSTATUSUPDATE ROLLBACK and normal
       }
     }
 
-    if(getState().GenReceivers.finish.failed || 
-      !getState().GenReceivers.finish.done){
+    if(getState().GenReceivers.bpGRFinish.failed || 
+      !getState().GenReceivers.bpGRFinish.done){
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLFINISH.sql1() FAILED.`);
       }

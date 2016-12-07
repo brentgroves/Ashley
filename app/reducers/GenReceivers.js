@@ -114,7 +114,6 @@ export default function reducer( state = {}, action) {
           bpGRReceiversCribDelete:{$set:{done:false,failed:false}},
           bpGRRCItemDelete:{$set:{done:false,failed:false}},
           bpGRRCMastDelete:{$set:{done:false,failed:false}},
-          finish:{$set:{done:false,failed:false}},
           bpGRSetCurrentReceiver:{$set:{done:false,failed:false}},
           chk0: {$set: CHK.UNKNOWN},
           closePOsReceived:{$set:{done:false,failed:false}},
