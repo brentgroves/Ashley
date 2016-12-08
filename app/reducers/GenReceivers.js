@@ -21,7 +21,6 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {bpGRSetCurrentReceiver: {$set: bpGRSetCurrentReceiver}});
       return newData;
     }
-
     case GRACTION.FINISH_DONE:
     {
       var bpGRFinish = state.bpGRFinish;
@@ -115,6 +114,7 @@ export default function reducer( state = {}, action) {
           bpGRRCItemDelete:{$set:{done:false,failed:false}},
           bpGRRCMastDelete:{$set:{done:false,failed:false}},
           bpGRSetCurrentReceiver:{$set:{done:false,failed:false}},
+          bpGRTransIns:{$set:{done:false,failed:false}},
           chk0: {$set: CHK.UNKNOWN},
           closePOsReceived:{$set:{done:false,failed:false}},
           currentReceiver:{$set:0},
@@ -379,6 +379,24 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {sqlExec: {$set: sqlExec}});
       return newData;
     }
+
+
+    case GRACTION.TRANS_INS_DONE:
+    {
+      var bpGRTransIns = state.bpGRTransIns;
+      bpGRTransIns.done=action.done;
+      var newData = update(state, {bpGRTransIns: {$set: bpGRTransIns}});
+      return newData;
+    }
+    case GRACTION.TRANS_INS_FAILED:
+    {
+      var bpGRTransIns = state.bpGRTransIns;
+      bpGRTransIns.failed=action.failed;
+      var newData = update(state, {bpGRTransIns: {$set: bpGRTransIns}});
+      return newData;
+    }
+
+
     case GRACTION.UPDATE_RCMAST_FPACKLIST:
     {
       var newData = update(state, {rcmast: {$set: action.rcmast}});

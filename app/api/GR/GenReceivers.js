@@ -27,6 +27,8 @@ import * as SQLSETCURRENTRECEIVER from "./SQLSetCurrentReceiver.js"
 import * as SQLSETRECEIVERCOUNT from "./SQLSetReceiverCount.js"
 import * as SQLSETSHIPVIA from "./SQLSetShipVia.js"
 
+var _ = require('lodash');
+var join = require('lodash.join');
 
 export async function prime(disp,getSt){
   var dispatch = disp;
@@ -159,6 +161,8 @@ export async function m2mGenReceivers(disp,getSt) {
     }
   }
 
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+  continueProcess=false;
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -497,6 +501,10 @@ steps
 3. these trans are recorded in the intran table
 */
 
+function accessor(obj) {
+ return obj['freceiver'];
+}
+
 export async function start(disp,getSt) {
 //  var that = this;
   var dispatch = disp;
@@ -535,6 +543,22 @@ export async function start(disp,getSt) {
       console.log(`prime Success.`);
     }
   }
+
+  var st = getState();
+  if(continueProcess){
+
+ //   var a = join.hashInnerJoin(st.GenReceivers.rcmast, accessor, st.GenReceivers.rcitem, accessor);
+
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`JOIN Test() join=>`);
+      console.dir(join);
+      console.dir(_)
+    }
+  }
+
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+  continueProcess=false;
+
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -616,7 +640,7 @@ export async function start(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`rollback receiver count >= MAX_RECEIVERS.`);
       }
-      dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.STEP_8_OUT_OF_RANGE });
+      dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.OUT_OF_RANGE });
       continueProcess=false;
     }
 

@@ -138,7 +138,7 @@ export default class GenReceivers extends Component {
           <Jumbotron  >
             <h1 style={{textAlign: 'center'}}>Ready to Save</h1>
             <p >You have entered a packing list number and
-            selected a freight carrier for every receiver. Press the
+            selected a freight carrier for at least one receiver. Press the
             'save' button to create receiver(s) in Made2Manage.</p>
           </Jumbotron>
         </Col>
@@ -224,9 +224,6 @@ export default class GenReceivers extends Component {
   {
     grid = 
     <div>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
       <Row>
         <Col xs={12}><GRGrid /></Col>
       </Row>

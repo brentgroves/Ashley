@@ -1,5 +1,5 @@
-
 var sql = require('mssql');
+var join = require('lodash.join');
 import * as GRACTION from "../../actions/GRConst.js"
 import * as GRSTATE from "../../actions/GRState.js"
 import * as CONNECT from "../SQLConst.js"
@@ -32,6 +32,9 @@ function init(dispatch){
   dispatch({ type:GRACTION.RCITEM_INSERT_DONE, done:false });
 }
 
+function accessor(obj) {
+ return obj['freceiver'];
+}
 
 function execSQL1(disp,getSt){
   var dispatch = disp;

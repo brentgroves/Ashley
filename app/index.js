@@ -52,6 +52,7 @@ const initialState = {
 		bpGRReceiversCribDelete:{done:false,failed:false},
 		bpGRReceiversM2mDelete:{done:false,failed:false},
 		bpGRSetCurrentReceiver:{done:false,failed:false},
+		bpGRTransIns:{done:false,failed:false},
 		chk0:CHK.UNKNOWN,
 		currentReceiver:0,
 		goButton:PROGRESSBUTTON.READY, 

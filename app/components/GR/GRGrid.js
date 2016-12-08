@@ -63,6 +63,20 @@ export default class GRGrid extends React.Component{
 
   }
 */
+  packlistOk(rcm) {
+
+    var readyToInsert=false;
+    if((rcm.fpacklist.trim().length>=4)&&(rcm.fpacklist.trim().length<=15)){
+      readyToInsert=true;
+    }
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`packlistOk.rcm => `);
+      console.dir(rcm);
+      console.log(`readyToInsert => ${readyToInsert} `);
+    }
+    return readyToInsert;
+  }
+
   onAfterSaveCellChk1(row, cellName, cellValue){
     if ('development'==process.env.NODE_ENV) {
       console.log("Save cell '"+cellName+"' with value '"+cellValue+"'");
@@ -99,30 +113,26 @@ export default class GRGrid extends React.Component{
     console.log(`newRCMast=`);
     console.dir(newRCMast);
     this.props.setRCMast(newRCMast);
-  // Determine if the user has selected a packlist number and freight carrier
-  // for each record
-  /*
+  // Determine if the user has update at least one receiver with a
+  // packlist number and freight carrier
+    var readyToInsert=false;
+    readyToInsert=rcmast.find(this.packlistOk.bind(this));
     if ('development'==process.env.NODE_ENV) {
-      console.log(`newRCMast.length=>${newRCMast.length}`);
-      console.log(`newRCMast:`);
-      console.dir(newRCMast);
+      console.log(`onAfterSaveCellChk1.readyToInsert =>`);
+      console.dir(readyToInsert);
     }
-*/
-    var readyToInsert=true;
+
+    /*
     rcmast.forEach(function(rcm,i,arr){
 
-      if(!rcm.fpacklist){
-        readyToInsert=false;
-      }else if((rcm.fpacklist.trim().length<4)||(rcm.fpacklist.trim().length>15)){
-        readyToInsert=false;
+      if(rcm.fpacklist && rcm.ffrtcarr){
+        if((rcm.fpacklist.trim().length>=4)||(rcm.fpacklist.trim().length<=15)){
+          readyToInsert=true;
+        }
       }
-
-      if(!rcm.ffrtcarr){
-        readyToInsert=false;
-      }else if(rcm.ffrtcarr.trim().length<1){
-        readyToInsert=false;
-      }
+//      }else if(rcm.ffrtcarr.trim().length<1){
     });
+    */
 //    this.props.setRCMast(newRCMast);
     if(readyToInsert){
       this.props.setState(GRSTATE.RCMAST_INSERT_READY);
@@ -135,12 +145,14 @@ export default class GRGrid extends React.Component{
 // validator function pass the user input value and should return true|false.
   fpacklistValidator(value){
     let pl = value.trim();
-    if(!value){
-      return 'Packing List is required!'
+    let retVal=true;
+    if(!value || 0==pl.length){
+      retVal=true;
+      //return 'Packing List is required!'
     }else if((pl.length<4)||(pl.length>15)){
-      return `Packing List must be 4 to 15 characters in length.`
+      retVal = `Packing List must be 4 to 15 characters in length.`
     }
-    return true;
+    return retVal;
   }
 
 //table-striped table-bordered table-condensed editable={{type:'text', validator:this.fpacklistValidator}}
