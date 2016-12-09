@@ -114,7 +114,8 @@ export default function reducer( state = {}, action) {
           bpGRRCItemDelete:{$set:{done:false,failed:false}},
           bpGRRCMastDelete:{$set:{done:false,failed:false}},
           bpGRSetCurrentReceiver:{$set:{done:false,failed:false}},
-          bpGRTransIns:{$set:{done:false,failed:false}},
+          bpGRTransDelete:{$set:{done:false,failed:false}},
+          bpGRTransInsert:{$set:{done:false,failed:false}},
           chk0: {$set: CHK.UNKNOWN},
           closePOsReceived:{$set:{done:false,failed:false}},
           currentReceiver:{$set:0},
@@ -212,7 +213,6 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {bpGRRCMastDelete: {$set: bpGRRCMastDelete}});
       return newData;
     }
-
     case GRACTION.RCMAST_INSERT_DONE:
     {
       var rcmastInsert = state.rcmastInsert;
@@ -380,19 +380,34 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
-
-    case GRACTION.TRANS_INS_DONE:
+    case GRACTION.TRANS_DELETE_DONE:
     {
-      var bpGRTransIns = state.bpGRTransIns;
-      bpGRTransIns.done=action.done;
-      var newData = update(state, {bpGRTransIns: {$set: bpGRTransIns}});
+      var bpGRTransDelete = state.bpGRTransDelete;
+      bpGRTransDelete.done=action.done;
+      var newData = update(state, {bpGRTransDelete: {$set: bpGRTransDelete}});
       return newData;
     }
-    case GRACTION.TRANS_INS_FAILED:
+    case GRACTION.TRANS_DELETE_FAILED:
     {
-      var bpGRTransIns = state.bpGRTransIns;
-      bpGRTransIns.failed=action.failed;
-      var newData = update(state, {bpGRTransIns: {$set: bpGRTransIns}});
+      var bpGRTransDelete = state.bpGRTransDelete;
+      bpGRTransDelete.failed=action.failed;
+      var newData = update(state, {bpGRTransDelete: {$set: bpGRTransDelete}});
+      return newData;
+    }
+
+
+    case GRACTION.TRANS_INSERT_DONE:
+    {
+      var bpGRTransInsert = state.bpGRTransInsert;
+      bpGRTransInsert.done=action.done;
+      var newData = update(state, {bpGRTransInsert: {$set: bpGRTransInsert}});
+      return newData;
+    }
+    case GRACTION.TRANS_INSERT_FAILED:
+    {
+      var bpGRTransInsert = state.bpGRTransInsert;
+      bpGRTransInsert.failed=action.failed;
+      var newData = update(state, {bpGRTransInsert: {$set: bpGRTransInsert}});
       return newData;
     }
 

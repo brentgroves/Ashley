@@ -55,8 +55,7 @@ function execSQL1(disp,getSt){
         if ('development'==process.env.NODE_ENV) {
           console.log(`SQLRCMastInsert.execSQL1().fpacklist.length=>${fpckLen}`);
         }
-        if(fpckLen>0){
-
+        if( (fpckLen>0) && allInsSucceded ){
           let sproc;
 
           if (MISC.PROD===true) {
@@ -124,9 +123,6 @@ function execSQL1(disp,getSt){
           });
         }
       });
-      if(!allInsSucceded){
-        dispatch({ type:GRACTION.RCMAST_INSERT_FAILED, failed:true });
-      }
       dispatch({ type:GRACTION.RCMAST_INSERT_DONE, done:true });
 
     }else{

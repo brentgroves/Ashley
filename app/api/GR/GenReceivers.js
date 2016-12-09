@@ -11,6 +11,7 @@ import * as MISC from "../Misc.js"
 import * as PROGRESSBUTTON from "../../actions/ProgressButtonConst.js"
 import * as SQLPOSTATUSUPDATE from "./SQLPOStatusUpdate.js"
 import * as SQLEXEC from "./SQLExec.js"
+import * as SQLFINISH from "./SQLFinish.js"
 import * as SQLLOGENTRYLASTSET from "./SQLLogEntryLastSet.js"
 import * as SQLLOGINSERT from "./SQLLogInsert.js"
 import * as SQLLOGSTEPSET from "./SQLLogStepSet.js"
@@ -22,13 +23,15 @@ import * as SQLRCITEMUPDATE from "./SQLRCItemUpdate.js"
 import * as SQLRCMASTDELETE from "./SQLRCMastDelete.js"
 import * as SQLRCMASTINSERT from "./SQLRCMastInsert.js"
 import * as SQLRECEIVERSCRIBDELETE from "./SQLReceiversCribDelete.js"
-import * as SQLFINISH from "./SQLFinish.js"
 import * as SQLSETCURRENTRECEIVER from "./SQLSetCurrentReceiver.js"
 import * as SQLSETRECEIVERCOUNT from "./SQLSetReceiverCount.js"
 import * as SQLSETSHIPVIA from "./SQLSetShipVia.js"
+import * as SQLTRANSDELETE from "./SQLTransDelete.js"
+import * as SQLTRANSINSERT from "./SQLTransInsert.js"
 
+//import * as hashLeftOuterJoin from "lodash-joins/lib/hash/hashLeftOuterJoin.js"
 var _ = require('lodash');
-var join = require('lodash.join');
+var joins = require('lodash-joins');
 
 export async function prime(disp,getSt){
   var dispatch = disp;
@@ -161,8 +164,6 @@ export async function m2mGenReceivers(disp,getSt) {
     }
   }
 
-  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
-  continueProcess=false;
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -187,7 +188,6 @@ export async function m2mGenReceivers(disp,getSt) {
       continueProcess=false;
     }
   }
-
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -267,6 +267,34 @@ export async function m2mGenReceivers(disp,getSt) {
   }
 
 
+  if(continueProcess){
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
+      SQLTRANSINSERT.sql1(disp,getSt,false);
+    });
+    cnt=0;
+    while(!getState().GenReceivers.bpGRTransInsert.done){
+      if(++cnt>maxCnt ){
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+
+    if(getState().GenReceivers.bpGRTransInsert.failed || 
+      !getState().GenReceivers.bpGRTransInsert.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLTRANSINSERT.sql1() FAILED.`);
+      }
+      continueProcess=false;
+    }
+   
+  }
+
+
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+  continueProcess=false;
 
 
   if(continueProcess){
@@ -400,6 +428,7 @@ export async function rollBack(disp,getSt,rcvCnt) {
             var getSt = getState;
             SQLPOSTATUSUPDATE.sql1(disp,getSt,true);
           });
+          maxCnt=10;
           cnt=0;
           while(!getState().GenReceivers.bpGRPOStatusUpdate.done){
             if(++cnt>maxCnt ){
@@ -416,6 +445,34 @@ export async function rollBack(disp,getSt,rcvCnt) {
             }
             continueProcess=false;
           }
+
+          if(continueProcess){
+            dispatch((dispatch,getState) => {
+              var disp = dispatch;
+              var getSt = getState;
+              SQLTRANSDELETE.sql1(disp,getSt,false);
+            });
+            maxCnt=10;
+            cnt=0;
+            while(!getState().GenReceivers.bpGRTransDelete.done){
+              if(++cnt>maxCnt ){
+                break;
+              }else{
+                await MISC.sleep(2000);
+              }
+            }
+
+            if(getState().GenReceivers.bpGRTransDelete.failed || 
+              !getState().GenReceivers.bpGRTransDelete.done){
+              if ('development'==process.env.NODE_ENV) {
+                console.log(`SQLTRANSDELETE.sql1() FAILED.`);
+              }
+              continueProcess=false;
+            }
+           
+          }
+
+
         }
         if(continueProcess && 
           ( (GRSTEPS.STEP_20_RECEIVER_INSERT_M2M==step) ||
@@ -451,6 +508,7 @@ export async function rollBack(disp,getSt,rcvCnt) {
         break;
     }
   }
+
   if(continueProcess){
       dispatch((dispatch,getState) => {
         var disp = dispatch;
@@ -544,20 +602,6 @@ export async function start(disp,getSt) {
     }
   }
 
-  var st = getState();
-  if(continueProcess){
-
- //   var a = join.hashInnerJoin(st.GenReceivers.rcmast, accessor, st.GenReceivers.rcitem, accessor);
-
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`JOIN Test() join=>`);
-      console.dir(join);
-      console.dir(_)
-    }
-  }
-
-  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
-  continueProcess=false;
 
 
   if(continueProcess){
@@ -911,6 +955,48 @@ export async function start(disp,getSt) {
     }
   }
 
+  // debug/testing section
+ //http://colintoh.com/blog/lodash-10-javascript-utility-functions-stop-rewriting 
+  if(continueProcess){
+/*
+    var st = getState();
+
+    var rcmast = st.GenReceivers.rcmast;
+    var rcitem = st.GenReceivers.rcitem;
+    */
+/*  replace props
+    var newrcmast = _.map(rcmast).map(function(x) {
+      return _.assign(x, {
+        freceiver: '123456',
+        fpono:'111111'
+      });
+    });
+*/
+/*
+    var newrcmast = _.map(rcmast).map(function(x){
+      return _.pick(x, ['freceiver', 'fpacklist']); 
+    });
+
+    var a =joins.hashLeftOuterJoin(newrcmast, accessor, rcitem, accessor);
+
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`lodash=>`);
+      console.dir(_);
+      console.log(`lodash-joins=>`);
+      console.dir(joins);
+      console.log(`array newrcmast =>`);
+      console.dir(newrcmast);
+
+      console.log(`array a =>`);
+      console.dir(a);
+
+    }
+*/
+
+  }
+
+//  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+//  continueProcess=false;
 
   if(continueProcess){
     dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.RCMAST_INSERT_NOT_READY });

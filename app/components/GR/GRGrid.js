@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import * as GRSTATE from "../../actions/GRState.js"
-
+var _ = require('lodash');
 
 var catRecs = [{}],vendors=[{}],m2mVendors=[{}];
 // can't find a way for onAfterSaveCell() to access this.props??
@@ -86,10 +86,7 @@ export default class GRGrid extends React.Component{
       console.dir(this);
     }
     var rcmast=this.props.GenR.rcmast;
-    console.log(`rcmast =`);
-    console.dir(rcmast);
     let newValue=cellValue.trim();
-    console.log(`newValue = ${newValue}`);
     var newRCMast=[];
     var identity_column=row.identity_column;
     rcmast.forEach(function(oldRCMast,i,arr){
@@ -103,38 +100,34 @@ export default class GRGrid extends React.Component{
           oldRCMast.fpacklist=newValue;
         }  
       }else{
-        if ('development'==process.env.NODE_ENV) {
-          console.log(oldRCMast.identity_column + "!=" + identity_column);
-        }
       }
       newRCMast.push(oldRCMast);
 
     });
-    console.log(`newRCMast=`);
-    console.dir(newRCMast);
     this.props.setRCMast(newRCMast);
-  // Determine if the user has update at least one receiver with a
-  // packlist number and freight carrier
-    var readyToInsert=false;
+    /*
     readyToInsert=rcmast.find(this.packlistOk.bind(this));
     if ('development'==process.env.NODE_ENV) {
       console.log(`onAfterSaveCellChk1.readyToInsert =>`);
       console.dir(readyToInsert);
+    }*/
+
+    let notReadyCnt=_.size(_.filter(newRCMast, function(o) { return 0==o.fpacklist.trim().length; }));
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`notReadyCnt => ${notReadyCnt}`);
     }
+
 
     /*
     rcmast.forEach(function(rcm,i,arr){
-
       if(rcm.fpacklist && rcm.ffrtcarr){
         if((rcm.fpacklist.trim().length>=4)||(rcm.fpacklist.trim().length<=15)){
           readyToInsert=true;
         }
       }
-//      }else if(rcm.ffrtcarr.trim().length<1){
     });
     */
-//    this.props.setRCMast(newRCMast);
-    if(readyToInsert){
+    if(notReadyCnt<=5){
       this.props.setState(GRSTATE.RCMAST_INSERT_READY);
     }else{
       this.props.setState(GRSTATE.RCMAST_INSERT_NOT_READY);

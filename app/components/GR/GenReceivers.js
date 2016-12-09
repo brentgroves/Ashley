@@ -65,7 +65,13 @@ export default class GenReceivers extends Component {
           <Jumbotron  >
              <h1 style={{textAlign: 'center'}}>Generate Receivers</h1>
             <p style={{padding: '0px'}}>This App generates M2m receivers from items received into Cribmaster.
-            It includes a ROLLBACK process so if it fails at ANY point just run it again.  <strong>Do NOT give receipts to Accounting until the program completes successfully.</strong></p>
+            It includes a ROLLBACK process so if it fails at ANY point just run it again. 
+            <br/><br/>
+            <strong>Do not SAVE if you are not ready with packing list numbers for most if not ALL items received.  At most 3 items
+            without a packing list number is allowed.</strong>
+            <br/><br/>
+            <strong>Do NOT give receipts to Accounting until the program completes successfully.</strong>
+            </p>
             <br/>
             <p style={{textAlign: 'center'}}>Once the GO! button is clicked this process will start.  </p>            
             <br/>
