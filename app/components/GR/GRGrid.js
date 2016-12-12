@@ -128,9 +128,9 @@ export default class GRGrid extends React.Component{
     });
     */
     if(notReadyCnt<=5){
-      this.props.setState(GRSTATE.RCMAST_INSERT_READY);
+      this.props.setState(GRSTATE.READY_TO_REVIEW);
     }else{
-      this.props.setState(GRSTATE.RCMAST_INSERT_NOT_READY);
+      this.props.setState(GRSTATE.NOT_READY_TO_REVIEW);
     }
 
   }

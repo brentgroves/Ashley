@@ -5,6 +5,7 @@ import {LinkContainer} from 'react-router-bootstrap';
 import GRButton from '../../containers/GR/GRButton';
 import GRChecks from '../../containers/GR/GRChecks';
 import GRGrid from '../../containers/GR/GRGrid';
+import GRPivot from '../../containers/GR/GRPivot';
 import * as GRSTATE from "../../actions/GRState.js"
 import { Grid, Row, Col, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse, Text as NavbarText } from 'react-bootstrap/lib/Navbar'
@@ -42,7 +43,7 @@ export default class GenReceivers extends Component {
   const chk2 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '5px 13px' };
   const dbg1 ={border: '1px solid blue', padding: '0px' };
 
-  var checks,goButton,grid,navbar,cancelBtn,saveAndCancelBtn,jumboTronTxt,navbarStatus,navbarEnd;
+  var checks,goButton,grid,pivot,navbar,cancelBtn,saveAndCancelBtn,jumboTronTxt,navbarStatus,navbarEnd;
 
   if(GRSTATE.NOT_PRIMED==this.props.GenR.state){
     jumboTronTxt=
@@ -121,7 +122,7 @@ export default class GenReceivers extends Component {
         </Col>
       </Row>
   } else if(
-            (GRSTATE.RCMAST_INSERT_NOT_READY==this.props.GenR.state) 
+            (GRSTATE.NOT_READY_TO_REVIEW==this.props.GenR.state) 
             ){
     jumboTronTxt=
       <Row >
@@ -134,8 +135,24 @@ export default class GenReceivers extends Component {
           </Jumbotron>
         </Col>
       </Row>
+
   } else if(
-            (GRSTATE.RCMAST_INSERT_READY==this.props.GenR.state) 
+            (GRSTATE.READY_TO_REVIEW==this.props.GenR.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron  >
+            <h1 style={{textAlign: 'center'}}>Ready to Review</h1>
+            <p >You have entered a packing list number and
+            selected a freight carrier for enough receiver(s) to continue. Press the
+            'Review' button to review receiver items to be inserted.</p>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(
+            (GRSTATE.REVIEW_RECEIVERS==this.props.GenR.state) 
             ){
     jumboTronTxt=
       <Row >
@@ -143,8 +160,8 @@ export default class GenReceivers extends Component {
         <Col >
           <Jumbotron  >
             <h1 style={{textAlign: 'center'}}>Ready to Save</h1>
-            <p >You have entered a packing list number and
-            selected a freight carrier for at least one receiver. Press the
+            <p >Please review items before continuing. If the 
+            freight carrier, packing list number, and quantity(s) look good then press the
             'save' button to create receiver(s) in Made2Manage.</p>
           </Jumbotron>
         </Col>
@@ -224,8 +241,8 @@ export default class GenReceivers extends Component {
   } 
 
   if(
-      (GRSTATE.RCMAST_INSERT_NOT_READY==this.props.GenR.state)  ||
-      (GRSTATE.RCMAST_INSERT_READY==this.props.GenR.state)  
+      (GRSTATE.READY_TO_REVIEW==this.props.GenR.state)  ||
+      (GRSTATE.NOT_READY_TO_REVIEW==this.props.GenR.state)  
     )
   {
     grid = 
@@ -235,6 +252,19 @@ export default class GenReceivers extends Component {
       </Row>
     </div>
   }
+
+  if(
+      (GRSTATE.REVIEW_RECEIVERS==this.props.GenR.state)  
+    )
+  {
+    pivot = 
+    <div>
+      <Row>
+        <Col xs={12}><GRPivot /></Col>
+      </Row>
+    </div>
+  }
+
 
   if(
       (GRSTATE.FAILURE==this.props.GenR.state) ||
@@ -255,8 +285,9 @@ export default class GenReceivers extends Component {
     </div>
   }
 
+
   if(
-      (GRSTATE.RCMAST_INSERT_NOT_READY==this.props.GenR.state) 
+      (GRSTATE.NOT_READY_TO_REVIEW==this.props.GenR.state) 
 
     )
   {
@@ -268,7 +299,7 @@ export default class GenReceivers extends Component {
 
       <Row>
         <Col xs={5} >&nbsp;</Col>
-        <Col xs={1}><Button  onClick={this.props.m2mGenReceivers} bsSize="large" bsStyle="info" disabled>Save</Button></Col>
+        <Col xs={1}><Button  onClick={() => this.props.setState(GRSTATE.REVIEW_RECEIVERS)} bsSize="large" bsStyle="info" disabled>Review</Button></Col>
         <Col xs={1}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
         <Col xs={5}>&nbsp;</Col>
       </Row>
@@ -276,7 +307,7 @@ export default class GenReceivers extends Component {
   }
 
   if(
-      (GRSTATE.RCMAST_INSERT_READY==this.props.GenR.state) 
+      (GRSTATE.READY_TO_REVIEW==this.props.GenR.state) 
 
     )
   {
@@ -288,12 +319,33 @@ export default class GenReceivers extends Component {
 
       <Row>
         <Col xs={5} >&nbsp;</Col>
-        <Col xs={1}><Button  onClick={this.props.m2mGenReceivers} bsSize="large" bsStyle="info" >Save</Button></Col>
+        <Col xs={1}><Button  onClick={() => this.props.setState(GRSTATE.REVIEW_RECEIVERS)} bsSize="large" bsStyle="info" >Review</Button></Col>
         <Col xs={1}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
         <Col xs={5}>&nbsp;</Col>
       </Row>
     </div>
   }
+
+  if(
+      (GRSTATE.REVIEW_RECEIVERS==this.props.GenR.state) 
+
+    )
+  {
+    saveAndCancelBtn = 
+    <div>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+
+      <Row>
+        <Col xs={5} >&nbsp;</Col>
+        <Col xs={1}><Button  onClick={this.props.m2mGenReceivers} bsSize="large" bsStyle="info">Save</Button></Col>
+        <Col xs={1}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
+        <Col xs={5}>&nbsp;</Col>
+      </Row>
+    </div>
+  }
+
 
   if(
       (GRSTATE.PRIMED==this.props.GenR.state) || 
@@ -337,6 +389,7 @@ export default class GenReceivers extends Component {
           {jumboTronTxt}
           {checks}
           {grid}
+          {pivot}
           {goButton}
           {saveAndCancelBtn}
           {cancelBtn}

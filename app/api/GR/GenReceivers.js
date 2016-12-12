@@ -115,6 +115,8 @@ export async function m2mGenReceivers(disp,getSt) {
     }
   }
 
+
+
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -293,15 +295,14 @@ export async function m2mGenReceivers(disp,getSt) {
   }
 
 
-  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
-  continueProcess=false;
-
+//  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+//  continueProcess=false;
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
-      SQLFINISH.sql1(disp,getSt,true,GRSTEPS.STEP_40_FINISH,true);
+      SQLFINISH.sql1(disp,getSt,true,GRSTEPS.STEP_40_FINISH);
     });
     cnt=0;
     while(!getState().GenReceivers.bpGRFinish.done){
@@ -513,7 +514,7 @@ export async function rollBack(disp,getSt,rcvCnt) {
       dispatch((dispatch,getState) => {
         var disp = dispatch;
         var getSt = getState;
-        SQLFINISH.sql1(disp,getSt,false,GRSTEPS.STEP_5_ROLLBACK,false);
+        SQLFINISH.sql1(disp,getSt,false,GRSTEPS.STEP_5_ROLLBACK);
       });
       cnt=0;
       maxCnt=10;
@@ -557,6 +558,9 @@ steps
 1. receive items  - rcmast,rcitem,po
 2. if raw parts the inventory movement happens
 3. these trans are recorded in the intran table
+
+Links: http://colintoh.com/blog/lodash-10-javascript-utility-functions-stop-rewriting
+
 */
 
 function accessor(obj) {
@@ -602,6 +606,9 @@ export async function start(disp,getSt) {
     }
   }
 
+ 
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.REVIEW_RECEIVERS });
+  continueProcess=false;
 
 
   if(continueProcess){
@@ -633,20 +640,36 @@ export async function start(disp,getSt) {
     }
   }
 
-  if(continueProcess && (null == getState().GenReceivers.logEntryLast.fEnd)){
+  var fEnd = getState().GenReceivers.logEntryLast.fEnd;
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`fEnd = ${fEnd}.`);
+  }
+
+  if(continueProcess && (null == fEnd)){
     var rcvStart=0;
     var rcvEnd=0;
     var receiverCount=0;
     var failedBeforeReceiverCnt=false;
-    // Did the previous session fail before retrieving the receiver count?
-    if((null != getState().GenReceivers.logEntryLast.rcvStart) &&
-       (null != getState().GenReceivers.logEntryLast.rcvEnd)){
 
-      rcvStart = getState().GenReceivers.logEntryLast.rcvStart;
-      rcvEnd = getState().GenReceivers.logEntryLast.rcvEnd;
+    rcvStart=getState().GenReceivers.logEntryLast.rcvStart;
+    rcvEnd=getState().GenReceivers.logEntryLast.rcvEnd;
+
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`rcvStart = ${rcvStart}.`);
+      console.log(`rcvEnd = ${rcvEnd}.`);
+    }
+
+
+    // Did the previous session fail before retrieving the receiver count?
+    if((null != rcvStart) &&
+       (null != rcvEnd)){
       receiverCount=rcvEnd-rcvStart+1;
     }else{
       failedBeforeReceiverCnt=true;
+    }
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`receiverCount = ${receiverCount}.`);
+      console.log(`failedBeforeReceiverCnt = ${failedBeforeReceiverCnt}.`);
     }
     // if receiverCount==0 still call rollback
     // either we got the receiver count before the last session failed
@@ -691,7 +714,6 @@ export async function start(disp,getSt) {
   }
 
 
-
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -720,6 +742,7 @@ export async function start(disp,getSt) {
       }
     }
   }
+
 
 
   if(continueProcess ){
@@ -752,6 +775,9 @@ export async function start(disp,getSt) {
       }
     }
   }
+
+
+
   // if the program fails at this point some receivers numbers will be
   // skipped for good because the rollback function can really do nothing for this case
   var finish=false;
@@ -791,7 +817,7 @@ export async function start(disp,getSt) {
       dispatch((dispatch,getState) => {
         var disp = dispatch;
         var getSt = getState;
-        SQLFINISH.sql1(disp,getSt,false,logStep,lastRun);
+        SQLFINISH.sql1(disp,getSt,false,logStep);
       });
       cnt=0;
       maxCnt=10;
@@ -955,6 +981,7 @@ export async function start(disp,getSt) {
     }
   }
 
+
   // debug/testing section
  //http://colintoh.com/blog/lodash-10-javascript-utility-functions-stop-rewriting 
   if(continueProcess){
@@ -999,7 +1026,7 @@ export async function start(disp,getSt) {
 //  continueProcess=false;
 
   if(continueProcess){
-    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.RCMAST_INSERT_NOT_READY });
+    dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.NOT_READY_TO_REVIEW });
   }
 
   return;

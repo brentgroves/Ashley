@@ -6,11 +6,13 @@ export const PRIMED = 'PRIMED';
 export const STARTED = 'STARTED';
 
 // state 10 - Freight Carrier and packing list NOT selected for each record
-export const RCMAST_INSERT_NOT_READY = 'RCMAST_INSERT_NOT_READY'
+export const NOT_READY_TO_REVIEW = 'NOT_READY_TO_REVIEW'
 
-// state 20 - Freight Carrier and packing list selected for each record
-export const RCMAST_INSERT_READY = 'RCMAST_INSERT_READY'
+// state 20 - Freight Carrier and packing list selected for enough record(s)
+export const READY_TO_REVIEW = 'READY_TO_REVIEW'
 
+// state 30 - Review receivers
+export const REVIEW_RECEIVERS = 'REVIEW_RECEIVERS'
 
 // state 80 - FAILED
 export const UPTODATE = 'UPTODATE';

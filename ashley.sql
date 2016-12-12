@@ -279,6 +279,9 @@ INSERT INTO [dbo].[btrcitem]
 		   --------START HERE
 --Declare @lastRun datetime
 --select @lastRun=flastrun from btgrvars
+--		Declare @lastRun datetime
+--		set @lastRun = '2016-10-25'
+
 select 
 ---start debug
 --lv1.fpono,lv2.fpoitemno, lv1.freceiver,
@@ -306,20 +309,23 @@ end as fdescript,
 0 ShsrceLink,'' fCINSTRUCT
 from
 (
+
 	-- Declare @lastRun datetime
 	-- select @lastRun=flastrun from btgrvars
 	-- we now have the receiver number for all items
+
 	select rcm.fpono,rcm.freceiver,
 	rcm.start,pod.Received,pod.ItemDescription,pod.fcategory,pod.Quantity podQuantity,
 	pod.fvendno,pod.Cost,fdescript
 	from(
 
 	select fpono,start,freceiver from btrcmast 
-	--394
+	--423
 	--order by fpono,start
 	)rcm
 	inner join 
 	(
+
 		--Declare @lastRun datetime
 		--set @lastRun = '2016-10-25'
 		--select @lastRun=flastrun from btgrvars
@@ -334,28 +340,37 @@ from
 		(
 			select vendorponumber,DATEADD(DD, DATEDIFF(DD, 0, received), 0) start,ItemDescription,sum(quantity) Quantity,comments,
 			description2 fdescript,max(received) received,UDF_POCATEGORY,Cost,VendorNumber,max(id) maxId
-			from PODETAIL
+			from 
+			( 
+--		select @lastRun=flastrun from btgrvars
+				select vendorponumber,received,ItemDescription,Quantity,comments,description2,UDF_POCATEGORY,Cost,VendorNumber,
+				id from PODETAIL pod
+				where Received > @lastRun
+		 		and pod.id not in
+				(
+					select podetailId from btGRTrans
+				)
+--				order by vendorponumber,itemdescription
+				--643
+--		and VendorPONumber = '121124',63210
+			) pod
 			group by vendorponumber,DATEADD(DD, DATEDIFF(DD, 0, received), 0),ItemDescription,comments,Description2,UDF_POCATEGORY,cost,VendorNumber
+--			order by vendorponumber,itemdescription
 			--having VendorPONumber = '121124'
 		)pod
 		inner join 	(
 			select VendorNumber,UDFM2MVENDORNUMBER fvendno from vendor 
 		)vn1
 		on pod.VendorNumber = vn1.VendorNumber
-		where Received > @lastRun
-		and pod.maxId not in
-		(
-			select podetailId from btGRTrans
-		)
-
-		--610
+		--37
+		--642
 --		and VendorPONumber = '121124',63210
-		--order by VendorPONumber,ItemDescription
+--		order by VendorPONumber,start,ItemDescription
 		--170
 	) pod
 	on rcm.fpono=pod.VendorPONumber
 	and rcm.start=pod.start
-	--order by VendorPONumber,ItemDescription
+	--order by VendorPONumber,start,ItemDescription
 	--170
 	--More because podetail can have multiple records with the same itemdescription because of partial shipments
 )lv1
@@ -367,18 +382,19 @@ inner join
 	-- generated from the bpPORT sproc.
 --	Declare @lastRun datetime
 --	select @lastRun=flastrun from btgrvars
+--		Declare @lastRun datetime
+--		set @lastRun = '2016-10-25'
+
 	select lv1.VendorPONumber fpono, lv2.*
 	from
 	(
-		--Declare @lastRun datetime
-		--set @lastRun = '2016-10-25'
 		select distinct vendorponumber from	PODETAIL pod
 		where Received > @lastRun
 		and pod.id not in
 		(
 			select podetailId from btGRTrans
 		)
-		--317
+		--320
 	)lv1
 	inner join
 	(
@@ -402,6 +418,7 @@ inner join
 	) lv2
 	on 
 	lv1.VendorPONumber=lv2.VendorPONumber
+	--694
 	--235
 	--order by lv2.VendorPONumber,lv2.fpoitemno
 	--665
@@ -411,7 +428,7 @@ on
 lv1.fpono=lv2.fpono and
 lv1.ItemDescription=lv2.ItemDescription
 order by lv1.fpono,lv1.start,lv2.fpoitemno
---605 one for each distinct fpono,start,itemdescription 
+--642 one for each distinct fpono,start,itemdescription 
 
 select * 
 from 

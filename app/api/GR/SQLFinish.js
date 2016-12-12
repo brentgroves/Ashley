@@ -10,13 +10,12 @@ const ATTEMPTS=1;
 
 
 
-export async function sql1(disp,getSt,del,step,last){
+export async function sql1(disp,getSt,del,step){
 //  var that = this;
   var dispatch = disp;
   var getState = getSt;
   var delrc = del;
   var fstep = step;
-  var lastRun = last;
   if ('development'==process.env.NODE_ENV) {
     console.log(`SQLFinish()->top.`);
   }
@@ -24,7 +23,7 @@ export async function sql1(disp,getSt,del,step,last){
 
   var cnt=0;
   init(dispatch);
-  execSQL1(dispatch,getState,delrc,fstep,lastRun);
+  execSQL1(dispatch,getState,delrc,fstep);
 
 }
 
@@ -35,12 +34,11 @@ function init(dispatch){
 }
 
 
-function execSQL1(disp,getSt,del,step,last){
+function execSQL1(disp,getSt,del,step){
   var dispatch = disp;
   var getState = getSt;
   var delrc = del;
   var fstep = step;
-  var lastRun = last;
 
   if ('development'==process.env.NODE_ENV) {
     console.log(`SQLFinish.execSQL1() top=>${sql1Cnt}`);
@@ -53,7 +51,6 @@ function execSQL1(disp,getSt,del,step,last){
         console.log(`SQLFinish.execSQL1() Connection Sucess`);
         console.log(`SQLFinish.execSQL1() delrc => ${delrc}`);
         console.log(`SQLFinish.execSQL1() fstep => ${fstep}`);
-        console.log(`SQLFinish.execSQL1() lastRun => ${lastRun}`);
       }
       let sproc;
 
@@ -68,7 +65,6 @@ function execSQL1(disp,getSt,del,step,last){
       var request = new sql.Request(connection); 
       request.input('delrc',sql.Bit,delrc);
       request.input('step',sql.VarChar(50),fstep);
-      request.input('lastRun',sql.Bit,lastRun);
       request.execute(sproc, function(err, recordsets, returnValue) {
         // ... error checks
         if(null==err){

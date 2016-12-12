@@ -1,4 +1,5 @@
 import * as GRACTION from "./GRConst.js"
+import * as GRState from "./GRState.js"
 import { push } from 'react-router-redux';
 import * as GRAPI from '../api/GR/GenReceivers';
 import * as MISC from "../api/Misc.js"
@@ -204,6 +205,7 @@ export function rollbackDone(done) {
     done:done
   };
 }
+
 
 export function rollbackFailed(failed) {
   return {

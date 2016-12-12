@@ -60,6 +60,7 @@ export default validate(merge(baseConfig, {
   externals: [
     'font-awesome',
     'bootstrap',
-    'source-map-support'
+    'source-map-support',
+    'apivot'
   ]
 }));
