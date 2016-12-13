@@ -66,6 +66,7 @@ const initialState = {
 		rcmast:[{}],
 		rcmastRange:{start:0,end:0},
 		rcmastInsert:{done:false,failed:false},
+		rcvJoin:[{}],
 		reason:'',
 		receiverCount:0,
 		rollback:{done:false,failed:false},

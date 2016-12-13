@@ -130,6 +130,7 @@ export default function reducer( state = {}, action) {
           rcmast:{$set:[{}]},
           rcmastInsert:{$set:{done:false,failed:false}},
           rcmastRange:{$set:{start:0,end:0}},
+          rcvJoin:{$set:[{}]},
           rollback:{$set:{done:false,failed:false}},
           reason:{$set:''},
           shipVia:{$set:[{}]},
@@ -315,6 +316,11 @@ export default function reducer( state = {}, action) {
     case GRACTION.SET_RCMAST_RANGE:
     {
       var newData = update(state, {rcmastRange: {$set: action.rcmastRange}});
+      return newData;
+    }
+    case GRACTION.SET_RCVJOIN:
+    {
+      var newData = update(state, {rcvJoin: {$set: action.rcvJoin}});
       return newData;
     }
     

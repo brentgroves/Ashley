@@ -115,6 +115,8 @@ export async function m2mGenReceivers(disp,getSt) {
     }
   }
 
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+  continueProcess=false;
 
 
   if(continueProcess){
@@ -563,9 +565,6 @@ Links: http://colintoh.com/blog/lodash-10-javascript-utility-functions-stop-rewr
 
 */
 
-function accessor(obj) {
- return obj['freceiver'];
-}
 
 export async function start(disp,getSt) {
 //  var that = this;
@@ -607,9 +606,6 @@ export async function start(disp,getSt) {
   }
 
  
-  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.REVIEW_RECEIVERS });
-  continueProcess=false;
-
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -985,40 +981,25 @@ export async function start(disp,getSt) {
   // debug/testing section
  //http://colintoh.com/blog/lodash-10-javascript-utility-functions-stop-rewriting 
   if(continueProcess){
-/*
+
     var st = getState();
 
     var rcmast = st.GenReceivers.rcmast;
     var rcitem = st.GenReceivers.rcitem;
-    */
-/*  replace props
-    var newrcmast = _.map(rcmast).map(function(x) {
-      return _.assign(x, {
-        freceiver: '123456',
-        fpono:'111111'
-      });
-    });
-*/
-/*
-    var newrcmast = _.map(rcmast).map(function(x){
-      return _.pick(x, ['freceiver', 'fpacklist']); 
+
+    var rcmastSel = _.map(rcmast).map(function(x){
+      return _.pick(x, ['freceiver', 'fpono','fpacklist','ffrtcarr']); 
     });
 
-    var a =joins.hashLeftOuterJoin(newrcmast, accessor, rcitem, accessor);
+    var rcvJoin =joins.hashLeftOuterJoin(rcmastSel, accessor, rcitem, accessor);
+
+    dispatch({ type:GRACTION.SET_RCVJOIN,rcvJoin:rcvJoin});
 
     if ('development'==process.env.NODE_ENV) {
-      console.log(`lodash=>`);
-      console.dir(_);
-      console.log(`lodash-joins=>`);
-      console.dir(joins);
-      console.log(`array newrcmast =>`);
-      console.dir(newrcmast);
-
-      console.log(`array a =>`);
-      console.dir(a);
+      console.log(`rcvJoin =>`);
+      console.dir(rcvJoin);
 
     }
-*/
 
   }
 
@@ -1035,4 +1016,7 @@ export async function start(disp,getSt) {
 
 
 
+function accessor(obj) {
+ return obj['freceiver'];
+}
 

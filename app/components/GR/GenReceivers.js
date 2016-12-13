@@ -173,9 +173,11 @@ export default class GenReceivers extends Component {
         <Col >
           <Jumbotron  >
             <h1 style={{textAlign: 'center'}}>Error!</h1>
+            <div style={{textAlign: 'left'}}>
             <p><strong>Description:{" "}</strong>{this.props.GenR.reason}</p>
             <p><strong>Press the Cancel button and try again.</strong></p> 
             <p><strong>If the problem persists give IT the error description above.</strong></p>
+            </div>
             <br/>
           </Jumbotron>
         </Col>

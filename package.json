@@ -111,6 +111,7 @@
     "lodash": "^4.17.2",
     "lodash-joins": "^2.0.1",
     "mssql": "^3.3.0",
+    "orb": "^1.0.9",
     "postcss": "^5.1.2",
     "react": "^15.3.2",
     "react-bootstrap": "^0.30.3",

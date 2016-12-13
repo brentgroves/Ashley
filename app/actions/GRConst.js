@@ -56,6 +56,7 @@ export const SET_LOG_ENTRY_LAST = 'GR_SET_LOG_ENTRY_LAST';
 export const SET_RCITEM = 'GR_SET_RCITEM';
 export const SET_RCMAST = 'GR_SET_RCMAST';
 export const SET_RCMAST_RANGE = 'GR_SET_RCMAST_RANGE';
+export const SET_RCVJOIN = 'GR_SET_RCVJOIN';
 export const SET_REASON = 'GR_SET_REASON';
 export const SET_RECEIVER_COUNT = 'SET_RECEIVER_COUNT';
 

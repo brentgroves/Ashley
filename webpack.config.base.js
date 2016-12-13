@@ -7,10 +7,22 @@ import validate from 'webpack-validator';
 
 export default validate({
   module: {
-    loaders: [{
+    loaders: [
+    {
       test: /\.jsx?$/,
       loaders: ['babel-loader'],
       exclude: /node_modules/
+    }, 
+    {
+      test: /\.jsx?$/,
+      loaders: ['babel-loader'],
+      include: function(absPath) {
+        if(absPath.indexOf('/node_modules/react-pivot/') > -1) {
+          return true;
+        } else {
+             return false;
+        }
+      }
     }, 
     {
       test: /\.(jpe?g|png|bmp|gif|svg)$/i,
