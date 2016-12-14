@@ -137,6 +137,19 @@ export function prime() {
   }
 }
 
+export function RcvJoin() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`GRACTIONS.RcvJoin()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    GRAPI.RcvJoin(disp,getSt);
+  };
+}
+
+
 export function receiverCountDone(done) {
   return {
     type: GRACTION.RECEIVER_COUNT_DONE,

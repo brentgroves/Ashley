@@ -31,7 +31,7 @@ export default class GRChecks extends Component {
   const  chk ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '10px 30px 10px 10px' };
   const  chk1 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   };
 
-  var check0Button;
+  var check0Button,check1Button;
   switch (this.props.GenR.chk0) {
     case CHK.SUCCESS:
       check0Button = 
@@ -57,6 +57,30 @@ export default class GRChecks extends Component {
 
   }
 
+  switch (this.props.GenR.chk1) {
+    case CHK.SUCCESS:
+      check1Button = 
+        <Row style={chk} >
+          <Col  xs={10}>Generating Receivers</Col>
+          <Col  xs={2}><Button bsStyle="success"><Glyphicon glyph="ok" /></Button></Col>
+        </Row>
+      break; 
+    case CHK.FAILURE:
+        check1Button = 
+          <Row style={chk} >
+            <Col  xs={10}>Generating Receivers</Col>
+            <Col  xs={2}><Button bsStyle="danger"><Glyphicon glyph="remove" /></Button></Col>
+          </Row>;
+        break;
+      default: 
+        check1Button = 
+          <Row style={chk} >
+            <Col  xs={10}>Generating Receivers</Col>
+            <Col  xs={2}><Button bsStyle="info"><Glyphicon glyph="time" /></Button></Col>
+          </Row>;
+        break;
+
+  }
 
 
 

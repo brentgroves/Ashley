@@ -5,7 +5,7 @@ import {LinkContainer} from 'react-router-bootstrap';
 import GRButton from '../../containers/GR/GRButton';
 import GRChecks from '../../containers/GR/GRChecks';
 import GRGrid from '../../containers/GR/GRGrid';
-import GRPivot from '../../containers/GR/GRPivot';
+import GRDataGrid from '../../containers/GR/GRDataGrid';
 import * as GRSTATE from "../../actions/GRState.js"
 import { Grid, Row, Col, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse, Text as NavbarText } from 'react-bootstrap/lib/Navbar'
@@ -159,10 +159,23 @@ export default class GenReceivers extends Component {
         <Col xs={1}>&nbsp;</Col>
         <Col >
           <Jumbotron  >
-            <h1 style={{textAlign: 'center'}}>Ready to Save</h1>
+            <h1 style={{textAlign: 'center'}}>Review Receivers</h1>
             <p >Please review items before continuing. If the 
             freight carrier, packing list number, and quantity(s) look good then press the
             'save' button to create receiver(s) in Made2Manage.</p>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(
+            (GRSTATE.GENERATE_RECEIVERS==this.props.GenR.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron  >
+            <h1 style={{textAlign: 'center'}}>Ready to Save</h1>
+            <p >The verified receiver(s) are now being inserted into Made2Manage.</p>
           </Jumbotron>
         </Col>
       </Row>
@@ -201,7 +214,8 @@ export default class GenReceivers extends Component {
 
   if(
       (GRSTATE.PRIMED==this.props.GenR.state) ||
-      (GRSTATE.STARTED==this.props.GenR.state) 
+      (GRSTATE.STARTED==this.props.GenR.state) ||
+      (GRSTATE.GENERATE_RECEIVERS==this.props.GenR.state) 
     )
   {
     goButton = 
@@ -222,7 +236,8 @@ export default class GenReceivers extends Component {
   }
 
   if(
-      (GRSTATE.STARTED==this.props.GenR.state) 
+      (GRSTATE.STARTED==this.props.GenR.state) ||
+      (GRSTATE.GENERATE_RECEIVERS==this.props.GenR.state) 
     )
   {
     checks = 
@@ -244,7 +259,8 @@ export default class GenReceivers extends Component {
 
   if(
       (GRSTATE.READY_TO_REVIEW==this.props.GenR.state)  ||
-      (GRSTATE.NOT_READY_TO_REVIEW==this.props.GenR.state)  
+      (GRSTATE.NOT_READY_TO_REVIEW==this.props.GenR.state)  ||
+      (GRSTATE.REVIEW_RECEIVERS==this.props.GenR.state)  
     )
   {
     grid = 
@@ -254,7 +270,7 @@ export default class GenReceivers extends Component {
       </Row>
     </div>
   }
-
+/*
   if(
       (GRSTATE.REVIEW_RECEIVERS==this.props.GenR.state)  
     )
@@ -262,11 +278,11 @@ export default class GenReceivers extends Component {
     pivot = 
     <div>
       <Row>
-        <Col xs={12}><GRPivot /></Col>
+        <Col xs={12}><GRDataGrid /></Col>
       </Row>
     </div>
   }
-
+*/
 
   if(
       (GRSTATE.FAILURE==this.props.GenR.state) ||
@@ -322,7 +338,7 @@ export default class GenReceivers extends Component {
       <Row>
         <Col xs={5} >&nbsp;</Col>
         <Col xs={1}><Button  onClick={() => this.props.setState(GRSTATE.REVIEW_RECEIVERS)} bsSize="large" bsStyle="info" >Review</Button></Col>
-        <Col xs={1}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
+        <Col xs={2}>&nbsp;<Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
         <Col xs={5}>&nbsp;</Col>
       </Row>
     </div>
@@ -342,7 +358,7 @@ export default class GenReceivers extends Component {
       <Row>
         <Col xs={5} >&nbsp;</Col>
         <Col xs={1}><Button  onClick={this.props.m2mGenReceivers} bsSize="large" bsStyle="info">Save</Button></Col>
-        <Col xs={1}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
+        <Col xs={1}><Button  onClick={() => this.props.setState(GRSTATE.READY_TO_REVIEW)} bsSize="large" bsStyle="warning">Cancel</Button></Col>
         <Col xs={5}>&nbsp;</Col>
       </Row>
     </div>

@@ -86,6 +86,8 @@ export async function m2mGenReceivers(disp,getSt) {
   if ('development'==process.env.NODE_ENV) {
     console.log(`m2mGenReceivers()->top.`);
   }
+  dispatch({ type:GRACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.LOADING });
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.GENERATE_RECEIVERS });
 
   dispatch((dispatch,getState) => {
     var disp = dispatch;
@@ -114,6 +116,7 @@ export async function m2mGenReceivers(disp,getSt) {
       console.log(`prime Success.`);
     }
   }
+
 
   dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
   continueProcess=false;
@@ -170,6 +173,8 @@ export async function m2mGenReceivers(disp,getSt) {
 
 
   if(continueProcess){
+    dispatch({ type:PORTACTION.SET_CHECK2, chk1:PORTCHK.SUCCESS });
+
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
@@ -194,6 +199,8 @@ export async function m2mGenReceivers(disp,getSt) {
   }
 
   if(continueProcess){
+    dispatch({ type:PORTACTION.SET_CHECK3, chk1:PORTCHK.SUCCESS });
+
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
@@ -220,6 +227,8 @@ export async function m2mGenReceivers(disp,getSt) {
 
 
   if(continueProcess){
+    dispatch({ type:PORTACTION.SET_CHECK4, chk1:PORTCHK.SUCCESS });
+
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
@@ -269,9 +278,10 @@ export async function m2mGenReceivers(disp,getSt) {
     }
    
   }
-
+MAKE 5 OR 6 STEPS///////////////////////////
 
   if(continueProcess){
+    dispatch({ type:PORTACTION.SET_CHECK5, chk1:PORTCHK.SUCCESS });
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
@@ -980,6 +990,7 @@ export async function start(disp,getSt) {
 
   // debug/testing section
  //http://colintoh.com/blog/lodash-10-javascript-utility-functions-stop-rewriting 
+ /*
   if(continueProcess){
 
     var st = getState();
@@ -1002,6 +1013,7 @@ export async function start(disp,getSt) {
     }
 
   }
+*/
 
 //  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
 //  continueProcess=false;
@@ -1012,8 +1024,35 @@ export async function start(disp,getSt) {
 
   return;
 
-} // poUpdate
+} // start
 
+
+
+export function RcvJoin(disp,getSt) {
+  var dispatch = disp;
+  var getState = getSt;
+
+  var st = getState();
+
+  var rcmast = st.GenReceivers.rcmast;
+  var rcitem = st.GenReceivers.rcitem;
+
+  var rcmastSel = _.map(rcmast).map(function(x){
+    return _.pick(x, ['freceiver', 'fpono','fpacklist','fcompany','ffrtcarr']); 
+  });
+
+  var rcvJoin =joins.hashLeftOuterJoin(rcmastSel, accessor, rcitem, accessor);
+
+  dispatch({ type:GRACTION.SET_RCVJOIN,rcvJoin:rcvJoin});
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.READY_TO_REVIEW });
+
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`rcvJoin =>`);
+    console.dir(rcvJoin);
+
+  }
+
+}
 
 
 function accessor(obj) {

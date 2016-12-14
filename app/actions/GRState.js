@@ -14,6 +14,9 @@ export const READY_TO_REVIEW = 'READY_TO_REVIEW'
 // state 30 - Review receivers
 export const REVIEW_RECEIVERS = 'REVIEW_RECEIVERS'
 
+// state 40 - Review receivers
+export const GENERATE_RECEIVERS = 'GENERATE_RECEIVERS'
+
 // state 80 - FAILED
 export const UPTODATE = 'UPTODATE';
 // state 85 - receivers > MAXRECIEVERS -- OUTOFRANGE

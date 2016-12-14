@@ -114,7 +114,7 @@ export default class GRPivot extends React.Component{
     // the memo object starts as {} for each group, build it up
     memo.amountTotal = (memo.amountTotal || 0) + parseFloat(row.fqtyrecv)
     // be sure to return it when you're done for the next pass
-    if(memo._level==0){
+    if(memo._level=='0'){
       memo.plist = ' ';
       memo.car = ' ';
       memo.qty = ' '; 

@@ -35,7 +35,6 @@ export default class GRGrid extends React.Component{
     };
 
   }
-
   cellEditPropChk1 = {
     mode: "click",
     blurToSave: true,
@@ -128,7 +127,7 @@ export default class GRGrid extends React.Component{
     });
     */
     if(notReadyCnt<=5){
-      this.props.setState(GRSTATE.READY_TO_REVIEW);
+      this.props.RcvJoin();
     }else{
       this.props.setState(GRSTATE.NOT_READY_TO_REVIEW);
     }
@@ -152,26 +151,56 @@ export default class GRGrid extends React.Component{
   render(){
 
     var whichTable;
-        whichTable = 
-         <BootstrapTable  
-            data={this.props.GenR.rcmast} pagination 
-            trClassName={trClassFormat}          
-            tableHeaderClass='my-header-class'
-            tableBodyClass='my-body-class'
-            containerClass='my-container-class'
-            tableContainerClass='my-table-container-class'
-            headerContainerClass='my-header-container-class'
-            bodyContainerClass='my-body-container-class'
-            hover={true} bordered={true} condensed={true} 
-            cellEdit={this.cellEditPropChk1} insertRow={false}>
-            <TableHeaderColumn dataField="identity_column" hidden={true} isKey={true}>Row</TableHeaderColumn>
-            <TableHeaderColumn dataField="fpono" width="155" columnClassName='td-first-column' editable={false} >PO Number</TableHeaderColumn>
-            <TableHeaderColumn dataField="freceiver" width="155" editable={false} >Receiver</TableHeaderColumn>
-            <TableHeaderColumn dataField="fcompany" width="300" editable={false} >Company</TableHeaderColumn>
-            <TableHeaderColumn dataField="fpacklist" width="200" editable={{type:'text', validator:this.fpacklistValidator}}  >Packing List</TableHeaderColumn>
-            <TableHeaderColumn dataField="ffrtcarr" width="200" columnClassName={columnClassNameFormat} 
-            editable={{type:'select', options:{values:this.props.GenR.shipVia}}}>Select Carrier</TableHeaderColumn>
-          </BootstrapTable>;
+    if(GRSTATE.REVIEW_RECEIVERS==this.props.GenR.state){
+      whichTable = 
+       <BootstrapTable  
+          data={this.props.GenR.rcvJoin} pagination 
+          trClassName={trClassFormat}          
+          tableHeaderClass='my-header-class'
+          tableBodyClass='my-body-class'
+          containerClass='my-container-class'
+          tableContainerClass='my-table-container-class'
+          headerContainerClass='my-header-container-class'
+          bodyContainerClass='my-body-container-class'
+          hover={true} bordered={true} condensed={true} 
+          cellEdit={this.cellEditPropChk1} insertRow={false}>
+          <TableHeaderColumn dataField="identity_column" hidden={true} isKey={true}>Row</TableHeaderColumn>
+          <TableHeaderColumn dataField="fpono" width="100" columnClassName='td-first-column' editable={false} >PO</TableHeaderColumn>
+          <TableHeaderColumn dataField="freceiver" width="100" editable={false} >Receiver</TableHeaderColumn>
+          <TableHeaderColumn dataField="fcompany" width="250" editable={false} >Company</TableHeaderColumn>
+          <TableHeaderColumn dataField="fpacklist" width="100" editable={false} >Packing</TableHeaderColumn>
+          <TableHeaderColumn dataField="ffrtcarr" width="120" editable={false}>Carrier</TableHeaderColumn>
+          <TableHeaderColumn dataField="fpartno" width="250" editable={false} >PN</TableHeaderColumn>
+          <TableHeaderColumn dataField="fqtyrecv" width="50" editable={false} >Qty</TableHeaderColumn>
+        </BootstrapTable>;
+
+    }else{
+      whichTable = 
+       <BootstrapTable  
+          data={this.props.GenR.rcmast} pagination 
+          trClassName={trClassFormat}          
+          tableHeaderClass='my-header-class'
+          tableBodyClass='my-body-class'
+          containerClass='my-container-class'
+          tableContainerClass='my-table-container-class'
+          headerContainerClass='my-header-container-class'
+          bodyContainerClass='my-body-container-class'
+          hover={true} bordered={true} condensed={true} 
+          cellEdit={this.cellEditPropChk1} insertRow={false}>
+          <TableHeaderColumn dataField="identity_column" hidden={true} isKey={true}>Row</TableHeaderColumn>
+          <TableHeaderColumn dataField="fpono" width="155" columnClassName='td-first-column' editable={false} >PO Number</TableHeaderColumn>
+          <TableHeaderColumn dataField="freceiver" width="155" editable={false} >Receiver</TableHeaderColumn>
+          <TableHeaderColumn dataField="fcompany" width="300" editable={false} >Company</TableHeaderColumn>
+          <TableHeaderColumn dataField="fpacklist" width="200" editable={{type:'text', validator:this.fpacklistValidator}}  >Packing List</TableHeaderColumn>
+          <TableHeaderColumn dataField="ffrtcarr" width="200" columnClassName={columnClassNameFormat} 
+          editable={{type:'select', options:{values:this.props.GenR.shipVia}}}>Select Carrier</TableHeaderColumn>
+        </BootstrapTable>;
+    }
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`whichTable => `);
+      console.dir(whichTable);
+    }
+
     return ( <div>{whichTable}</div> );
   }
 };
