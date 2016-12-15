@@ -117,6 +117,9 @@ export default function reducer( state = {}, action) {
           bpGRTransDelete:{$set:{done:false,failed:false}},
           bpGRTransInsert:{$set:{done:false,failed:false}},
           chk0: {$set: CHK.UNKNOWN},
+          chk1: {$set: CHK.UNKNOWN},
+          chk2: {$set: CHK.UNKNOWN},
+          chk3: {$set: CHK.UNKNOWN},
           closePOsReceived:{$set:{done:false,failed:false}},
           currentReceiver:{$set:0},
           goButton:{$set:PROGRESSBUTTON.READY},
@@ -274,6 +277,56 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
+    case GRACTION.SET_CHECK0:
+    {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set check0`);
+      }
+      var newData = update(state, 
+        { 
+          chk0: {$set: action.chk0}
+        });
+      return newData;
+
+    }
+
+    case GRACTION.SET_CHECK1:
+    {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set check1`);
+      }
+      var newData = update(state, 
+        { 
+          chk1: {$set: action.chk1}
+        });
+      return newData;
+
+    }
+    case GRACTION.SET_CHECK2:
+    {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set check2`);
+      }
+      var newData = update(state, 
+        { 
+          chk2: {$set: action.chk2}
+        });
+      return newData;
+
+    }
+
+    case GRACTION.SET_CHECK3:
+    {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`set check3`);
+      }
+      var newData = update(state, 
+        { 
+          chk3: {$set: action.chk3}
+        });
+      return newData;
+
+    }
 
     case GRACTION.SET_CURRENT_RECEIVER:
     {

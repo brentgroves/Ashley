@@ -1,6 +1,6 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import GRPivot from '../../components/GR/GRPivot';
+import GRReactDataGrid from '../../components/GR/GRReactDataGrid';
 import * as GRActions from '../../actions/GRActions';
 
 function mapStateToProps(state) {
@@ -13,4 +13,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(GRActions, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(GRPivot);
+export default connect(mapStateToProps, mapDispatchToProps)(GRReactDataGrid);

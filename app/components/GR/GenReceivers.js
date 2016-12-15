@@ -5,7 +5,8 @@ import {LinkContainer} from 'react-router-bootstrap';
 import GRButton from '../../containers/GR/GRButton';
 import GRChecks from '../../containers/GR/GRChecks';
 import GRGrid from '../../containers/GR/GRGrid';
-import GRDataGrid from '../../containers/GR/GRDataGrid';
+import GRReactDataGrid from '../../containers/GR/GRReactDataGrid';
+//import GRDataGrid from '../../containers/GR/GRDataGrid';
 import * as GRSTATE from "../../actions/GRState.js"
 import { Grid, Row, Col, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse, Text as NavbarText } from 'react-bootstrap/lib/Navbar'
@@ -43,15 +44,14 @@ export default class GenReceivers extends Component {
   const chk2 ={backgroundColor: 'black' , color: 'green',border: '1px solid blue',   padding: '5px 13px' };
   const dbg1 ={border: '1px solid blue', padding: '0px' };
 
-  var checks,goButton,grid,pivot,navbar,cancelBtn,saveAndCancelBtn,jumboTronTxt,navbarStatus,navbarEnd;
+  var checks,goButton,grid,reactDataGrid,navbar,cancelBtn,saveAndCancelBtn,jumboTronTxt,navbarStatus,navbarEnd;
 
   if(GRSTATE.NOT_PRIMED==this.props.GenR.state){
     jumboTronTxt=
       <Row >
-        <Col xs={1}>&nbsp;</Col>
         <Col >
-          <Jumbotron  >
-             <h1 style={{textAlign: 'center'}}>Connecting to Databases</h1>
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+             <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Connecting to Databases</h1>
             <p style={{textAlign: 'center'}}><strong>Description:{" "}</strong>Attempting to connect to CribMaster and Made2Manage</p>
             <p style={{textAlign: 'center'}}><strong>Please wait...</strong></p> 
             <br/>
@@ -60,11 +60,10 @@ export default class GenReceivers extends Component {
       </Row>
   } else if(GRSTATE.PRIMED==this.props.GenR.state){
     jumboTronTxt=
-      <Row >
-        <Col xs={1}>&nbsp;</Col>
+      <Row>
         <Col >
-          <Jumbotron  >
-             <h1 style={{textAlign: 'center'}}>Generate Receivers</h1>
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+             <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Generate Receivers</h1>
             <p style={{padding: '0px'}}>This App generates M2m receivers from items received into Cribmaster.
             It includes a ROLLBACK process so if it fails at ANY point just run it again. 
             <br/><br/>
@@ -77,17 +76,16 @@ export default class GenReceivers extends Component {
             <p style={{textAlign: 'center'}}>Once the GO! button is clicked this process will start.  </p>            
             <br/>
           </Jumbotron>
-        </Col>
-      </Row>
+          </Col >
+        </Row>
   } else if(
             (GRSTATE.OUT_OF_RANGE==this.props.GenR.state)
             ){
     jumboTronTxt=
       <Row >
-        <Col xs={1}>&nbsp;</Col>
         <Col >
-          <Jumbotron  >
-            <h1 style={{textAlign: 'center'}}>Out Of Range</h1>
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Out Of Range</h1>
             <p style={{padding: '0px'}}>There are are more than 50 receivers to generate or rollback.  Ask 'IT' if you would like to override this condition check.</p>
             <br/>
           </Jumbotron>
@@ -98,10 +96,9 @@ export default class GenReceivers extends Component {
             ){
     jumboTronTxt=
       <Row >
-        <Col xs={1}>&nbsp;</Col>
         <Col >
-          <Jumbotron  >
-            <h1 style={{textAlign: 'center'}}>Up-To-Date</h1>
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Up-To-Date</h1>
             <p style={{padding: '0px',textAlign:'center'}}>There are currently 'NO' PO Items needing received into Made2Manage.</p>
            <br/>
           </Jumbotron>
@@ -112,13 +109,14 @@ export default class GenReceivers extends Component {
             ){
     jumboTronTxt=
       <Row >
-        <Col xs={1}>&nbsp;</Col>
         <Col >
-          <Jumbotron  >
-            <h1 style={{textAlign: 'center'}}>Validation in Progress</h1>
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Validation in Progress</h1>
             <p style={{padding: '0px'}}>Checking if the previous session finished gracefully,
             and all POs items are ready to receive into Made2Manage.  This shouldn't take long.</p>
+            <br/>
           </Jumbotron>
+
         </Col>
       </Row>
   } else if(
@@ -126,11 +124,10 @@ export default class GenReceivers extends Component {
             ){
     jumboTronTxt=
       <Row >
-        <Col xs={1}>&nbsp;</Col>
         <Col >
-          <Jumbotron  >
-            <h1 style={{textAlign: 'center'}}>Freight Carrier & Packing List</h1>
-            <p style={{textAlign: 'center'}}>Please enter the packing list number and
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Freight Carrier & Packing List</h1>
+            <p style={{textAlign: 'center',paddingBottom:5}}>Please enter the packing list number and
             select the appropriate freight carrier before continuing.</p>
           </Jumbotron>
         </Col>
@@ -141,10 +138,9 @@ export default class GenReceivers extends Component {
             ){
     jumboTronTxt=
       <Row >
-        <Col xs={1}>&nbsp;</Col>
         <Col >
-          <Jumbotron  >
-            <h1 style={{textAlign: 'center'}}>Ready to Review</h1>
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Ready to Review</h1>
             <p >You have entered a packing list number and
             selected a freight carrier for enough receiver(s) to continue. Press the
             'Review' button to review receiver items to be inserted.</p>
@@ -156,10 +152,9 @@ export default class GenReceivers extends Component {
             ){
     jumboTronTxt=
       <Row >
-        <Col xs={1}>&nbsp;</Col>
         <Col >
-          <Jumbotron  >
-            <h1 style={{textAlign: 'center'}}>Review Receivers</h1>
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Review Receivers</h1>
             <p >Please review items before continuing. If the 
             freight carrier, packing list number, and quantity(s) look good then press the
             'save' button to create receiver(s) in Made2Manage.</p>
@@ -184,8 +179,8 @@ export default class GenReceivers extends Component {
       <Row >
         <Col xs={1}>&nbsp;</Col>
         <Col >
-          <Jumbotron  >
-            <h1 style={{textAlign: 'center'}}>Error!</h1>
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Error!</h1>
             <div style={{textAlign: 'left'}}>
             <p><strong>Description:{" "}</strong>{this.props.GenR.reason}</p>
             <p><strong>Press the Cancel button and try again.</strong></p> 
@@ -213,6 +208,7 @@ export default class GenReceivers extends Component {
 
 
   if(
+    (GRSTATE.NOT_PRIMED==this.props.GenR.state) ||
       (GRSTATE.PRIMED==this.props.GenR.state) ||
       (GRSTATE.STARTED==this.props.GenR.state) ||
       (GRSTATE.GENERATE_RECEIVERS==this.props.GenR.state) 
@@ -220,9 +216,6 @@ export default class GenReceivers extends Component {
   {
     goButton = 
     <div>
-      <Row >
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
       <Row>
         <Col xs={1}>&nbsp;</Col>
       </Row>
@@ -237,30 +230,23 @@ export default class GenReceivers extends Component {
 
   if(
       (GRSTATE.STARTED==this.props.GenR.state) ||
-      (GRSTATE.GENERATE_RECEIVERS==this.props.GenR.state) 
+      (GRSTATE.GENERATE_RECEIVERS==this.props.GenR.state)  ||
+      (GRSTATE.OUT_OF_RANGE==this.props.GenR.state)  ||
+      (GRSTATE.UPTODATE==this.props.GenR.state)  ||
+      (GRSTATE.FAILURE==this.props.GenR.state)  
     )
   {
     checks = 
-    <div>
-      <Row >
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-
       <Row >
         <Col xs={4}></Col>
         <Col xs={4}><GRChecks /></Col>
         <Col xs={4}></Col>
       </Row>
-    </div>;
   } 
 
   if(
-      (GRSTATE.READY_TO_REVIEW==this.props.GenR.state)  ||
       (GRSTATE.NOT_READY_TO_REVIEW==this.props.GenR.state)  ||
-      (GRSTATE.REVIEW_RECEIVERS==this.props.GenR.state)  
+      (GRSTATE.READY_TO_REVIEW==this.props.GenR.state)  
     )
   {
     grid = 
@@ -270,19 +256,15 @@ export default class GenReceivers extends Component {
       </Row>
     </div>
   }
-/*
   if(
       (GRSTATE.REVIEW_RECEIVERS==this.props.GenR.state)  
     )
   {
-    pivot = 
-    <div>
+    reactDataGrid = 
       <Row>
-        <Col xs={12}><GRDataGrid /></Col>
+        <Col xs={12}><GRReactDataGrid /></Col>
       </Row>
-    </div>
   }
-*/
 
   if(
       (GRSTATE.FAILURE==this.props.GenR.state) ||
@@ -291,9 +273,6 @@ export default class GenReceivers extends Component {
   {
     cancelBtn = 
     <div>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
 
       <Row>
         <Col xs={5} >&nbsp;</Col>
@@ -310,18 +289,14 @@ export default class GenReceivers extends Component {
     )
   {
     saveAndCancelBtn = 
-    <div>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
 
       <Row>
         <Col xs={5} >&nbsp;</Col>
         <Col xs={1}><Button  onClick={() => this.props.setState(GRSTATE.REVIEW_RECEIVERS)} bsSize="large" bsStyle="info" disabled>Review</Button></Col>
-        <Col xs={1}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
-        <Col xs={5}>&nbsp;</Col>
+        <Col xs={3}><Button style={{marginLeft:10}} onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
+        <Col xs={4}>&nbsp;</Col>
       </Row>
-    </div>
+
   }
 
   if(
@@ -338,8 +313,8 @@ export default class GenReceivers extends Component {
       <Row>
         <Col xs={5} >&nbsp;</Col>
         <Col xs={1}><Button  onClick={() => this.props.setState(GRSTATE.REVIEW_RECEIVERS)} bsSize="large" bsStyle="info" >Review</Button></Col>
-        <Col xs={2}>&nbsp;<Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
-        <Col xs={5}>&nbsp;</Col>
+        <Col xs={2}><Button style={{marginLeft:10}} onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
+        <Col xs={4}>&nbsp;</Col>
       </Row>
     </div>
   }
@@ -350,18 +325,12 @@ export default class GenReceivers extends Component {
     )
   {
     saveAndCancelBtn = 
-    <div>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-
-      <Row>
+      <Row >
         <Col xs={5} >&nbsp;</Col>
-        <Col xs={1}><Button  onClick={this.props.m2mGenReceivers} bsSize="large" bsStyle="info">Save</Button></Col>
-        <Col xs={1}><Button  onClick={() => this.props.setState(GRSTATE.READY_TO_REVIEW)} bsSize="large" bsStyle="warning">Cancel</Button></Col>
-        <Col xs={5}>&nbsp;</Col>
+        <Col xs={1}><Button style={{marginTop:100}} onClick={this.props.m2mGenReceivers} bsSize="large" bsStyle="info">Save</Button></Col>
+        <Col xs={2}><Button style={{marginTop:100,marginLeft:10}} onClick={() => this.props.setState(GRSTATE.READY_TO_REVIEW)} bsSize="large" bsStyle="warning">Cancel</Button></Col>
+        <Col xs={4}>&nbsp;</Col>
       </Row>
-    </div>
   }
 
 
@@ -402,19 +371,17 @@ export default class GenReceivers extends Component {
 
     return (
 
-      <div  >
         <Grid >
           {jumboTronTxt}
           {checks}
           {grid}
-          {pivot}
+          {reactDataGrid}
           {goButton}
           {saveAndCancelBtn}
           {cancelBtn}
           {navbar}
         </Grid>
-      </div>
-
+ 
     );
   }
 }

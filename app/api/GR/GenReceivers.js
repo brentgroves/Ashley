@@ -2,6 +2,7 @@
 var sql = require('mssql');
 const {dialog} = require('electron').remote;
 
+import * as CHK from "../../actions/ChkConst.js"
 import * as CONNECT from "../SQLConst.js"
 import * as GRACTION from "../../actions/GRConst.js"
 import * as GRLIMITS from "../../actions/GRLimits.js"
@@ -44,6 +45,7 @@ export async function prime(disp,getSt){
   }
 
   dispatch({ type:GRACTION.INIT});
+  dispatch({ type:GRACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.LOADING });
 
   dispatch((dispatch,getState) => {
     var disp = dispatch;
@@ -59,6 +61,8 @@ export async function prime(disp,getSt){
       await MISC.sleep(2000);
     }
   }
+  dispatch({ type:GRACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.READY });
+
   if(!getState().Common.primed){
     if ('development'==process.env.NODE_ENV) {
       console.log(`prime FAILED Stop PO Request Transfer.`);
@@ -107,6 +111,7 @@ export async function m2mGenReceivers(disp,getSt) {
     if ('development'==process.env.NODE_ENV) {
       console.log(`primeDB FAILED.`);
     }
+    dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.FAILURE });
     continueProcess=false;
     dispatch({ type:GRACTION.SET_REASON, reason:`primeDB FAILED. ` });
     dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
@@ -116,7 +121,6 @@ export async function m2mGenReceivers(disp,getSt) {
       console.log(`prime Success.`);
     }
   }
-
 
   dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
   continueProcess=false;
@@ -142,6 +146,7 @@ export async function m2mGenReceivers(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLLOGSTEPSET.sql1() FAILED.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.FAILURE });
       continueProcess=false;
     }
   }
@@ -167,14 +172,13 @@ export async function m2mGenReceivers(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLRCMASTINSERT.sql1() FAILED.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.FAILURE });
       continueProcess=false;
     }
   }
 
 
   if(continueProcess){
-    dispatch({ type:PORTACTION.SET_CHECK2, chk1:PORTCHK.SUCCESS });
-
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
@@ -194,13 +198,12 @@ export async function m2mGenReceivers(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLRCITEMINSERT.sql1() FAILED.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.FAILURE });
       continueProcess=false;
     }
   }
 
   if(continueProcess){
-    dispatch({ type:PORTACTION.SET_CHECK3, chk1:PORTCHK.SUCCESS });
-
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
@@ -220,6 +223,7 @@ export async function m2mGenReceivers(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLRCITEMUPDATE.sql1() FAILED.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.FAILURE });
       continueProcess=false;
     }
    
@@ -227,8 +231,6 @@ export async function m2mGenReceivers(disp,getSt) {
 
 
   if(continueProcess){
-    dispatch({ type:PORTACTION.SET_CHECK4, chk1:PORTCHK.SUCCESS });
-
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
@@ -248,6 +250,7 @@ export async function m2mGenReceivers(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLLOGSTEPSET.sql1() FAILED.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.FAILURE });
       continueProcess=false;
     }
   }
@@ -274,14 +277,13 @@ export async function m2mGenReceivers(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLPOSTATUSUPDATE.sql1() FAILED.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.FAILURE });
       continueProcess=false;
     }
    
   }
-MAKE 5 OR 6 STEPS///////////////////////////
 
   if(continueProcess){
-    dispatch({ type:PORTACTION.SET_CHECK5, chk1:PORTCHK.SUCCESS });
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
@@ -301,6 +303,7 @@ MAKE 5 OR 6 STEPS///////////////////////////
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLTRANSINSERT.sql1() FAILED.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.FAILURE });
       continueProcess=false;
     }
    
@@ -330,6 +333,7 @@ MAKE 5 OR 6 STEPS///////////////////////////
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLFINISH.sql1() FAILED.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.FAILURE });
       continueProcess=false;
     }
    
@@ -340,6 +344,7 @@ MAKE 5 OR 6 STEPS///////////////////////////
 
   // THE END
   if(continueProcess){
+    dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.SUCCESS });
     dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
   }
 
@@ -582,8 +587,8 @@ export async function start(disp,getSt) {
   var getState = getSt;
   var continueProcess=true;
 
-  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.STARTED });
   dispatch({ type:GRACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.LOADING });
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.STARTED });
   dispatch({ type:GRACTION.SET_STATUS, status:'' });
 
   dispatch((dispatch,getState) => {
@@ -638,6 +643,7 @@ export async function start(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLLOGENTRYLASTSET.sql1() FAILED.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK0, chk0:CHK.FAILURE });
       continueProcess=false;
     }else{
       if ('development'==process.env.NODE_ENV) {
@@ -703,6 +709,7 @@ export async function start(disp,getSt) {
         if ('development'==process.env.NODE_ENV) {
           console.log(`rollBack() FAILED.`);
         }
+        dispatch({ type:GRACTION.SET_CHECK0, chk0:CHK.FAILURE });
         continueProcess=false;
       }else{
         if ('development'==process.env.NODE_ENV) {
@@ -713,6 +720,7 @@ export async function start(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`rollback receiver count >= MAX_RECEIVERS.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK1, chk1:CHK.FAILURE });
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.OUT_OF_RANGE });
       continueProcess=false;
     }
@@ -721,6 +729,8 @@ export async function start(disp,getSt) {
 
 
   if(continueProcess){
+    dispatch({ type:GRACTION.SET_CHECK0, chk0:CHK.SUCCESS });
+
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
@@ -795,12 +805,14 @@ export async function start(disp,getSt) {
       dispatch((dispatch,getState) => {
         var disp = dispatch;
         var getSt = getState;
+        dispatch({ type:GRACTION.SET_CHECK1, chk1:CHK.SUCCESS });
         SQLSETCURRENTRECEIVER.sql1(dispatch,getState);
       });
     }else if(0==getState().GenReceivers.receiverCount){
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLRCMASTRANGE count =0.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK1, chk1:CHK.SUCCESS });
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.UPTODATE });
       continueProcess=false;
       logStep=GRSTEPS.STEP_3_UP_TO_DATE
@@ -810,6 +822,7 @@ export async function start(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLRCMASTRANGE count >= MAX_RECEIVERS.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK1, chk1:CHK.FAILURE });
       dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.OUT_OF_RANGE });
       continueProcess=false;
       logStep=GRSTEPS.STEP_8_OUT_OF_RANGE 
@@ -840,6 +853,7 @@ export async function start(disp,getSt) {
         if ('development'==process.env.NODE_ENV) {
           console.log(`SQLFINISH.sql1() FAILED.`);
         }
+        dispatch({ type:GRACTION.SET_CHECK1, chk1:CHK.FAILURE });
         continueProcess=false;  // not needed - continueProcess already false;
       }else{
         if ('development'==process.env.NODE_ENV) {
@@ -851,6 +865,7 @@ export async function start(disp,getSt) {
 
 
     if(continueProcess){
+      dispatch({ type:GRACTION.SET_CHECK1, chk1:CHK.SUCCESS });
       cnt=0;
       maxCnt=10;
       while(!getState().GenReceivers.bpGRSetCurrentReceiver.done){
@@ -867,6 +882,7 @@ export async function start(disp,getSt) {
         if ('development'==process.env.NODE_ENV) {
           console.log(`SQLSETCURRENTRECEIVER.sql1() FAILED.`);
         }
+        dispatch({ type:GRACTION.SET_CHECK2, chk2:CHK.FAILURE });
         continueProcess=false;
       }else{
         if ('development'==process.env.NODE_ENV) {
@@ -917,6 +933,7 @@ export async function start(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLEXEC.sql1() update btGRLog set rcvStart FAILED.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK2, chk2:CHK.FAILURE });
       continueProcess=false;
     }else{
       if ('development'==process.env.NODE_ENV) {
@@ -949,6 +966,7 @@ export async function start(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLSETSHIPVIA not successful.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK2, chk2:CHK.FAILURE });
       continueProcess=false;
     }else{
       if ('development'==process.env.NODE_ENV) {
@@ -979,6 +997,7 @@ export async function start(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLGENRECEIVERS not successful.`);
       }
+      dispatch({ type:GRACTION.SET_CHECK2, chk2:CHK.FAILURE });
       continueProcess=false;
     }else{
       if ('development'==process.env.NODE_ENV) {
@@ -1019,6 +1038,7 @@ export async function start(disp,getSt) {
 //  continueProcess=false;
 
   if(continueProcess){
+    dispatch({ type:GRACTION.SET_CHECK2, chk2:CHK.SUCCESS });
     dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.NOT_READY_TO_REVIEW });
   }
 

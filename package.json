@@ -116,7 +116,7 @@
     "react": "^15.3.2",
     "react-bootstrap": "^0.30.3",
     "react-bootstrap-table": "^2.5.5",
-    "react-data-grid": "^1.0.71",
+    "react-datagrid": "^2.1.2",
     "react-dom": "^15.3.2",
     "react-pivot": "^1.18.3",
     "react-progress-button": "^5.0.1",
@@ -127,6 +127,7 @@
     "react-select": "^1.0.0-rc.2",
     "redux": "^3.5.2",
     "redux-thunk": "^2.1.0",
+    "sorty": "^1.2.2",
     "source-map-support": "^0.4.2",
     "tedious": "^1.14.0"
   },

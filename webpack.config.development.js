@@ -43,21 +43,6 @@ export default validate(merge(baseConfig, {
           'css-loader?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
         ]
       },
-      {
-        test: /react-data-grid.css/,
-        loaders: [
-          'style-loader',
-          'css-loader?sourceMap'
-        ]
-      },
-
-      {
-        test: /react-data-grid.css/,
-        loaders: [
-          'style-loader',
-          'css-loader?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
-        ]
-      }
     ]
   },
 
@@ -68,7 +53,7 @@ export default validate(merge(baseConfig, {
     // “If you are using the CLI, the webpack process will not exit with an error code by enabling this plugin.”
     // https://github.com/webpack/docs/wiki/list-of-plugins#noerrorsplugin
     new webpack.NoErrorsPlugin(),
-
+    new webpack.IgnorePlugin(/vertx/),
     // NODE_ENV should be production so that modules do not perform certain development checks
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('development')

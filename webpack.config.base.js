@@ -13,6 +13,7 @@ export default validate({
       loaders: ['babel-loader'],
       exclude: /node_modules/
     }, 
+/*
     {
       test: /\.jsx?$/,
       loaders: ['babel-loader'],
@@ -24,6 +25,7 @@ export default validate({
         }
       }
     }, 
+*/
     {
       test: /\.(jpe?g|png|bmp|gif|svg)$/i,
       loaders: [
