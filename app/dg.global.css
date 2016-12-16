@@ -1146,7 +1146,19 @@ html.u-app body * {
 .react-datagrid .z-column-header {
   position: relative;
   font-weight: bold;
+  color:#666B85;
+  background:#323C50;
+  font-size:20px;
+  font-weight:bolder;
+  text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
+
 }
+/*
+.react-datagrid .z-column-header {
+  position: relative;
+  font-weight: bold;
+}
+*/
 .react-datagrid .z-column-header .z-inner {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -1177,9 +1189,22 @@ html.u-app body * {
   cursor: pointer;
 }
 .react-datagrid .z-column-header.z-over {
+  position: relative;
+  font-weight: bold;
+  color:#666B85;
+  background:#323C50;
+  font-size:20px;
+  font-weight:bolder;
+  text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
+
+}
+
+/*
+.react-datagrid .z-column-header.z-over {
   background: -webkit-linear-gradient(top, #fbfbfb 0%, #f8f8f8 13%, #f4f4f4 100%);
   background: linear-gradient(to bottom, #fbfbfb 0%, #f8f8f8 13%, #f4f4f4 100%);
 }
+*/
 .react-datagrid .z-column-header .z-icon-sort-info {
   display: inline-block;
   width: 0px;
@@ -1233,7 +1258,8 @@ html.u-app body * {
 }
 .react-datagrid .z-row.z-over,
 .react-datagrid .z-row.z-over.z-odd {
-  background: #d7e7ff;
+  background: red;
+  background: #d7e7ff; 
 }
 .react-datagrid .z-row.z-selected,
 .react-datagrid .z-row.z-selected.z-odd {
@@ -1253,20 +1279,126 @@ html.u-app body * {
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0px 5px;
+
 }
-.react-datagrid .z-group-row.z-over,
-.react-datagrid .z-group-row.z-over.z-odd {
-  background: #cfcfcf;
-}
+/*
 .react-datagrid .z-group-cell {
   -webkit-box-flex: 1;
   -ms-box-flex: 1;
   -ms-flex: 1;
   flex: 1;
+
 }
+*/
+.react-datagrid .z-group-cell .z-content {
+  display: block;
+  width: 280px;
+    position:absolute;
+    text-align:right;
+}
+
+.react-datagrid .z-group-cell {
+  -webkit-box-flex: 1;
+  -ms-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+
+}
+
+.react-datagrid .z-group-cell:before {
+    content:'PO/Receiver: ';
+    position:absolute;
+    width: 125px;
+    text-align:right;
+
+}
+
+/*
+   // display: none;
+
+    float: left;
+    position: absolute;
+    padding-right: 10;
+
+.react-datagrid .z-group-cell:after {
+ content: 'Receiver:';
+    display: block;
+    float: left;
+    position: absolute;
+
+}
+*/
+
 .react-datagrid .z-group-row {
-  background: #e6e6e6;
+//  color: #FB667A;
+//  background: #e6e6e6; 
 }
+
+.react-datagrid .z-group-row.z-row.z-odd {
+  background: steelblue;
+  color:#2C3446;
+  font-size:18px;
+  font-weight:bolder;
+}
+.react-datagrid .z-group-row.z-row.z-odd.z-over {
+  background: #FFF842;
+  color: #403E10;
+  font-weight: bolder;
+  box-shadow: #7F7C21 -1px 1px, #7F7C21 -2px 2px, #7F7C21 -3px 3px, #7F7C21 -4px 4px, #7F7C21 -5px 5px, #7F7C21 -6px 6px;
+  transform: translate3d(6px, -6px, 0);
+  
+  transition-delay: 0s;
+    transition-duration: 0.4s;
+    transition-property: all;
+  transition-timing-function: line;
+
+
+//  background: red;
+//  color:green;
+  font-size:18px;
+  font-weight:bolder;
+}
+
+/*.react-datagrid .z-grouped.z-row.z-even.z-over {*/
+.react-datagrid .z-grouped.z-row.z-odd.z-over .z-content,
+.react-datagrid .z-grouped.z-row.z-even.z-over .z-content {
+  background: #FFF842;
+  color: #403E10;
+  font-weight: bolder;
+  box-shadow: #7F7C21 -1px 1px, #7F7C21 -2px 2px, #7F7C21 -3px 3px, #7F7C21 -4px 4px, #7F7C21 -5px 5px, #7F7C21 -6px 6px;
+  transform: translate3d(6px, -6px, 0);
+  
+  transition-delay: 0s;
+    transition-duration: 0.4s;
+    transition-property: all;
+  transition-timing-function: line;
+
+
+//  background: red;
+//  color:green;
+  font-size:18px;
+  font-weight:bolder;
+}
+
+/* Does not work
+.react-datagrid .z-grouped-row.z-row.z-even {
+  background: green;
+  color:white;
+  font-size:18px;
+  font-weight:bolder;
+}
+*/
+/*
+.react-datagrid .z-group-row.z-over,
+.react-datagrid .z-group-row.z-over.z-odd {
+//  background: green;
+  background: red;
+  color:green;
+
+//  background: #cfcfcf;
+
+}
+*/
 .react-datagrid.z-cell-borders-horizontal .z-cell:not(.z-column-header) {
   border-bottom: 1px dotted #a8a8a8;
 }

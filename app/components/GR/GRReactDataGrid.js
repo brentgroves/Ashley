@@ -18,10 +18,24 @@ export default class GRReactDataGrid extends React.Component{
     this.state = {
       rcvJoin:this.props.GenR.rcvJoin,
       columns : [
-        { name: 'identity_column'},
-        { name: 'freceiver'},
-        { name: 'fpono'},
-        { name: 'fpartno'}
+//        { name: 'identity_column'},
+//        { name: 'fpono'},
+       { name: 'fpartno', title: 'Part Number', width: 220,style: { color: '#FB667A' }},
+       { name: 'fpacklist',title: 'Pack List', width: 150},
+       { name: 'ffrtcarr',title: 'Carrier', width: 200},
+       { name: 'fqtyrecv',title: 'Qty', width: 70},
+       { name: 'fucost',title: 'Cost', width: 70},
+       { name: 'totCost',title: 'Total', width: 70},
+       { name: 'rcvTotCost',title: 'RcvTotal'}
+
+/*
+        {
+          name: 'fpono',
+          render: function(v){return 'Index ' + v}
+        }
+*/
+//        {name: 'fpono', title: '#', width: 150}
+//       { name: 'freceiver'},
       ],
       SORT_INFO: [ { name: 'fpartno', dir: 'asc'}],
       sort:this.sort.bind(this) ,
@@ -61,13 +75,21 @@ export default class GRReactDataGrid extends React.Component{
     }
     var style = {}
     rowIndex++;
-    if (rowIndex % 1 == 0){
-      style.background = '#2C3446';
-      style.color='green';
+    if (rowIndex % 2 == 0){
+//      style.background = '#2C3446';
+      style.color='#666B85';
+      style.background= '#323C50';
+
+ // background-color: #323C50;
+ // color:#666B85;
+
    //   style.color= 'white';
     }else{
-      style.background= 'green';
-      style.color='#2C3446';
+ //     style.background= 'green';
+      style.color='#668B85';
+      style.background= '#2C3446';
+ //  background-color: #2C3446;
+//  color: white;
 
     }
 /*
@@ -91,7 +113,14 @@ export default class GRReactDataGrid extends React.Component{
 //        sortInfo={this.state.SORT_INFO}
 //        onSortChange={this.handleSortChange.bind(this)}
         rowStyle={this.rowStyle.bind(this)}
-        groupBy={['fpono','fpartno']}
+        groupBy={['poRecv']}
+/*
+        groupBy={[
+       {
+          name: 'fpono',
+          render: function(v){return 'Index ' + v}
+        }]}
+        */
         columns={this.state.columns} />   
      return ( <div> {whichTable}</div>);
   }

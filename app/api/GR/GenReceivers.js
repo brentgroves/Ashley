@@ -33,6 +33,7 @@ import * as SQLTRANSINSERT from "./SQLTransInsert.js"
 //import * as hashLeftOuterJoin from "lodash-joins/lib/hash/hashLeftOuterJoin.js"
 var _ = require('lodash');
 var joins = require('lodash-joins');
+var sorty    = require('sorty')
 
 export async function prime(disp,getSt){
   var dispatch = disp;
@@ -1057,14 +1058,81 @@ export function RcvJoin(disp,getSt) {
   var rcmast = st.GenReceivers.rcmast;
   var rcitem = st.GenReceivers.rcitem;
 
-  var rcmastSel = _.map(rcmast).map(function(x){
-    return _.pick(x, ['freceiver', 'fpono','fpacklist','fcompany','ffrtcarr']); 
+  var rcmSelect = _.map(rcmast).map(function(x){
+
+    var rcmPick = _.pick(x, ['freceiver', 'fpono','fpacklist','fcompany','ffrtcarr']); 
+
+    return rcmPick; 
   });
 
-  var rcvJoin =joins.hashLeftOuterJoin(rcmastSel, accessor, rcitem, accessor);
+  var rcvJoin =joins.hashLeftOuterJoin(rcmSelect, accessor, rcitem, accessor);
 
-  dispatch({ type:GRACTION.SET_RCVJOIN,rcvJoin:rcvJoin});
-  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.READY_TO_REVIEW });
+  var rcvMod = _.map(rcvJoin).map(function(x){
+    var poRecv=x.fpono+' / '+x.freceiver; 
+    var totCost=parseFloat(x.fqtyrecv)  * parseFloat(x.fucost);
+    totCost=totCost.toFixed(2)
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`fqtyrecv = ${x.fqtyrecv} `);
+      console.log(`fucost = ${x.fucost} `);
+      console.log(`totCost = ${totCost} `);
+    }
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`poRecv = ${poRecv} `);
+    }
+    var rcmAdd = _.assign(x, {'poRecv':poRecv},{'totCost':totCost},{'grandTotal':false});
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`rcmAdd = `);
+      console.dir(rcmAdd);
+    }
+
+    return rcmAdd; 
+  });
+
+  var sortInfo = [ { name: 'fpono', dir: 'asc'},{ name: 'freceiver', dir: 'asc'},{ name: 'fpartno', dir: 'asc'}];
+  if ('development'==process.env.NODE_ENV) {
+    //      console.log(`this.test = `);
+    //    console.dir(this.test);
+  }
+
+  var rcvSorted = sorty(sortInfo, rcvMod);
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`rcvJoin = `);
+    console.dir(rcvSorted);
+  }
+
+
+  var rcvRunningTotalCost=[];
+  var curRecv='start';
+  var curRecvTot=0;
+  _.map(rcvSorted).map(function(x){
+    if(x.freceiver!=curRecv){
+      curRecv=x.freceiver;
+      curRecvTot=x.totCost; 
+    }else{
+      curRecvTot=parseFloat(curRecvTot)+parseFloat(x.totCost); 
+    }
+    // delete old rcvTotCostRow object
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`curRecvTot = ${curRecvTot} `);
+    }
+    curRecvTot=parseFloat(curRecvTot).toFixed(2);
+    var rcvItem = _.assign(x, {'rcvTotCost':curRecvTot});
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`rcvItem =`);
+      console.dir(rcvItem);
+    }
+    rcvRunningTotalCost.push(rcvItem);
+
+  });
+
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`rcvRunningTotalCost =`);
+    console.dir(rcvRunningTotalCost);
+  }
+
+
+  dispatch({ type:GRACTION.SET_RCVJOIN,rcvJoin:rcvRunningTotalCost});
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.REVIEW_RECEIVERS });
 
   if ('development'==process.env.NODE_ENV) {
     console.log(`rcvJoin =>`);

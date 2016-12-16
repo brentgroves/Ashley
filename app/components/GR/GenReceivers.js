@@ -273,6 +273,12 @@ export default class GenReceivers extends Component {
   {
     cancelBtn = 
     <div>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
 
       <Row>
         <Col xs={5} >&nbsp;</Col>
@@ -312,7 +318,7 @@ export default class GenReceivers extends Component {
 
       <Row>
         <Col xs={5} >&nbsp;</Col>
-        <Col xs={1}><Button  onClick={() => this.props.setState(GRSTATE.REVIEW_RECEIVERS)} bsSize="large" bsStyle="info" >Review</Button></Col>
+        <Col xs={1}><Button  onClick={this.props.RcvJoin} bsSize="large" bsStyle="info" >Review</Button></Col>
         <Col xs={2}><Button style={{marginLeft:10}} onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
         <Col xs={4}>&nbsp;</Col>
       </Row>
