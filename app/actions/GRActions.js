@@ -129,6 +129,17 @@ export function m2mGenReceivers() {
   };
 }
 
+export function POStatusReport() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`GRACTIONS.POStatusReport()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    GRAPI.POStatusReport(disp,getSt);
+  };
+}
 export function prime() {
  return (dispatch,getState) => {
     var disp = dispatch;

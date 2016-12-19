@@ -34,6 +34,9 @@ import * as SQLTRANSINSERT from "./SQLTransInsert.js"
 var _ = require('lodash');
 var joins = require('lodash-joins');
 var sorty    = require('sorty')
+var fs = require('fs');
+var client = require("jsreport-client")('http://10.1.1.217:5488', 'admin', 'password')
+
 
 export async function prime(disp,getSt){
   var dispatch = disp;
@@ -621,7 +624,27 @@ export async function start(disp,getSt) {
     }
   }
 
+ // debug/testing section
+ //http://colintoh.com/blog/lodash-10-javascript-utility-functions-stop-rewriting 
  
+  if(continueProcess){
+    dispatch((dispatch,getState) => {
+        var disp = dispatch;
+        var getSt = getState;
+        POStatusReport(disp,getSt);
+      }
+    );    
+
+
+    if ('development'==process.env.NODE_ENV) {
+ //     console.log(`rcvJoin =>`);
+ //     console.dir(rcvJoin);
+
+    }
+    continueProcess=false;
+  }
+
+
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -731,7 +754,6 @@ export async function start(disp,getSt) {
 
   if(continueProcess){
     dispatch({ type:GRACTION.SET_CHECK0, chk0:CHK.SUCCESS });
-
     dispatch((dispatch,getState) => {
       var disp = dispatch;
       var getSt = getState;
@@ -867,6 +889,7 @@ export async function start(disp,getSt) {
 
     if(continueProcess){
       dispatch({ type:GRACTION.SET_CHECK1, chk1:CHK.SUCCESS });
+      dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.PREPARING_RECEIVERS });
       cnt=0;
       maxCnt=10;
       while(!getState().GenReceivers.bpGRSetCurrentReceiver.done){
@@ -1055,6 +1078,8 @@ export function RcvJoin(disp,getSt) {
 
   var st = getState();
 
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.PRE_REVIEW_RECEIVERS });
+
   var rcmast = st.GenReceivers.rcmast;
   var rcitem = st.GenReceivers.rcitem;
 
@@ -1071,16 +1096,12 @@ export function RcvJoin(disp,getSt) {
     var poRecv=x.fpono+' / '+x.freceiver; 
     var totCost=parseFloat(x.fqtyrecv)  * parseFloat(x.fucost);
     totCost=totCost.toFixed(2)
+    var rcmAdd = _.assign(x, {'poRecv':poRecv},{'totCost':totCost},{'sumRow':false});
     if ('development'==process.env.NODE_ENV) {
       console.log(`fqtyrecv = ${x.fqtyrecv} `);
       console.log(`fucost = ${x.fucost} `);
       console.log(`totCost = ${totCost} `);
-    }
-    if ('development'==process.env.NODE_ENV) {
       console.log(`poRecv = ${poRecv} `);
-    }
-    var rcmAdd = _.assign(x, {'poRecv':poRecv},{'totCost':totCost},{'grandTotal':false});
-    if ('development'==process.env.NODE_ENV) {
       console.log(`rcmAdd = `);
       console.dir(rcmAdd);
     }
@@ -1089,10 +1110,6 @@ export function RcvJoin(disp,getSt) {
   });
 
   var sortInfo = [ { name: 'fpono', dir: 'asc'},{ name: 'freceiver', dir: 'asc'},{ name: 'fpartno', dir: 'asc'}];
-  if ('development'==process.env.NODE_ENV) {
-    //      console.log(`this.test = `);
-    //    console.dir(this.test);
-  }
 
   var rcvSorted = sorty(sortInfo, rcvMod);
   if ('development'==process.env.NODE_ENV) {
@@ -1100,29 +1117,59 @@ export function RcvJoin(disp,getSt) {
     console.dir(rcvSorted);
   }
 
-
   var rcvRunningTotalCost=[];
-  var curRecv='start';
-  var curRecvTot=0;
+  var sumRecv='start';
+  var sumRecvTot=0;
+  var sumPORecv,sumPO,sumRecv,sumPackList,sumFrtCarr;
   _.map(rcvSorted).map(function(x){
-    if(x.freceiver!=curRecv){
-      curRecv=x.freceiver;
-      curRecvTot=x.totCost; 
-    }else{
-      curRecvTot=parseFloat(curRecvTot)+parseFloat(x.totCost); 
-    }
-    // delete old rcvTotCostRow object
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`curRecvTot = ${curRecvTot} `);
-    }
-    curRecvTot=parseFloat(curRecvTot).toFixed(2);
-    var rcvItem = _.assign(x, {'rcvTotCost':curRecvTot});
-    if ('development'==process.env.NODE_ENV) {
-      console.log(`rcvItem =`);
-      console.dir(rcvItem);
-    }
-    rcvRunningTotalCost.push(rcvItem);
+    if((x.freceiver!=sumRecv)&&('start'!=sumRecv)){
+      sumRecvTot=parseFloat(sumRecvTot).toFixed(2);
+      var rcvSum = {'poRecv':sumPORecv,'fpono':sumPO,'fpartno':'999','freceiver':sumRecv,'fpacklist':sumPackList, 
+      'ffrtcarr':sumFrtCarr,'fqtyrecv':999,'fucost':999.9,'totCost':sumRecvTot,'sumRow':true};
 
+
+
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`if((x.freceiver!=curRecv)&&('start'!=curRecv)) =>rcvSum = `);
+        console.dir(rcvSum);
+      }
+
+      rcvRunningTotalCost.push(rcvSum);
+
+      sumPORecv=x.poRecv;
+      sumPO=x.fpono;
+      sumRecv=x.freceiver;
+      sumPackList=x.fpacklist;
+      sumFrtCarr=x.ffrtcarr;
+      sumRecvTot=0;
+ 
+    }else if((x.freceiver!=sumRecv)&&'start'==sumRecv){
+      sumPORecv=x.poRecv;
+      sumPO=x.fpono;
+      sumRecv=x.freceiver;
+      sumPackList=x.fpacklist;
+      sumFrtCarr=x.ffrtcarr;
+      sumRecvTot=0;
+
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`if((x.freceiver!=curRecv)&&('start'==curRecv)) =>x = `);
+        console.dir(x);
+      }
+
+    }
+
+    sumRecvTot=parseFloat(sumRecvTot)+parseFloat(x.totCost); 
+    if ('development'==process.env.NODE_ENV) {
+        console.log(`sumPORecv = ${sumPORecv}`);
+        console.log(`sumPO = ${sumPO}`);
+        console.log(`sumRecv = ${sumRecv}`);
+        console.log(`sumPackList = ${sumPackList}`);
+        console.log(`sumFrtCarr = ${sumFrtCarr}`);
+        console.log(`sumRecvTot = ${sumRecvTot}`);
+        console.log(`x = `);
+        console.dir(x);
+    }
+    rcvRunningTotalCost.push(x);
   });
 
   if ('development'==process.env.NODE_ENV) {
@@ -1131,8 +1178,8 @@ export function RcvJoin(disp,getSt) {
   }
 
 
-  dispatch({ type:GRACTION.SET_RCVJOIN,rcvJoin:rcvRunningTotalCost});
   dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.REVIEW_RECEIVERS });
+  dispatch({ type:GRACTION.SET_RCVJOIN,rcvJoin:rcvRunningTotalCost});
 
   if ('development'==process.env.NODE_ENV) {
     console.log(`rcvJoin =>`);
@@ -1147,3 +1194,55 @@ function accessor(obj) {
  return obj['freceiver'];
 }
 
+export function POStatusReport(disp,getSt) {
+  var dispatch = disp;
+  var getState = getSt;
+
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`client = } `);
+    console.dir(client);
+  }
+  client.render({
+
+//      template: { shortid:"HJEa3YSNl"}
+      template: { shortid:"B1WBsctr4e"} // sample report
+//      template: { content: "hello {{:someText}}", recipe: "html",
+//                  engine: "jsrender" },
+//      data: { someText: "world!!" }
+  }, function(err, response) {
+      response.body(function(body) {
+          //prints hello world!!
+          if ('development'==process.env.NODE_ENV) {
+            console.log(`body = } `);
+        //    console.dir(body);
+          }
+          //let poStatusReport = body.toString();
+          //var myBlob = new Blob();
+
+//do stuff here to give the blob some data...
+fs.writeFile('/home/brent/myfile.txt',body , (err) => {
+  if (err) throw err;
+  console.log('It\'s saved!');
+});
+
+//          var myBlob = new Blob([poStatusReport], { type: 'application/pdf' });
+
+  //        var myFile = blobToFile(myBlob, "mypdf.pdf");
+    //      var file = new File([myBlob], "mypdf.pdf");
+      //    dispatch({ type:GRACTION.SET_POSTATUS_REPORT, poStatusReport:poStatusReport });
+     //     var file = new Blob([poStatusReport], { type: 'application/pdf' });
+     //     var fileURL = URL.createObjectURL(file);
+//          window.open(fileURL);
+
+         // console.log(body.toString());
+      });
+  });
+  //dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.DISPLAY_REPORT });
+}
+
+function blobToFile(theBlob, fileName){
+    //A Blob() is almost a File() - it's just missing the two properties below which we will add
+    theBlob.lastModifiedDate = new Date();
+    theBlob.name = fileName;
+    return theBlob;
+}

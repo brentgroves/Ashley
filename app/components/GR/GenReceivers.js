@@ -120,6 +120,22 @@ export default class GenReceivers extends Component {
         </Col>
       </Row>
   } else if(
+            (GRSTATE.PREPARING_RECEIVERS==this.props.GenR.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Preparing Receivers</h1>
+            <p style={{textAlign: 'center'}}>Preparing receivers that will need to be updated with a freight carrier & packing list.</p>
+            <p style={{textAlign: 'center',paddingBottom:5}}><strong>Please wait...</strong></p> 
+            <br/>
+          </Jumbotron>
+
+        </Col>
+      </Row>
+
+  } else if(
             (GRSTATE.NOT_READY_TO_REVIEW==this.props.GenR.state) 
             ){
     jumboTronTxt=
@@ -132,7 +148,6 @@ export default class GenReceivers extends Component {
           </Jumbotron>
         </Col>
       </Row>
-
   } else if(
             (GRSTATE.READY_TO_REVIEW==this.props.GenR.state) 
             ){
@@ -147,6 +162,22 @@ export default class GenReceivers extends Component {
           </Jumbotron>
         </Col>
       </Row>
+  } else if(
+            (GRSTATE.PRE_REVIEW_RECEIVERS==this.props.GenR.state)  
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Preparing Review</h1>
+            <p style={{textAlign: 'center'}}>Preparing for review. Generating tables and calculating sums.</p>
+            <p style={{textAlign: 'center',paddingBottom:5}}><strong>Please wait...</strong></p> 
+            <br/>
+
+          </Jumbotron>
+        </Col>
+      </Row>
+
   } else if(
             (GRSTATE.REVIEW_RECEIVERS==this.props.GenR.state) 
             ){
@@ -174,6 +205,20 @@ export default class GenReceivers extends Component {
           </Jumbotron>
         </Col>
       </Row>
+  } else if(
+            (GRSTATE.DISPLAY_REPORT==this.props.GenR.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron  >
+            <h1 style={{textAlign: 'center'}}>PO Status Report</h1>
+            <p >This report lists shows which PO(s) in which all items have been received.</p>
+          </Jumbotron>
+        </Col>
+      </Row>
+
   } else if(GRSTATE.FAILURE==this.props.GenR.state){
     jumboTronTxt=
       <Row >
@@ -211,6 +256,8 @@ export default class GenReceivers extends Component {
     (GRSTATE.NOT_PRIMED==this.props.GenR.state) ||
       (GRSTATE.PRIMED==this.props.GenR.state) ||
       (GRSTATE.STARTED==this.props.GenR.state) ||
+      (GRSTATE.PREPARING_RECEIVERS==this.props.GenR.state) ||
+      (GRSTATE.PRE_REVIEW_RECEIVERS==this.props.GenR.state)  ||
       (GRSTATE.GENERATE_RECEIVERS==this.props.GenR.state) 
     )
   {
@@ -230,6 +277,8 @@ export default class GenReceivers extends Component {
 
   if(
       (GRSTATE.STARTED==this.props.GenR.state) ||
+      (GRSTATE.PREPARING_RECEIVERS==this.props.GenR.state) ||
+      (GRSTATE.PRE_REVIEW_RECEIVERS==this.props.GenR.state)  ||
       (GRSTATE.GENERATE_RECEIVERS==this.props.GenR.state)  ||
       (GRSTATE.OUT_OF_RANGE==this.props.GenR.state)  ||
       (GRSTATE.UPTODATE==this.props.GenR.state)  ||
@@ -267,6 +316,17 @@ export default class GenReceivers extends Component {
   }
 
   if(
+        (GRSTATE.DISPLAY_REPORT==this.props.GenR.state) 
+    )
+  {
+    reactDataGrid = 
+      <Row>
+        <Col xs={12}><GRReactDataGrid /></Col>
+      </Row>
+  }
+
+
+  if(
       (GRSTATE.FAILURE==this.props.GenR.state) ||
       (GRSTATE.OUT_OF_RANGE==this.props.GenR.state)
     )
@@ -298,7 +358,7 @@ export default class GenReceivers extends Component {
 
       <Row>
         <Col xs={5} >&nbsp;</Col>
-        <Col xs={1}><Button  onClick={() => this.props.setState(GRSTATE.REVIEW_RECEIVERS)} bsSize="large" bsStyle="info" disabled>Review</Button></Col>
+        <Col xs={1}><Button  onClick={this.props.RcvJoin} bsSize="large" bsStyle="info" disabled>Review</Button></Col>
         <Col xs={3}><Button style={{marginLeft:10}} onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
         <Col xs={4}>&nbsp;</Col>
       </Row>
@@ -343,7 +403,9 @@ export default class GenReceivers extends Component {
   if(
       (GRSTATE.PRIMED==this.props.GenR.state) || 
       (GRSTATE.UPTODATE==this.props.GenR.state) ||  
-      (GRSTATE.SUCCESS==this.props.GenR.state)   
+      (GRSTATE.SUCCESS==this.props.GenR.state)  || 
+      (GRSTATE.DISPLAY_REPORT==this.props.GenR.state) 
+
     )
   {
     navbar =

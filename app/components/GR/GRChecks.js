@@ -86,21 +86,21 @@ export default class GRChecks extends Component {
     case CHK.SUCCESS:
       check2Button = 
         <Row style={chk} >
-          <Col  xs={10}>Create Receivers</Col>
+          <Col  xs={10}>Preparing Receivers</Col>
           <Col  xs={2}><Button bsStyle="success"><Glyphicon glyph="ok" /></Button></Col>
         </Row>
       break; 
     case CHK.FAILURE:
         check2Button = 
           <Row style={chk} >
-            <Col  xs={10}>Create Receivers</Col>
+            <Col  xs={10}>Preparing Receivers</Col>
             <Col  xs={2}><Button bsStyle="danger"><Glyphicon glyph="remove" /></Button></Col>
           </Row>;
         break;
       default: 
         check2Button = 
           <Row style={chk} >
-            <Col  xs={10}>Create Receivers</Col>
+            <Col  xs={10}>Preparing Receivers</Col>
             <Col  xs={2}><Button bsStyle="info"><Glyphicon glyph="time" /></Button></Col>
           </Row>;
         break;

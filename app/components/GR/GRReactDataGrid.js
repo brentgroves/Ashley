@@ -20,14 +20,42 @@ export default class GRReactDataGrid extends React.Component{
       columns : [
 //        { name: 'identity_column'},
 //        { name: 'fpono'},
-       { name: 'fpartno', title: 'Part Number', width: 220,style: { color: '#FB667A' }},
+       { name: 'fpartno', title: 'Part Number', width: 220,style: { color: '#FB667A' },
+              render: function(v){
+                var ret;
+                if('999'==v){
+                  ret='';
+                }else{
+                  ret=v;
+                }
+                return ret;
+              }},
        { name: 'fpacklist',title: 'Pack List', width: 150},
        { name: 'ffrtcarr',title: 'Carrier', width: 200},
-       { name: 'fqtyrecv',title: 'Qty', width: 70},
-       { name: 'fucost',title: 'Cost', width: 70},
-       { name: 'totCost',title: 'Total', width: 70},
-       { name: 'rcvTotCost',title: 'RcvTotal'}
-
+       { name: 'fqtyrecv',title: 'Qty', width: 70,
+              render: function(v){
+                var ret;
+                if(999==v){
+                  ret='';
+                }else{
+                  ret=v;
+                }
+                return ret;
+              }},
+       { name: 'fucost',title: 'Cost', width: 70,
+              render: function(v){
+                var ret;
+                if(999.9==v){
+                  ret='Total:';
+                }else{
+                  ret='$'+v;
+                }
+                return ret;
+              }},
+       { name: 'totCost',title: 'Total',/*textAlign: 'right',*/
+              render: function(v){
+                return '$' + v;
+              }}
 /*
         {
           name: 'fpono',

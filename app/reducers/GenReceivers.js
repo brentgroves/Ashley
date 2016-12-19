@@ -356,6 +356,14 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {logId: {$set: action.logId}});
       return newData;
     }
+
+
+    case GRACTION.SET_POSTATUS_REPORT:
+    {
+      var newData = update(state, {poStatusReport: {$set: action.poStatusReport}});
+      return newData;
+    }
+
     case GRACTION.SET_RCITEM:
     {
       var newData = update(state, {rcitem: {$set: action.rcitem}});
