@@ -1,9 +1,13 @@
-import { app, BrowserWindow, Menu, shell } from 'electron';
+import { app, BrowserWindow, Menu, shell,ipcMain } from 'electron';
+const qs = require ("querystring");
+
 
 let menu;
 let template;
 let mainWindow = null;
-
+let pdfWindow = null;
+//const pdfURL = "http://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
+let temp=app.getPath('temp');
 
 if (process.env.NODE_ENV === 'development') {
   require('electron-debug')(); // eslint-disable-line global-require
@@ -32,6 +36,7 @@ const installExtensions = async () => {
   }
 };
 
+
 app.on('ready', async () => {
   await installExtensions();
 
@@ -40,6 +45,42 @@ app.on('ready', async () => {
     width: 1200,
     height: 900
   });
+
+//https://github.com/seanchas116/electron-pdfjs
+  ipcMain.on('asynchronous-message', (event, fullPathName) => {
+    console.log(fullPathName);  // prints "ping"
+
+    pdfWindow = new BrowserWindow({
+      show: true,
+      width: 800,
+      height: 600,
+      webPreferences: {
+        nodeIntegration: false,
+        webSecurity: false,
+      },
+    });
+    let pdfURL = 'file://' + fullPathName;
+
+//    let pdfURL = 'file://' + app.getPath('temp') + '/myfile.pdf';
+
+    let param = qs.stringify({file: pdfURL});
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`pdfURL: ${pdfURL}`);
+  //    console.log(`app.on().__dirname: ${__dirname}`);
+    }
+
+//  pdfWindow.webContents.openDevTools();
+
+    pdfWindow.on('closed', function() {
+      pdfWindow = null;
+    });
+
+    pdfWindow.loadURL('file://' + __dirname + '/pdfjs/web/viewer.html?' + param);
+    //event.sender.send('asynchronous-reply', 'pong')
+    //pdfWindow.show();
+    
+  })
+
 /*
      width: 1200,
     height: 900

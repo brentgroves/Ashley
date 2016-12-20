@@ -23,6 +23,7 @@ export const REVIEW_RECEIVERS = 'REVIEW_RECEIVERS'
 // state 40 - Generate receivers in Made2Manage
 export const GENERATE_RECEIVERS = 'GENERATE_RECEIVERS'
 
+
 // state 50 - Display PO Status report
 export const DISPLAY_REPORT = 'DISPLAY_REPORT'
 

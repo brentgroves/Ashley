@@ -1,6 +1,9 @@
 
 var sql = require('mssql');
-const {dialog} = require('electron').remote;
+
+import { remote,ipcRenderer } from 'electron';
+
+
 
 import * as CHK from "../../actions/ChkConst.js"
 import * as CONNECT from "../SQLConst.js"
@@ -126,8 +129,6 @@ export async function m2mGenReceivers(disp,getSt) {
     }
   }
 
-  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
-  continueProcess=false;
 
 
   if(continueProcess){
@@ -317,6 +318,8 @@ export async function m2mGenReceivers(disp,getSt) {
 //  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
 //  continueProcess=false;
 
+
+
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -343,12 +346,38 @@ export async function m2mGenReceivers(disp,getSt) {
    
   }
 
+  if(continueProcess){
+    dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.SUCCESS });
+    dispatch((dispatch,getState) => {
+        var disp = dispatch;
+        var getSt = getState;
+        POStatusReport(disp,getSt);
+      }
+    );    
+
+    cnt=0;
+    while(!getState().GenReceivers.poStatusReport.done){
+      if(++cnt>maxCnt ){
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+
+    if(getState().GenReceivers.poStatusReport.failed || 
+      !getState().GenReceivers.poStatusReport.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`m2mGenReceivers().poStatusReport() FAILED.`);
+      }
+    }
+  }
+
+
 //  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
 //  continueProcess=false;
 
   // THE END
   if(continueProcess){
-    dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.SUCCESS });
     dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
   }
 
@@ -626,7 +655,7 @@ export async function start(disp,getSt) {
 
  // debug/testing section
  //http://colintoh.com/blog/lodash-10-javascript-utility-functions-stop-rewriting 
- 
+ /*
   if(continueProcess){
     dispatch((dispatch,getState) => {
         var disp = dispatch;
@@ -644,7 +673,7 @@ export async function start(disp,getSt) {
     continueProcess=false;
   }
 
-
+*/
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -1194,55 +1223,96 @@ function accessor(obj) {
  return obj['freceiver'];
 }
 
-export function POStatusReport(disp,getSt) {
+export async function POStatusReport(disp,getSt) {
   var dispatch = disp;
   var getState = getSt;
+  var continueProcess=true;
+
+
+  //remote.dialog.showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']})
+  dispatch({ type:GRACTION.SET_GO_BUTTON, goButton:PROGRESSBUTTON.LOADING });
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.DISPLAY_REPORT });
+
+  var dirName=remote.app.getPath('temp');
 
   if ('development'==process.env.NODE_ENV) {
-    console.log(`client = } `);
-    console.dir(client);
+    console.log(`remote = } `);
+    console.dir(remote);
+    console.log(` dirName: ${ dirName}`);
   }
-  client.render({
 
-//      template: { shortid:"HJEa3YSNl"}
-      template: { shortid:"B1WBsctr4e"} // sample report
-//      template: { content: "hello {{:someText}}", recipe: "html",
-//                  engine: "jsrender" },
-//      data: { someText: "world!!" }
-  }, function(err, response) {
-      response.body(function(body) {
-          //prints hello world!!
+  if(continueProcess){
+    client.render({
+
+  //      template: { shortid:"HJEa3YSNl"}
+        template: { shortid:"B1WBsctr4e"} // sample report
+//http://10.1.1.217:5488/templates/B1WBsctr4e
+  //      template: { content: "hello {{:someText}}", recipe: "html",
+  //                  engine: "jsrender" },
+  //      data: { someText: "world!!" }
+    }, function(err, response) {
+        var dirName1 = dirName;
+
+        if ('development'==process.env.NODE_ENV) {
+          console.log(`dirName: ${dirName}`);
+          console.log(`dirName1: ${dirName1}`);
+          console.log(`err =  `);
+          console.dir(err);
+        }
+      //dispatch({ type:GRACTION.SET_REASON, reason:err.message });
+      //dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
+      //dispatch({ type:GRACTION.LOG_ENTRY_LAST_FAILED, failed:true });
+
+        response.body(function(body) {
+          var dirName2 = dirName1;
+          let fileName =  dirName2 + '/myfile.pdf';
           if ('development'==process.env.NODE_ENV) {
-            console.log(`body = } `);
-        //    console.dir(body);
+            console.log(`dirName: ${dirName}`);
+            console.log(`dirName1: ${dirName1}`);
+            console.log(`dirName2: ${dirName2}`);
+            console.log(`fileName: ${fileName}`);
           }
-          //let poStatusReport = body.toString();
-          //var myBlob = new Blob();
 
-//do stuff here to give the blob some data...
-fs.writeFile('/home/brent/myfile.txt',body , (err) => {
-  if (err) throw err;
-  console.log('It\'s saved!');
-});
+          fs.writeFileSync(fileName,body);
+//          fs.writeFileSync('/home/brent/myfile.pdf',body);
+          dispatch({ type:GRACTION.SET_POSTATUS_REPORT_DONE, done:true });
+          if ('development'==process.env.NODE_ENV) {
+            console.log(`Done creating file myfile.pdf `);
+            console.log(`fileName: ${fileName}`);
+          }
+          ipcRenderer.send('asynchronous-message', fileName)
+          //dispatch({ type:GRACTION.SET_POSTATUS_REPORT_PDF, pdf:body });
+        });
+    });
 
-//          var myBlob = new Blob([poStatusReport], { type: 'application/pdf' });
+    var cnt=0;
+    var maxCnt=40;
+    while(!getState().GenReceivers.poStatusReport.done){
+      if(++cnt>maxCnt){
+        continueProcess=false;
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
 
-  //        var myFile = blobToFile(myBlob, "mypdf.pdf");
-    //      var file = new File([myBlob], "mypdf.pdf");
-      //    dispatch({ type:GRACTION.SET_POSTATUS_REPORT, poStatusReport:poStatusReport });
-     //     var file = new Blob([poStatusReport], { type: 'application/pdf' });
-     //     var fileURL = URL.createObjectURL(file);
-//          window.open(fileURL);
+    if(getState().GenReceivers.poStatusReport.failed || 
+      !getState().GenReceivers.poStatusReport.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`POStatusReport not successful.`);
+      }
+      /*  Don't fail the APP if the report fails.
+      dispatch({ type:GRACTION.SET_REASON, reason:`FAILED to generate report.` });
+      dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
+      dispatch({ type:GRACTION.SET_STATUS, status:'Can not connect to Report Server...' });
+      */
+//      dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.FAILURE });
+      continueProcess=false;
+    }else{
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`POStatusReport Success.`);
+      }
+    }
+  }
 
-         // console.log(body.toString());
-      });
-  });
-  //dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.DISPLAY_REPORT });
-}
-
-function blobToFile(theBlob, fileName){
-    //A Blob() is almost a File() - it's just missing the two properties below which we will add
-    theBlob.lastModifiedDate = new Date();
-    theBlob.name = fileName;
-    return theBlob;
 }

@@ -63,7 +63,7 @@ const initialState = {
 		logEntryLast:{},
 		logId:0,
 		logInsert:{done:false,failed:false},
-		poStatusReport:'',
+		poStatusReport:{pdf:'',done:false,failed:false},
 		rcitem:[{}],
 		rcitemInsert:{done:false,failed:false},
 		rcitemUpdate:{done:false,failed:false},

@@ -127,6 +127,7 @@ export default function reducer( state = {}, action) {
           logEntryLast:{$set:[{}]},
           logId:{$set:0},
           receiverCount:{$set:0},
+          poStatusReport:{$set:{pdf:'',done:false,failed:false}},
           rcitem:{$set:[{}]},
           rcitemInsert:{$set:{done:false,failed:false}},
           rcitemUpdate:{$set:{done:false,failed:false}},
@@ -357,10 +358,27 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
-
-    case GRACTION.SET_POSTATUS_REPORT:
+    case GRACTION.SET_POSTATUS_REPORT_FAILED:
     {
-      var newData = update(state, {poStatusReport: {$set: action.poStatusReport}});
+      var poStatusReport = state.poStatusReport;
+      poStatusReport.failed=action.failed;
+      var newData = update(state, {poStatusReport: {$set: poStatusReport}});
+      return newData;
+    }
+
+    case GRACTION.SET_POSTATUS_REPORT_DONE:
+    {
+      var poStatusReport = state.poStatusReport;
+      poStatusReport.done=action.done;
+      var newData = update(state, {poStatusReport: {$set: poStatusReport}});
+      return newData;
+    }
+
+    case GRACTION.SET_POSTATUS_REPORT_PDF:
+    {
+      var poStatusReport = state.poStatusReport;
+      poStatusReport.pdf=action.pdf;
+      var newData = update(state, {poStatusReport: {$set: poStatusReport}});
       return newData;
     }
 

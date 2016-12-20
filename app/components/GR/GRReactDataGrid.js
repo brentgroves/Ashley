@@ -30,7 +30,16 @@ export default class GRReactDataGrid extends React.Component{
                 }
                 return ret;
               }},
-       { name: 'fpacklist',title: 'Pack List', width: 150},
+       { name: 'fpacklist',title: 'Pack List#', width: 150,
+              render: function(v){
+                var ret;
+                if(''==v){
+                  ret='NO Packlist!';
+                }else{
+                  ret=v;
+                }
+                return ret;
+              }},
        { name: 'ffrtcarr',title: 'Carrier', width: 200},
        { name: 'fqtyrecv',title: 'Qty', width: 70,
               render: function(v){
