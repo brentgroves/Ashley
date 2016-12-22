@@ -655,8 +655,8 @@ export async function start(disp,getSt) {
 
  // debug/testing section
  //http://colintoh.com/blog/lodash-10-javascript-utility-functions-stop-rewriting 
- /*
   if(continueProcess){
+    dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.SUCCESS });
     dispatch((dispatch,getState) => {
         var disp = dispatch;
         var getSt = getState;
@@ -664,16 +664,23 @@ export async function start(disp,getSt) {
       }
     );    
 
-
-    if ('development'==process.env.NODE_ENV) {
- //     console.log(`rcvJoin =>`);
- //     console.dir(rcvJoin);
-
+    cnt=0;
+    while(!getState().GenReceivers.poStatusReport.done){
+      if(++cnt>maxCnt ){
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
     }
-    continueProcess=false;
-  }
 
-*/
+    if(getState().GenReceivers.poStatusReport.failed || 
+      !getState().GenReceivers.poStatusReport.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`m2mGenReceivers().poStatusReport() FAILED.`);
+      }
+    }
+  }
+  continueProcess=false;
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -1245,7 +1252,7 @@ export async function POStatusReport(disp,getSt) {
     client.render({
 
   //      template: { shortid:"HJEa3YSNl"}
-        template: { shortid:"B1WBsctr4e"} // sample report
+        template: { shortid:"SkVLXedVe"} // sample report
 //http://10.1.1.217:5488/templates/B1WBsctr4e
   //      template: { content: "hello {{:someText}}", recipe: "html",
   //                  engine: "jsrender" },

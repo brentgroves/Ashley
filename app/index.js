@@ -9,6 +9,7 @@ import './app.global.css';
 import * as CHK from "./actions/ChkConst.js"
 import * as GRSTATE from "./actions/GRState.js"
 import * as PORTSTATE from "./actions/PORTState.js"
+import * as RPTSTATE from "./actions/Rpt/State.js"
 import * as PORTCHK from "./actions/PORTChkConst.js"
 import * as PROGRESSBUTTON from "./actions/ProgressButtonConst.js"
 
@@ -79,6 +80,13 @@ const initialState = {
 		status:'',
 		shipViaQry:{done:false,failed:false},
 		sqlExec:{done:false,failed:false}
+	},
+	Reports:{ 
+		progressBtn:PROGRESSBUTTON.READY, 
+		poStatusReport:{pdf:'',done:false,failed:false},
+		reason:'',
+		state:RPTSTATE.NOT_STARTED,
+		status:''
 	},
 	Common:{ 
 		primed:false

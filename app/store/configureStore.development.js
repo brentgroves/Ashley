@@ -8,11 +8,13 @@ import rootReducer from '../reducers';
 import * as PORTActions from '../actions/POReqTrans';
 import * as CommonActions from '../actions/Common';
 import * as GRActions from '../actions/GRActions';
+import * as RptActions from '../actions/Rpt/Actions';
 
 const actionCreators = {
   ...PORTActions,
   ...CommonActions,
   ...GRActions,
+  ...RptActions,
   push,
 };
 
