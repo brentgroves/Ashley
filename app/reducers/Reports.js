@@ -21,6 +21,21 @@ export default function reducer( state = {}, action) {
         });
       return newData;
     }
+
+    case ACTION.INIT_NO_STATE:
+    {
+      if ('development'==process.env.NODE_ENV) {
+        console.log('RPT_INIT_NO_STATE');
+      }
+      var newData = update(state, 
+        { 
+          progressBtn:{$set:PROGRESSBUTTON.READY},
+          poStatusReport:{$set:{pdf:'',done:false,failed:false}},
+          reason:{$set:''},
+          status:{$set: ''}
+        });
+      return newData;
+    }
     
     case ACTION.SET_POSTATUS_REPORT_FAILED:
     {

@@ -119,6 +119,10 @@ export default class Reports extends Component {
       (STATE.SUCCESS==this.props.Rpt.state)
     )
   {
+  const rpt1Style = {
+    fontWeight:'bold'
+  };
+
     var rptMenu;
     rptMenu =
       <Row>
@@ -126,7 +130,8 @@ export default class Reports extends Component {
           <table className={styles.tg}>
           <tbody>
             <tr>
-              <td className={styles.tgh1ue} onClick={this.props.POStatusReport} >PO Status</td>
+              <td className={styles.btnWarning} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Opened Today</span><br/>Email(s) Sent</td>
+              <td className={styles.btnInfo} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Closed Today</span><br/>PDF format</td>
             </tr>
             </tbody>
           </table>

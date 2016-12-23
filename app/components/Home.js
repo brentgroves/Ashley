@@ -69,10 +69,22 @@ export default class Home extends Component {
      </p>
   </div>   
 
+  var jumboTronTxt;
+  jumboTronTxt=
+    jumboTronTxt=
+      <Row >
+        <Col >
+          <Jumbotron style={{marginLeft:0,marginRight:0}} >
+             <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Busche Production Software</h1>
+            <p style={{textAlign: 'center'}}><strong>Description:{" "}</strong>Please choose from one of the activities listed below.</p>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
+
+
   var gridMenu;
   gridMenu =
-    <div className="intro-header">
-    <Grid>
     <Row>
       <Col>
         <table className={styles.tg}>
@@ -92,13 +104,14 @@ export default class Home extends Component {
         </table>
       </Col>
     </Row>
-    </Grid>
-    </div>
 
     return (
-      <div >
-      {gridMenu}
-      {navbar}
+      <div>
+        <Grid>
+        {jumboTronTxt}
+        {gridMenu}
+        </Grid>
+        {navbar}
       </div>
     );
   }

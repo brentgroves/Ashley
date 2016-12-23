@@ -43,7 +43,7 @@ app.on('ready', async () => {
   mainWindow = new BrowserWindow({
     show: false,
     width: 1200,
-    height: 900
+    height: 800
   });
 
 //https://github.com/seanchas116/electron-pdfjs

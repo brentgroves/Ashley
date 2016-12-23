@@ -108,6 +108,8 @@ export async function POStatusReport(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`POStatusReport Success.`);
       }
+      
+      dispatch({type:ACTION.INIT_NO_STATE});
       dispatch({ type:ACTION.SET_STATE, state:STATE.SUCCESS});
     }
   }

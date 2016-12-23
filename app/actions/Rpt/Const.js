@@ -2,6 +2,7 @@
 export const CANCEL_APP = 'RPT_CANCEL_APP';
 
 export const INIT = 'RPT_INIT';
+export const INIT_NO_STATE = 'INIT_NO_STATE';
 
 export const SET_PROGRESS_BTN = 'RPT_SET_PROGRESS_BTN';
 
