@@ -86,6 +86,65 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {status: {$set: action.status}});
       return newData;
     }
+
+    case ACTION.TOGGLE_OPEN_PO_SELECTED:
+    {
+      var openPO = state.openPO;
+      var fpono = action.fpono;
+
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`ACTION.TOGGLE_OPEN_PO_SELECTED.top()=>`);
+//        console.log(`this.props.setStyle=>`);
+//        console.dir(setStyle);
+      }
+
+      var openPONew = _.map(openPO).map(function(x){
+        var newSelected;
+        if(fpono==x.fpono){
+          newSelected=!x.selected;
+        }else{
+          newSelected=x.selected;
+        }
+        var openPOAdd = _.assign(x, {'selected':newSelected});
+        return openPOAdd; 
+      });
+
+
+      var newData = update(state, {openPO: {$set: openPONew}});
+      return newData;
+    }
+
+    case ACTION.TOGGLE_OPEN_PO_VISIBLE:
+    {
+      var openPO = state.openPO;
+      var fpono = action.fpono;
+
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`ACTION.TOGGLE_OPEN_PO_VISIBLE.top()=>`);
+//        console.log(`this.props.setStyle=>`);
+//        console.dir(setStyle);
+      }
+
+      var openPONew = _.map(openPO).map(function(x){
+        var newVisible;
+        if(fpono==x.fpono){
+          newVisible=!x.visible;
+        }else{
+          newVisible=x.visible;
+        }
+        var openPOAdd = _.assign(x, {'visible':newVisible});
+        return openPOAdd; 
+      });
+
+
+      var newData = update(state, {openPO: {$set: openPONew}});
+      return newData;
+    }
+
+
+/// 
+/// 
+/////////////////
     default:
       return state;
 

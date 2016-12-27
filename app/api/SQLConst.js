@@ -2,6 +2,7 @@
 export const m2m = {
   user: 'sa',
   password: 'buschecnc1',
+
 //  server: '192.168.254.36', // You can use 'localhost\\instance' to connect to named instance
   server: '10.1.2.19',//   server: 'busche-sql-1', // You can use 'localhost\\instance' to connect to named instance
 //  database: 'm2mdata01',
@@ -20,7 +21,7 @@ export const m2m = {
 export const m2mDefTO = {
   user: 'sa',
   password: 'buschecnc1',
-//  server: '192.168.254.36', // You can use 'localhost\\instance' to connect to named instance
+//  server: 192.168.254.42
   server: '10.1.2.19',//   server: 'busche-sql-1', // You can use 'localhost\\instance' to connect to named instance
   database: 'M2MDATA02',
 //  database: 'm2mdata01',
@@ -35,7 +36,7 @@ export const m2mDefTO = {
 export const crib = {
  user: 'sa',
   password: 'buschecnc1',
-//  server: '192.168.254.36', // You can use 'localhost\\instance' to connect to named instance
+//  server: 192.168.254.42
   server: '10.1.2.17',//   server: 'busche-sql-1', // You can use 'localhost\\instance' to connect to named instance
   options: {
     database: 'Cribmaster',
@@ -48,7 +49,7 @@ export const crib = {
 export const cribDefTO = {
  user: 'sa',
   password: 'buschecnc1',
-//  server: '192.168.254.36', // You can use 'localhost\\instance' to connect to named instance
+//  server: 192.168.254.42
   server: '10.1.2.17',//   server: 'busche-sql-1', // You can use 'localhost\\instance' to connect to named instance
   options: {
     database: 'Cribmaster',

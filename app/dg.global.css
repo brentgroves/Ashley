@@ -6,6 +6,21 @@
  *    without disabling user zoom.
  */
 
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+ /*   background-color: #f97777 !important; */
+      color:#666B85;
+      background-color:#323C50;
+
+}
+.table-striped>tbody>tr:nth-of-type(even) {
+/*    background-color: green !important; */
+    color:#668B85;
+    background-color:#2C3446;
+
+}
+
+
 html {
   font-family: sans-serif; /* 1 */
   -ms-text-size-adjust: 100%; /* 2 */

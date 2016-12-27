@@ -1,3 +1,25 @@
+/*
+.table-striped>tbody>tr:nth-child(odd)>td,
+.table-striped>tbody>tr:nth-child(odd)>th {
+  background-color: #f97777;
+}
+*/
+.tableHeader{
+   font-weight: bold;
+  color:#666B85;
+  background:#323C50;
+  font-size:20px;
+  font-weight:bolder;
+  text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
+}
+
+.my-striped>tbody>tr:nth-of-type(odd) {
+    background-color: #f97777 !important;
+}
+.test{
+  color: green;  
+
+}
 .intro-header {
   color: #33ccff;  
   margin-top: 20%;

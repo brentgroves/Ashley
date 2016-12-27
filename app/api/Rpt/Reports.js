@@ -18,11 +18,120 @@ var sorty    = require('sorty')
 var fs = require('fs');
 var client = require("jsreport-client")('http://10.1.1.217:5488', 'admin', 'password')
 
+export async function POPrompt(disp,getSt) {
+  var dispatch = disp;
+  var getState = getSt;
+  var continueProcess=true;
+
+
+  //remote.dialog.showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']})
+//  dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
+/// FILL po and poitem state variables
+
+  dispatch({ type:ACTION.SET_STATE, state:STATE.PO_PROMPT_NOT_READY });
+
+
+}
 
 
 
 
 export async function POStatusReport(disp,getSt) {
+  var dispatch = disp;
+  var getState = getSt;
+  var continueProcess=true;
+
+
+  //remote.dialog.showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']})
+  dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
+  dispatch({ type:ACTION.SET_STATE, state:STATE.STARTED });
+
+  var dirName=remote.app.getPath('temp');
+
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`remote = } `);
+    console.dir(remote);
+    console.log(` dirName: ${ dirName}`);
+  }
+
+  if(continueProcess){
+    client.render({
+
+  //      template: { shortid:"HJEa3YSNl"}
+        template: { shortid:"SkVLXedVe"} // sample report
+//http://10.1.1.217:5488/templates/B1WBsctr4e
+  //      template: { content: "hello {{:someText}}", recipe: "html",
+  //                  engine: "jsrender" },
+  //      data: { someText: "world!!" }
+    }, function(err, response) {
+        var dirName1 = dirName;
+
+        if ('development'==process.env.NODE_ENV) {
+          console.log(`dirName: ${dirName}`);
+          console.log(`dirName1: ${dirName1}`);
+          console.log(`err =  `);
+          console.dir(err);
+        }
+      //dispatch({ type:GRACTION.SET_REASON, reason:err.message });
+      //dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
+      //dispatch({ type:GRACTION.LOG_ENTRY_LAST_FAILED, failed:true });
+
+        response.body(function(body) {
+          var dirName2 = dirName1;
+          let fileName =  dirName2 + '/myfile.pdf';
+          if ('development'==process.env.NODE_ENV) {
+            console.log(`dirName: ${dirName}`);
+            console.log(`dirName1: ${dirName1}`);
+            console.log(`dirName2: ${dirName2}`);
+            console.log(`fileName: ${fileName}`);
+          }
+
+          fs.writeFileSync(fileName,body);
+//          fs.writeFileSync('/home/brent/myfile.pdf',body);
+          dispatch({ type:ACTION.SET_POSTATUS_REPORT_DONE, done:true });
+          if ('development'==process.env.NODE_ENV) {
+            console.log(`Done creating file myfile.pdf `);
+            console.log(`fileName: ${fileName}`);
+          }
+          ipcRenderer.send('asynchronous-message', fileName)
+          //dispatch({ type:GRACTION.SET_POSTATUS_REPORT_PDF, pdf:body });
+        });
+    });
+
+    var cnt=0;
+    var maxCnt=40;
+    while(!getState().Reports.poStatusReport.done){
+      if(++cnt>maxCnt){
+        continueProcess=false;
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+
+    if(getState().Reports.poStatusReport.failed || 
+      !getState().Reports.poStatusReport.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`POStatusReport not successful.`);
+      }
+      dispatch({ type:ACTION.SET_REASON, reason:`Network or server problem preventing access to the Report Server. `});
+      dispatch({ type:ACTION.SET_STATE, state:STATE.FAILURE });
+      dispatch({ type:ACTION.SET_STATUS, status:'Can not connect to Report Server...' });
+      continueProcess=false;
+    }else{
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`POStatusReport Success.`);
+      }
+      
+      dispatch({type:ACTION.INIT_NO_STATE});
+      dispatch({ type:ACTION.SET_STATE, state:STATE.SUCCESS});
+    }
+  }
+
+}
+
+
+export async function POVendorEmail(disp,getSt) {
   var dispatch = disp;
   var getState = getSt;
   var continueProcess=true;

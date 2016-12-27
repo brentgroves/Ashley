@@ -86,7 +86,25 @@ const initialState = {
 		poStatusReport:{pdf:'',done:false,failed:false},
 		reason:'',
 		state:RPTSTATE.NOT_STARTED,
-		status:''
+		status:'',
+		openPO:
+		[
+		  {selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+		  {selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
+		  {selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
+		  {selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
+		  {selected:false,visible:false,fpono: "111113", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+		  {selected:false,visible:false,fpono: "111113", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
+		],
+		products: [
+		  {rowStyle:{display: 'none'},category: 'Sporting Goods', price: '$49.99', stocked: true, name: 'Football'},
+		  {rowStyle:{display: 'none'},category: 'Sporting Goods', price: '$9.99', stocked: true, name: 'Baseball'},
+		  {rowStyle:{display: 'none'},category: 'Sporting Goods', price: '$29.99', stocked: false, name: 'Basketball'},
+		  {rowStyle:{},category: 'Electronics', price: '$99.99', stocked: true, name: 'iPod Touch'},
+		  {rowStyle:{},category: 'Electronics', price: '$399.99', stocked: false, name: 'iPhone 5'},
+		  {rowStyle:{},category: 'Electronics', price: '$199.99', stocked: true, name: 'Nexus 7'}
+		]
+
 	},
 	Common:{ 
 		primed:false

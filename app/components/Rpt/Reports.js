@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import { Link,IndexLink } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 import ProgressBtn from '../../containers/Rpt/ProgressBtn';
+import POPrompt from "../../containers/Rpt/POPrompt";
 import * as STATE from "../../actions/Rpt/State.js"
 import { Grid, Row, Col, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse, Text as NavbarText } from 'react-bootstrap/lib/Navbar'
@@ -23,7 +24,7 @@ export default class Reports extends Component {
   }
 
   render() {
-    var jumboTronTxt,rptMenu,progressBtn,cancelBtn,navbar;
+    var jumboTronTxt,rptMenu,poPrompt,progressBtn,backBtn,cancelBtn,navbar;
 
     if(STATE.NOT_STARTED==this.props.Rpt.state){
     jumboTronTxt=
@@ -39,6 +40,44 @@ export default class Reports extends Component {
           </Jumbotron>
           </Col >
         </Row>
+  } else if(
+            (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
+            <div style={{textAlign: 'left'}}>
+              <p >Please select which PO(s) you wish to have email notifications prepared for. </p>
+              <p>After selecting at least one PO the 'run' button will be enabled so you may 
+              continue. </p>
+              <p>Click the checkboxes to make your selections.</p>
+            </div>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(
+            (STATE.PO_PROMPT_READY==this.props.Rpt.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
+            <div style={{textAlign: 'left'}}>
+              <p >You may now press the 'run' button to begin. After 'run' is
+              pressed this program will create an email notification for each applicable vendor
+              and send them to the designated MRO personel for review and forwarding. 
+              </p>
+            </div>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
   } else if(
             (STATE.STARTED==this.props.Rpt.state) 
             ){
@@ -130,6 +169,7 @@ export default class Reports extends Component {
           <table className={styles.tg}>
           <tbody>
             <tr>
+              <td className={styles.btnWarning} onClick={this.props.POPrompt} ><span style={rpt1Style}>PO Vendor Email</span><br/>Email(s) Sent</td>
               <td className={styles.btnWarning} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Opened Today</span><br/>Email(s) Sent</td>
               <td className={styles.btnInfo} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Closed Today</span><br/>PDF format</td>
             </tr>
@@ -139,9 +179,27 @@ export default class Reports extends Component {
       </Row>
     }
 
+  if(
+      (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) ||
+      (STATE.PO_PROMPT_READY==this.props.Rpt.state)
+    )
+  {
+    poPrompt = 
+    <div>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={5} >&nbsp;</Col>
+        <Col xs={2}><POPrompt/></Col>
+        <Col xs={5}>&nbsp;</Col>
+      </Row>
+
+    </div>
+  }
 
   if(
-      (STATE.FAILURE==this.props.Rpt.state)
+      (STATE.FAILURE==this.props.Rpt.state)  
     )
   {
     cancelBtn = 
@@ -161,11 +219,34 @@ export default class Reports extends Component {
     </div>
   }
 
+  if(
+      (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) ||
+      (STATE.PO_PROMPT_READY==this.props.Rpt.state)
+    )
+  {
+    backBtn = 
+    <div>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={5} >&nbsp;</Col>
+        <Col xs={2}><Button  onClick={()=>this.props.setState(STATE.NOT_STARTED)} bsSize="large" bsStyle="warning">Back</Button></Col>
+        <Col xs={5}>&nbsp;</Col>
+      </Row>
+    </div>
+  }
+
+
 
   if(
       (STATE.SUCCESS==this.props.Rpt.state)  || 
-      (STATE.NOT_STARTED==this.props.Rpt.state) 
-
+      (STATE.NOT_STARTED==this.props.Rpt.state) ||
+      (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) ||
+      (STATE.PO_PROMPT_READY==this.props.Rpt.state) 
     )
   {
     navbar =
@@ -207,6 +288,8 @@ export default class Reports extends Component {
           {jumboTronTxt}
           {progressBtn}
           {rptMenu}
+          {poPrompt}
+          {backBtn}
           {cancelBtn}
           {navbar}
         </Grid>

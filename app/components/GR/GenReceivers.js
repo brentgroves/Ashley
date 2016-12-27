@@ -5,7 +5,6 @@ import {LinkContainer} from 'react-router-bootstrap';
 import GRButton from '../../containers/GR/GRButton';
 import GRChecks from '../../containers/GR/GRChecks';
 import GRGrid from '../../containers/GR/GRGrid';
-import MyPdfViewer from '../../containers/GR/MyPdfViewer';
 import GRReactDataGrid from '../../containers/GR/GRReactDataGrid';
 //import GRDataGrid from '../../containers/GR/GRDataGrid';
 import * as GRSTATE from "../../actions/GRState.js"
@@ -333,27 +332,6 @@ export default class GenReceivers extends Component {
         <Col xs={12}><GRReactDataGrid /></Col>
       </Row>
   }
-/*
-  if(
-      (GRSTATE.DISPLAY_REPORT==this.props.GenR.state) 
-    )
-  {
-    pdfReport = 
-    <div>
-      <Row>
-        <Col xs={12}><MyPdfViewer/></Col>
-      </Row>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-      </div>
-
-  }
-           
-*/
 
   if(
       (GRSTATE.FAILURE==this.props.GenR.state) ||
