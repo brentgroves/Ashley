@@ -243,18 +243,21 @@ export default class POPrompt extends React.Component {
     var pageClass = classNames(
       'pagination','hidden-xs', 'pull-right'
     );
+    var pageNoClass = classNames(
+      'pagination','hidden-xs', 'pull-left'
+    );
 
     return (
       <div>
-        <Button onClick={ ()=> this.setState({ open: !this.state.open })}>
-          click
-        </Button>
-
           <OpenPOTable openPO={this.state.openPO} 
             toggleOpenPOSelected={this.state.toggleOpenPOSelected} 
             toggleOpenPOVisible={this.state.toggleOpenPOVisible}/>
                 <Row>
-                  <Col xs={4}><span style={{color:'white'}} >Page 1 of 5</span></Col>
+                  <Col xs={4}>
+                    <ul className={pageNoClass}>
+                      <li><span style={{color:'black'}} >Page 1 of 5</span></li>
+                    </ul>
+                   </Col>
                    <Col xs={8}>
                     <ul className={pageClass}>
                       <li><a href="#">«</a></li>
