@@ -190,9 +190,9 @@ export default class Reports extends Component {
         <Col xs={1}>&nbsp;</Col>
       </Row>
       <Row>
-        <Col xs={5} >&nbsp;</Col>
-        <Col xs={2}><POPrompt/></Col>
-        <Col xs={5}>&nbsp;</Col>
+        <Col xs={1} >&nbsp;</Col>
+        <Col xs={10}><POPrompt/></Col>
+        <Col xs={1}>&nbsp;</Col>
       </Row>
 
     </div>

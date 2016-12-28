@@ -34,17 +34,43 @@ export async function POPrompt(disp,getSt) {
 }
 
 
-
-
 export async function POStatusReport(disp,getSt) {
+  var dispatch = disp;
+  var getState = getSt;
+  dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
+  dispatch({ type:ACTION.SET_STATE, state:STATE.STARTED });
+
+  for(var x=0;x<10;x++){
+    client.render({
+
+  //      template: { shortid:"HJEa3YSNl"}
+        template: { shortid:"SkVLXedVe"} // sample report
+    }, function(err, response) {
+        if ('development'==process.env.NODE_ENV) {
+        }
+      //dispatch({ type:GRACTION.SET_REASON, reason:err.message });
+      //dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
+      //dispatch({ type:GRACTION.LOG_ENTRY_LAST_FAILED, failed:true });
+
+        response.body(function(body) {
+          if ('development'==process.env.NODE_ENV) {
+          }
+        });
+    });
+  }
+  await MISC.sleep(6000);
+  dispatch({ type:ACTION.SET_STATE, state:STATE.SUCCESS});
+}
+
+async function IteratePOStatusReport(disp,getSt) {
   var dispatch = disp;
   var getState = getSt;
   var continueProcess=true;
 
 
   //remote.dialog.showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']})
-  dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
-  dispatch({ type:ACTION.SET_STATE, state:STATE.STARTED });
+//  dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
+//  dispatch({ type:ACTION.SET_STATE, state:STATE.STARTED });
 
   var dirName=remote.app.getPath('temp');
 
@@ -59,10 +85,6 @@ export async function POStatusReport(disp,getSt) {
 
   //      template: { shortid:"HJEa3YSNl"}
         template: { shortid:"SkVLXedVe"} // sample report
-//http://10.1.1.217:5488/templates/B1WBsctr4e
-  //      template: { content: "hello {{:someText}}", recipe: "html",
-  //                  engine: "jsrender" },
-  //      data: { someText: "world!!" }
     }, function(err, response) {
         var dirName1 = dirName;
 
@@ -87,14 +109,12 @@ export async function POStatusReport(disp,getSt) {
           }
 
           fs.writeFileSync(fileName,body);
-//          fs.writeFileSync('/home/brent/myfile.pdf',body);
           dispatch({ type:ACTION.SET_POSTATUS_REPORT_DONE, done:true });
           if ('development'==process.env.NODE_ENV) {
             console.log(`Done creating file myfile.pdf `);
             console.log(`fileName: ${fileName}`);
           }
           ipcRenderer.send('asynchronous-message', fileName)
-          //dispatch({ type:GRACTION.SET_POSTATUS_REPORT_PDF, pdf:body });
         });
     });
 
@@ -122,7 +142,6 @@ export async function POStatusReport(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`POStatusReport Success.`);
       }
-      
       dispatch({type:ACTION.INIT_NO_STATE});
       dispatch({ type:ACTION.SET_STATE, state:STATE.SUCCESS});
     }

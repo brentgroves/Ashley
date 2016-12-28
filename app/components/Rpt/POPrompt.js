@@ -1,7 +1,7 @@
 //require('../../react-pivot/example/demo.css')
 import React, { Component, PropTypes } from 'react';
-import { Table,Button,Glyphicon,ButtonGroup,ButtonToolbar} from 'react-bootstrap';
-
+import { Row,Col,ListGroup,ListGroupItem,Panel,Table,Button,Glyphicon,ButtonGroup,ButtonToolbar} from 'react-bootstrap';
+var classNames = require('classnames');
 
 //require('../../css/Rpt/styles.css')
 import styles from '../../css/Rpt/styles.css';
@@ -104,6 +104,7 @@ class POItemRow extends React.Component {
   }
 }
 
+var rowsPerPage;
 class OpenPOTable extends React.Component {
   constructor(props) {
     super(props);
@@ -149,8 +150,7 @@ class OpenPOTable extends React.Component {
       lastPO = poItem.fpono;
     });
     return (
-      <Table striped bordered condensed hover>
-        <caption>PO(s) Notifications</caption>
+      <Table style={{marginTop:0,marginBottom:0}} fill striped bordered condensed hover>
         <thead>
           <tr className={styles.tableHeader}>
             <th>PO</th>
@@ -187,6 +187,7 @@ export default class POPrompt extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      open: true,
       openPO:this.props.Rpt.openPO,      
       toggleOpenPOSelected: this.props.toggleOpenPOSelected.bind(this),
       toggleOpenPOVisible: this.props.toggleOpenPOVisible.bind(this)
@@ -203,13 +204,70 @@ export default class POPrompt extends React.Component {
      if ('development'==process.env.NODE_ENV) {
      // console.log(`this.state.setStyle=>`);
      // console.dir(this.state.setStyle);
+
     }
+/*
+
+        <Button bsSize="xsmall">
+          <Glyphicon glyph="chevron-down" />
+        </Button>     
+
+
+        <Panel style={{padding:0}} footer={test} collapsible expanded={this.state.open}>
+          <OpenPOTable openPO={this.state.openPO} 
+            toggleOpenPOSelected={this.state.toggleOpenPOSelected} 
+            toggleOpenPOVisible={this.state.toggleOpenPOVisible}/>
+        </Panel>
+
+    var btnClass = classNames({
+      'btn': true,
+      'btn-pressed': this.state.isPressed,
+      'btn-over': !this.state.isPressed && this.state.isHovered
+    });
+    return <button className={btnClass}>{this.props.label}</button>;
+                    <ul className="pagination visible-xs pull-right">
+                        <li><a href="#">«</a></li>
+                        <li><a href="#">»</a></li>
+                    </ul>
+
+*/
+    var footerClass = classNames(
+      'panel-footer'
+    );
+    var col4Class = classNames(
+      'col','col-xs-4'
+    );
+    var col8Class = classNames(
+      'col','col-xs-8'
+    );
+    var pageClass = classNames(
+      'pagination','hidden-xs', 'pull-right'
+    );
+
     return (
       <div>
-        <SearchBar />
-        <OpenPOTable openPO={this.state.openPO} 
-          toggleOpenPOSelected={this.state.toggleOpenPOSelected} 
-          toggleOpenPOVisible={this.state.toggleOpenPOVisible}/>
+        <Button onClick={ ()=> this.setState({ open: !this.state.open })}>
+          click
+        </Button>
+
+          <OpenPOTable openPO={this.state.openPO} 
+            toggleOpenPOSelected={this.state.toggleOpenPOSelected} 
+            toggleOpenPOVisible={this.state.toggleOpenPOVisible}/>
+                <Row>
+                  <Col xs={4}><span style={{color:'white'}} >Page 1 of 5</span></Col>
+                   <Col xs={8}>
+                    <ul className={pageClass}>
+                      <li><a href="#">«</a></li>
+                      <li><a href="#">»</a></li>
+                      <li><a href="#">1</a></li>
+                      <li><a href="#">2</a></li>
+                      <li><a href="#">3</a></li>
+                      <li><a href="#">4</a></li>
+                      <li><a href="#">5</a></li>
+                    </ul>
+                  </Col>
+                </Row>
+
       </div>
     );
   }
