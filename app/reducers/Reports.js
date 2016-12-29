@@ -13,6 +13,31 @@ export default function reducer( state = {}, action) {
       }
       var newData = update(state, 
         { 
+          openPO:{$set:{
+              curPage:1,
+              maxPage:5,
+              poItem:
+              [
+                {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+                {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
+                {page:1,selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
+                {page:1,selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
+                {page:1,selected:false,visible:false,fpono: "111113", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+                {page:1,selected:false,visible:false,fpono: "111113", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
+                {page:1,selected:false,visible:false,fpono: "111114", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+                {page:2,selected:false,visible:false,fpono: "111114", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
+                {page:2,selected:false,visible:false,fpono: "111115", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
+                {page:2,selected:false,visible:false,fpono: "111115", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
+                {page:2,selected:false,visible:false,fpono: "111116", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+                {page:2,selected:false,visible:false,fpono: "111116", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
+                {page:2,selected:false,visible:false,fpono: "111117", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+                {page:3,selected:false,visible:false,fpono: "111117", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
+                {page:3,selected:false,visible:false,fpono: "111118", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
+                {page:3,selected:false,visible:false,fpono: "111118", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
+                {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+                {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
+              ]
+            }},
           progressBtn:{$set:PROGRESSBUTTON.READY},
           poStatusReport:{$set:{pdf:'',done:false,failed:false}},
           reason:{$set:''},
@@ -29,6 +54,32 @@ export default function reducer( state = {}, action) {
       }
       var newData = update(state, 
         { 
+          openPO:{$set:{
+              curPage:1,
+              maxPage:5,
+              poItem:
+              [
+                {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+                {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
+                {page:1,selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
+                {page:1,selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
+                {page:1,selected:false,visible:false,fpono: "111113", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+                {page:1,selected:false,visible:false,fpono: "111113", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
+                {page:1,selected:false,visible:false,fpono: "111114", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+                {page:2,selected:false,visible:false,fpono: "111114", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
+                {page:2,selected:false,visible:false,fpono: "111115", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
+                {page:2,selected:false,visible:false,fpono: "111115", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
+                {page:2,selected:false,visible:false,fpono: "111116", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+                {page:2,selected:false,visible:false,fpono: "111116", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
+                {page:2,selected:false,visible:false,fpono: "111117", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+                {page:3,selected:false,visible:false,fpono: "111117", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
+                {page:3,selected:false,visible:false,fpono: "111118", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
+                {page:3,selected:false,visible:false,fpono: "111118", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
+                {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+                {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
+              ]
+            }},
+
           progressBtn:{$set:PROGRESSBUTTON.READY},
           poStatusReport:{$set:{pdf:'',done:false,failed:false}},
           reason:{$set:''},
@@ -36,7 +87,16 @@ export default function reducer( state = {}, action) {
         });
       return newData;
     }
+
     
+    case ACTION.SET_OPENPO_CURPAGE:
+    {
+      var openPO = state.openPO;
+      openPO.curPage=action.curPage;
+      var newData = update(state, {openPO: {$set: openPO}});
+      return newData;
+    }
+
     case ACTION.SET_POSTATUS_REPORT_FAILED:
     {
       var poStatusReport = state.poStatusReport;
@@ -90,6 +150,7 @@ export default function reducer( state = {}, action) {
     case ACTION.TOGGLE_OPEN_PO_SELECTED:
     {
       var openPO = state.openPO;
+      var poItem = state.openPO.poItem;
       var fpono = action.fpono;
 
       if ('development'==process.env.NODE_ENV) {
@@ -98,25 +159,26 @@ export default function reducer( state = {}, action) {
 //        console.dir(setStyle);
       }
 
-      var openPONew = _.map(openPO).map(function(x){
+      var poItemNew = _.map(poItem).map(function(x){
         var newSelected;
         if(fpono==x.fpono){
           newSelected=!x.selected;
         }else{
           newSelected=x.selected;
         }
-        var openPOAdd = _.assign(x, {'selected':newSelected});
-        return openPOAdd; 
+        var poItemAdd = _.assign(x, {'selected':newSelected});
+        return poItemAdd; 
       });
 
-
-      var newData = update(state, {openPO: {$set: openPONew}});
+      openPO.poItem=poItemNew;
+      var newData = update(state, {openPO: {$set: openPO}});
       return newData;
     }
 
     case ACTION.TOGGLE_OPEN_PO_VISIBLE:
     {
       var openPO = state.openPO;
+      var poItem = state.openPO.poItem;
       var fpono = action.fpono;
 
       if ('development'==process.env.NODE_ENV) {
@@ -125,19 +187,19 @@ export default function reducer( state = {}, action) {
 //        console.dir(setStyle);
       }
 
-      var openPONew = _.map(openPO).map(function(x){
+      var poItemNew = _.map(poItem).map(function(x){
         var newVisible;
         if(fpono==x.fpono){
           newVisible=!x.visible;
         }else{
           newVisible=x.visible;
         }
-        var openPOAdd = _.assign(x, {'visible':newVisible});
-        return openPOAdd; 
+        var poItemAdd = _.assign(x, {'visible':newVisible});
+        return poItemAdd; 
       });
 
-
-      var newData = update(state, {openPO: {$set: openPONew}});
+      openPO.poItem=poItemNew;
+      var newData = update(state, {openPO: {$set: openPO}});
       return newData;
     }
 

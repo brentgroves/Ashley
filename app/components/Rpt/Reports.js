@@ -219,19 +219,13 @@ export default class Reports extends Component {
     </div>
   }
 
-  if(
-      (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) ||
-      (STATE.PO_PROMPT_READY==this.props.Rpt.state)
+  if( false
+ //     (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) ||
+ //     (STATE.PO_PROMPT_READY==this.props.Rpt.state)
     )
   {
     backBtn = 
     <div>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
       <Row>
         <Col xs={5} >&nbsp;</Col>
         <Col xs={2}><Button  onClick={()=>this.props.setState(STATE.NOT_STARTED)} bsSize="large" bsStyle="warning">Back</Button></Col>

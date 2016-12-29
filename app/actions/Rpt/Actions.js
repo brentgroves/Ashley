@@ -69,6 +69,15 @@ export function setProductCategoryStyle(category,style) {
   };
 }
 
+
+export function setOpenPOCurPage(curPage) {
+  return {
+    type: ACTION.SET_OPENPO_CURPAGE,
+    curPage: curPage
+  };
+}
+
+
 export function setProgressBtn(goButton) {
   return {
     type: ACTION.SET_PROGRESS_BTN,

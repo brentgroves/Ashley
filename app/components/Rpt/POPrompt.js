@@ -2,6 +2,8 @@
 import React, { Component, PropTypes } from 'react';
 import { Row,Col,ListGroup,ListGroupItem,Panel,Table,Button,Glyphicon,ButtonGroup,ButtonToolbar} from 'react-bootstrap';
 var classNames = require('classnames');
+import * as STATE from "../../actions/Rpt/State.js"
+
 
 //require('../../css/Rpt/styles.css')
 import styles from '../../css/Rpt/styles.css';
@@ -25,9 +27,6 @@ class PORow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      toggleOpenPOSelected: this.props.toggleOpenPOSelected.bind(this),
-      toggleOpenPOVisible: this.props.toggleOpenPOVisible.bind(this),
-      poItem:this.props.poItem
     };
   }
 /*
@@ -38,37 +37,35 @@ class PORow extends React.Component {
     }
     */
   render() {
-    var fpono=this.state.poItem.fpono;
+    var fpono=this.props.poItem.fpono;
     if ('development'==process.env.NODE_ENV) {
       console.log(`PORow:fpono=>${fpono}`);
     }
     var checkbox;
-    checkbox=<input type="checkbox" onChange={()=>this.state.toggleOpenPOSelected(fpono)}/>     
+    checkbox=<input type="checkbox" onChange={()=>this.props.toggleOpenPOSelected(fpono)}/>;     
     var showButton;
-    if(this.state.poItem.visible){
+    if(this.props.poItem.visible){
       showButton=
         <Button bsSize="xsmall" 
-          onClick={()=>this.state.toggleOpenPOVisible(fpono)}>
+          onClick={()=>this.props.toggleOpenPOVisible(fpono)}>
           <Glyphicon glyph="chevron-down" />
         </Button>     
     }else{
       showButton=
         <Button bsSize="xsmall" 
-          onClick={()=>this.state.toggleOpenPOVisible(fpono)}>
+          onClick={()=>this.props.toggleOpenPOVisible(fpono)}>
           <Glyphicon glyph="chevron-right" />
         </Button>     
     }
     return (
-      <tr style={{}}>
-        <th >
+      <tr >
+        <th colSpan="4" >
           {showButton}
-        </th>
-        <th>
+          <span style={{paddingLeft:25,color:'steelblue'}}>PO: </span> 
           {fpono}
-        </th>
-        <th>
+          <span style={{paddingLeft:25,color:'steelblue'}}>Select: </span> 
           {checkbox}     
-      </th>
+        </th>
       </tr>
     );
   }
@@ -78,16 +75,15 @@ class POItemRow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      poItem:this.props.poItem
     };
   }
   render() {
     var myRow=null;
-    var fpono=this.state.poItem.fpono;
-    var fpartno=this.state.poItem.fpartno;
-    var fordqty=this.state.poItem.fordqty;
-    var frcvqty=this.state.poItem.frcvqty;
-    if(true==this.state.poItem.visible){
+    var fpono=this.props.poItem.fpono;
+    var fpartno=this.props.poItem.fpartno;
+    var fordqty=this.props.poItem.fordqty;
+    var frcvqty=this.props.poItem.frcvqty;
+    if(true==this.props.poItem.visible){
       myRow=<tr>
             <td>{fpono}</td>
             <td>{fpartno}</td>
@@ -109,13 +105,8 @@ class OpenPOTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      openPO: this.props.openPO,
-      toggleOpenPOSelected: this.props.toggleOpenPOSelected.bind(this),
-      toggleOpenPOVisible: this.props.toggleOpenPOVisible.bind(this)
     };
     if ('development'==process.env.NODE_ENV) {
-      console.log(`OpenPO:this.props.toggleOpenPOSelected=>`);
-      console.dir(this.props.toggleOpenPOSelected);
     }
   }
   render() {
@@ -124,19 +115,27 @@ class OpenPOTable extends React.Component {
     if ('development'==process.env.NODE_ENV) {
       console.log(`OpenPOTable.render()=>`);
     }
-    var toggleOpenPOSelected= this.state.toggleOpenPOSelected.bind(this);
-    var toggleOpenPOVisible=this.state.toggleOpenPOVisible.bind(this);
-    this.state.openPO.forEach(function(poItem) {
+    var poItem=this.props.poItem;
+    var curPage=this.props.curPage;
+    var toggleOpenPOSelected=this.props.toggleOpenPOSelected;
+    var toggleOpenPOVisible=this.props.toggleOpenPOVisible;
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`OpenPOTable.render().curPage=>${curPage}`);
+    }
+    poItem.forEach(function(poItem) {
       if (poItem.fpono !== lastPO) {
         if ('development'==process.env.NODE_ENV) {
           console.log(`poItem.fpono=>${poItem.fpono}`);
           console.log(`lastPO=>${lastPO}`);
           console.log(`poItem.fpono !== lastPO`);
         }
-        rows.push(<PORow 
-                    toggleOpenPOSelected={toggleOpenPOSelected} 
-                    toggleOpenPOVisible={toggleOpenPOVisible}
-                    poItem={poItem} key={poItem.fpono} />);
+        if(curPage==poItem.page){
+          rows.push(<PORow 
+                      toggleOpenPOSelected={toggleOpenPOSelected} 
+                      toggleOpenPOVisible={toggleOpenPOVisible}
+                      poItem={poItem} key={poItem.fpono} />);          
+        }
+
       }else{
         if ('development'==process.env.NODE_ENV) {
           console.log(`poItem.fpono=>${poItem.fpono}`);
@@ -146,11 +145,13 @@ class OpenPOTable extends React.Component {
 
       }
       var key = poItem.fpono+poItem.fpartno
-      rows.push(<POItemRow poItem={poItem} key={key} />);
+      if(curPage==poItem.page){
+        rows.push(<POItemRow poItem={poItem} key={key} />);
+      }
       lastPO = poItem.fpono;
     });
     return (
-      <Table style={{marginTop:0,marginBottom:0}} fill striped bordered condensed hover>
+      <Table style={{marginTop:0,marginBottom:0}} fill striped bordered condensed >
         <thead>
           <tr className={styles.tableHeader}>
             <th>PO</th>
@@ -187,10 +188,8 @@ export default class POPrompt extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: true,
-      openPO:this.props.Rpt.openPO,      
-      toggleOpenPOSelected: this.props.toggleOpenPOSelected.bind(this),
-      toggleOpenPOVisible: this.props.toggleOpenPOVisible.bind(this)
+      setState:this.props.setState(STATE.NOT_STARTED).bind(this),
+      test:this.test.bind(this)
     };
     if ('development'==process.env.NODE_ENV) {
       console.log(`POPrompt:this.props.toggleOpenPOSelected=>`);
@@ -198,14 +197,86 @@ export default class POPrompt extends React.Component {
     }
   }
  
+ test(greeting){
+  console.log(`greeting: ${greeting}`);
+ }
 
   render() {
     
      if ('development'==process.env.NODE_ENV) {
-     // console.log(`this.state.setStyle=>`);
-     // console.dir(this.state.setStyle);
+      console.log(`POPrompt.Render().this.props.Rpt.openPO.curPage=>${this.props.Rpt.openPO.curPage}`);
 
     }
+    var footerClass = classNames(
+      'panel-footer'
+    );
+    var col4Class = classNames(
+      'col','col-xs-4'
+    );
+    var col8Class = classNames(
+      'col','col-xs-8'
+    );
+    var pageClass = classNames(
+      'pagination','hidden-xs', 'pull-right'
+    );
+    var pageNoClass = classNames(
+      'pagination','hidden-xs', 'pull-left'
+    );
+    var pages = [];
+    var poItem=this.props.Rpt.openPO.poItem;
+    var curPage=this.props.Rpt.openPO.curPage;
+    var maxPage=this.props.Rpt.openPO.maxPage;
+    var prevPage,nextPage;
+    if (maxPage>=curPage){
+      nextPage=curPage;
+    }else{
+      nextPage+=curPage
+    }
+    if(1>=curPage){
+      prevPage=1;
+    }else{
+      prevPage-=1;
+    }
+    var maxPage=this.props.Rpt.openPO.maxPage;
+    for(var x=1;x<=maxPage;x++){
+        let page=x;
+        pages.push(<li><a onClick={()=>{this.props.setOpenPOCurPage(page)}}>{x}</a></li>);
+    }
+
+    return (
+      <div>
+          <OpenPOTable poItem={poItem} curPage={curPage}
+            toggleOpenPOSelected={this.props.toggleOpenPOSelected} 
+            toggleOpenPOVisible={this.props.toggleOpenPOVisible}/>
+                <Row>
+                  <Col xs={2}>
+                    <ul className={pageNoClass}>
+                      <li><span style={{color:'black'}} >Page {curPage} of {maxPage}</span></li>
+                    </ul>
+                  </Col>
+                  <Col xs={4}>
+                    <ul className={pageClass}>
+                      <li>
+                        <Button  bsSize="large" bsStyle="info" onClick={()=>this.props.setState(STATE.NOT_STARTED)} >Back
+                        </Button>
+                      </li>
+                    </ul>
+                  </Col>
+                   <Col xs={6}>
+                    <ul className={pageClass}>
+                      <li><a onClick={()=>{this.props.setOpenPOCurPage(prevPage)}}>«</a></li>
+                      <li><a onClick={()=>{this.props.setOpenPOCurPage(nextPage)}}>»</a></li>
+                      {pages}  
+                    </ul>
+                  </Col>
+                </Row>
+
+      </div>
+    );
+  }
+}
+
+
 /*
 
         <Button bsSize="xsmall">
@@ -231,49 +302,3 @@ export default class POPrompt extends React.Component {
                     </ul>
 
 */
-    var footerClass = classNames(
-      'panel-footer'
-    );
-    var col4Class = classNames(
-      'col','col-xs-4'
-    );
-    var col8Class = classNames(
-      'col','col-xs-8'
-    );
-    var pageClass = classNames(
-      'pagination','hidden-xs', 'pull-right'
-    );
-    var pageNoClass = classNames(
-      'pagination','hidden-xs', 'pull-left'
-    );
-
-    return (
-      <div>
-          <OpenPOTable openPO={this.state.openPO} 
-            toggleOpenPOSelected={this.state.toggleOpenPOSelected} 
-            toggleOpenPOVisible={this.state.toggleOpenPOVisible}/>
-                <Row>
-                  <Col xs={4}>
-                    <ul className={pageNoClass}>
-                      <li><span style={{color:'black'}} >Page 1 of 5</span></li>
-                    </ul>
-                   </Col>
-                   <Col xs={8}>
-                    <ul className={pageClass}>
-                      <li><a href="#">«</a></li>
-                      <li><a href="#">»</a></li>
-                      <li><a href="#">1</a></li>
-                      <li><a href="#">2</a></li>
-                      <li><a href="#">3</a></li>
-                      <li><a href="#">4</a></li>
-                      <li><a href="#">5</a></li>
-                    </ul>
-                  </Col>
-                </Row>
-
-      </div>
-    );
-  }
-}
-
-
