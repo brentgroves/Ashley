@@ -15,7 +15,7 @@ export default function reducer( state = {}, action) {
         { 
           openPO:{$set:{
               curPage:1,
-              maxPage:5,
+              maxPage:3,
               poItem:
               [
                 {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
@@ -38,6 +38,7 @@ export default function reducer( state = {}, action) {
                 {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
               ]
             }},
+          openPOPager:{$set:{done:false,failed:false}},
           progressBtn:{$set:PROGRESSBUTTON.READY},
           poStatusReport:{$set:{pdf:'',done:false,failed:false}},
           reason:{$set:''},
@@ -56,7 +57,7 @@ export default function reducer( state = {}, action) {
         { 
           openPO:{$set:{
               curPage:1,
-              maxPage:5,
+              maxPage:3,
               poItem:
               [
                 {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
@@ -79,7 +80,7 @@ export default function reducer( state = {}, action) {
                 {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
               ]
             }},
-
+          openPOPager:{done:false,failed:false},
           progressBtn:{$set:PROGRESSBUTTON.READY},
           poStatusReport:{$set:{pdf:'',done:false,failed:false}},
           reason:{$set:''},
@@ -88,11 +89,74 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
+
+    case ACTION.OPENPO_PAGER_FAILED:
+    {
+      var openPOPager = state.openPOPager;
+      openPOPager.failed=action.failed;
+      var newData = update(state, {openPOPager: {$set: openPOPager}});
+      return newData;
+    }
+
+    case ACTION.OPENPO_PAGER_DONE:
+    {
+      var openPOPager = state.openPOPager;
+      openPOPager.done=action.done;
+      var newData = update(state, {openPOPager: {$set: openPOPager}});
+      return newData;
+    }
+
     
     case ACTION.SET_OPENPO_CURPAGE:
     {
       var openPO = state.openPO;
       openPO.curPage=action.curPage;
+      var newData = update(state, {openPO: {$set: openPO}});
+      return newData;
+    }
+
+
+    case ACTION.SET_OPENPO_MAXPAGE:
+    {
+      var openPO = state.openPO;
+      openPO.maxPage = action.maxPage;
+      var newData = update(state, {openPO: {$set: openPO}});
+      return newData;
+    }
+
+    case ACTION.SET_OPENPO_NEXTPAGE:
+    {
+      var openPO = state.openPO;
+      var curPage = state.openPO.curPage;
+      var maxPage = state.openPO.maxPage;
+      if (maxPage>curPage){
+        curPage=curPage+1;
+      }else{
+        curPage=curPage;
+      }
+      openPO.curPage=curPage;
+      var newData = update(state, {openPO: {$set: openPO}});
+      return newData;
+    }
+
+    case ACTION.SET_OPENPO_POITEM:
+    {
+      var openPO = state.openPO;
+      openPO.poItem = action.poItem;
+      var newData = update(state, {openPO: {$set: openPO}});
+      return newData;
+    }
+
+    case ACTION.SET_OPENPO_PREVPAGE:
+    {
+      var openPO = state.openPO;
+      var curPage = state.openPO.curPage;
+      if(1>=curPage){
+        curPage=1;
+      }else{
+        curPage=curPage-1;
+      }
+      openPO.curPage=curPage;
       var newData = update(state, {openPO: {$set: openPO}});
       return newData;
     }
@@ -123,6 +187,10 @@ export default function reducer( state = {}, action) {
 
     case ACTION.SET_PROGRESS_BTN:
     {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`progressBtn=>${action.progressBtn}`);
+      }
+
       var newData = update(state, {progressBtn: {$set: action.progressBtn}});
     //  return {chk1:'failure',chk2:'failure',chk3:'unknown',chk4:'unknown',noCatList:[{}]};   
       return newData;
@@ -138,6 +206,9 @@ export default function reducer( state = {}, action) {
     }
     case ACTION.SET_STATE:
     {
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`state=>${action.state}`);
+      }
       var newData = update(state, {state: {$set: action.state}});
       return newData;
     }

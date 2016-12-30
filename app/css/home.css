@@ -29,7 +29,7 @@ box-shadow: none;
 transition: all 0.12s linear 0s !important;
 font: 14px/20px "Helvetica Neue",Helvetica,Arial,sans-serif;
 }	
-.tg  {border-collapse: separate;border-spacing:20px; margin-left: 30%;}
+.tg  {border-collapse: separate;border-spacing:20px;}
 .tg td{border-spacing:20px !important;font-family:Arial, sans-serif;font-size:14px;padding:20px 20px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
 .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:20px 20px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
 .tg .tgvv23{

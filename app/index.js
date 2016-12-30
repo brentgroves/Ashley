@@ -89,7 +89,7 @@ const initialState = {
 		status:'',
 		openPO:{
 			curPage:1,
-			maxPage:5,
+			maxPage:3,
 			poItem:
 			[
 			  {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
@@ -112,7 +112,7 @@ const initialState = {
 			  {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
 			]
 		},
-		openPORage:{rowsPerPage:5,start:1},
+		openPOPager:{done:false,failed:false},
 		products: [
 		  {rowStyle:{display: 'none'},category: 'Sporting Goods', price: '$49.99', stocked: true, name: 'Football'},
 		  {rowStyle:{display: 'none'},category: 'Sporting Goods', price: '$9.99', stocked: true, name: 'Baseball'},

@@ -188,7 +188,6 @@ export default class POPrompt extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      setState:this.props.setState(STATE.NOT_STARTED).bind(this),
       test:this.test.bind(this)
     };
     if ('development'==process.env.NODE_ENV) {
@@ -203,10 +202,6 @@ export default class POPrompt extends React.Component {
 
   render() {
     
-     if ('development'==process.env.NODE_ENV) {
-      console.log(`POPrompt.Render().this.props.Rpt.openPO.curPage=>${this.props.Rpt.openPO.curPage}`);
-
-    }
     var footerClass = classNames(
       'panel-footer'
     );
@@ -226,18 +221,15 @@ export default class POPrompt extends React.Component {
     var poItem=this.props.Rpt.openPO.poItem;
     var curPage=this.props.Rpt.openPO.curPage;
     var maxPage=this.props.Rpt.openPO.maxPage;
-    var prevPage,nextPage;
-    if (maxPage>=curPage){
-      nextPage=curPage;
-    }else{
-      nextPage+=curPage
+    var prevPage=this.props.Rpt.openPO.prevPage;
+    var nextPage=this.props.Rpt.openPO.nextPage;
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`POPrompt.Render().curPage=>${curPage}`);
+      console.log(`POPrompt.Render().maxPage=>${maxPage}`);
+      console.log(`POPrompt.Render().prevPage=>${prevPage}`);
+      console.log(`POPrompt.Render().nextPage=>${nextPage}`);
     }
-    if(1>=curPage){
-      prevPage=1;
-    }else{
-      prevPage-=1;
-    }
-    var maxPage=this.props.Rpt.openPO.maxPage;
+
     for(var x=1;x<=maxPage;x++){
         let page=x;
         pages.push(<li><a onClick={()=>{this.props.setOpenPOCurPage(page)}}>{x}</a></li>);
@@ -264,8 +256,8 @@ export default class POPrompt extends React.Component {
                   </Col>
                    <Col xs={6}>
                     <ul className={pageClass}>
-                      <li><a onClick={()=>{this.props.setOpenPOCurPage(prevPage)}}>«</a></li>
-                      <li><a onClick={()=>{this.props.setOpenPOCurPage(nextPage)}}>»</a></li>
+                      <li><a onClick={()=>{this.props.setOpenPOPrevPage()}}>«</a></li>
+                      <li><a onClick={()=>{this.props.setOpenPONextPage()}}>»</a></li>
                       {pages}  
                     </ul>
                   </Col>

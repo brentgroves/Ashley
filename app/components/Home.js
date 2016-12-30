@@ -85,8 +85,16 @@ export default class Home extends Component {
 
   var gridMenu;
   gridMenu =
+  <div>
     <Row>
-      <Col>
+      <Col xs={1}>&nbsp;</Col>
+    </Row>
+    <Row>
+      <Col xs={1}>&nbsp;</Col>
+    </Row>
+    <Row>
+      <Col xs={3}></Col>
+      <Col xs={6}>
         <table className={styles.tg}>
         <tbody>
           <tr>
@@ -103,7 +111,9 @@ export default class Home extends Component {
           </tbody>
         </table>
       </Col>
+      <Col xs={3}></Col>
     </Row>
+  </div>
 
     return (
       <div>

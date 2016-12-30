@@ -9,6 +9,7 @@ import * as STATE from "../../actions/Rpt/State.js"
 import { Grid, Row, Col, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse, Text as NavbarText } from 'react-bootstrap/lib/Navbar'
 
+
 export default class Reports extends Component {
 
   static propTypes = {
@@ -164,19 +165,29 @@ export default class Reports extends Component {
 
     var rptMenu;
     rptMenu =
-      <Row>
-        <Col>
-          <table className={styles.tg}>
-          <tbody>
-            <tr>
-              <td className={styles.btnWarning} onClick={this.props.POPrompt} ><span style={rpt1Style}>PO Vendor Email</span><br/>Email(s) Sent</td>
-              <td className={styles.btnWarning} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Opened Today</span><br/>Email(s) Sent</td>
-              <td className={styles.btnInfo} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Closed Today</span><br/>PDF format</td>
-            </tr>
-            </tbody>
-          </table>
-        </Col>
-      </Row>
+      <div>
+        <Row>
+          <Col xs={1}>&nbsp;</Col>
+        </Row>
+        <Row>
+          <Col xs={1}>&nbsp;</Col>
+        </Row>
+        <Row>
+          <Col xs={3}></Col>
+          <Col xs={6}>
+            <table className={styles.tg}>
+            <tbody>
+              <tr>
+                <td className={styles.btnWarning} onClick={this.props.POPrompt} ><span style={rpt1Style}>PO Vendor Email</span><br/>Email(s) Sent</td>
+                <td className={styles.btnWarning} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Opened Today</span><br/>Email(s) Sent</td>
+                <td className={styles.btnInfo} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Closed Today</span><br/>PDF format</td>
+              </tr>
+              </tbody>
+            </table>
+          </Col>
+          <Col xs={3}></Col>
+        </Row>
+      </div>
     }
 
   if(

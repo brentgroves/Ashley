@@ -18,20 +18,117 @@ var sorty    = require('sorty')
 var fs = require('fs');
 var client = require("jsreport-client")('http://10.1.1.217:5488', 'admin', 'password')
 
+export function OpenPOPager(disp,getSt) {
+  var dispatch = disp;
+  var getState = getSt;
+  var poItem = getState().Reports.openPO.poItem;
+  var curPO = 'start';
+  var rowCount = 0;
+  var pageIndex = 0;
+  var page=1;
+  const ROWS_PER_PAGE=8;
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`OpenPOPager() poItem=>`);
+    console.dir(poItem);
+  }
+
+  dispatch({ type:ACTION.OPENPO_PAGER_FAILED, failed:false });
+  dispatch({ type:ACTION.OPENPO_PAGER_DONE, done:false });
+
+
+  var poItemNew=poItem.map(function(poItem){
+    if(false==poItem.visible){
+      if(curPO!=poItem.fpono){
+        rowCount+=1;
+        pageIndex+=1;
+        curPO=poItem.fpono;
+      }
+    }else{
+      if(curPO!=poItem.fpono){
+        rowCount+=2;
+        pageIndex+=2;
+        curPO=poItem.fpono;
+      }else{
+        rowCount+=1;
+        pageIndex+=1;
+      }
+    }
+    if(ROWS_PER_PAGE<pageIndex){
+      pageIndex=0;
+      page+=1;
+    }
+    poItem.page=page;
+    return poItem;
+  });
+
+  dispatch({ type:ACTION.SET_OPENPO_MAXPAGE, maxPage:page });
+  dispatch({ type:ACTION.SET_OPENPO_POITEM, poItem:poItemNew });
+  dispatch({ type:ACTION.OPENPO_PAGER_DONE, done:true });
+
+}
+
+
+export async function OpenPOMailer(disp,getSt) {
+  var dispatch = disp;
+  var getState = getSt;
+}
+
 export async function POPrompt(disp,getSt) {
   var dispatch = disp;
   var getState = getSt;
   var continueProcess=true;
+  var cnt=0;
+  var maxCnt=10;
+  var state=getState();
+  var openPO=getState().Reports.openPO;
 
+  dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
+  dispatch({ type:ACTION.SET_STATE, state:STATE.STARTED });
 
-  //remote.dialog.showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']})
-//  dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
-/// FILL po and poitem state variables
+  // TO DO ADD SQL CALL TO LOAD POITEMS
+  if ('development'==process.env.NODE_ENV) {
+   console.log(`POPrompt() state=>`);
+    console.dir(state);
+     console.log(`POPrompt() openPO=>`);
+    console.dir(openPO);
+  }
 
-  dispatch({ type:ACTION.SET_STATE, state:STATE.PO_PROMPT_NOT_READY });
+  if(continueProcess){
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
+      OpenPOPager(disp,getSt);
+    });
+
+    cnt=0;
+    maxCnt=10;
+
+    while(!getState().Reports.openPOPager.done){
+      if(++cnt>maxCnt ){
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+    if(getState().Reports.openPOPager.failed ||
+      !getState().Reports.openPOPager.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`OpenPOPager() FAILED.`);
+      }
+      dispatch({ type:ACTION.SET_REASON, reason:`OpenPOPager() FAILED. ` });
+      dispatch({ type:ACTION.SET_STATE, state:STATE.FAILURE });
+      dispatch({ type:ACTION.SET_STATUS, status:'Can not update OpenPO poItem page...' });
+      continueProcess=false;
+    }
+  }
+
+  if(continueProcess){
+    dispatch({ type:ACTION.SET_STATE, state:STATE.PO_PROMPT_NOT_READY });
+  }
 
 
 }
+
 
 
 export async function POStatusReport(disp,getSt) {
