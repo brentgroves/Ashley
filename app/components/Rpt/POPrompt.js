@@ -232,7 +232,7 @@ export default class POPrompt extends React.Component {
 
     for(var x=1;x<=maxPage;x++){
         let page=x;
-        pages.push(<li><a onClick={()=>{this.props.setOpenPOCurPage(page)}}>{x}</a></li>);
+        pages.push(<li key={x}><a onClick={()=>{this.props.setOpenPOCurPage(page)}}>{x}</a></li>);
     }
 
     return (

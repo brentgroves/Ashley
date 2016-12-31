@@ -178,9 +178,9 @@ export default class Reports extends Component {
             <table className={styles.tg}>
             <tbody>
               <tr>
-                <td className={styles.btnWarning} onClick={this.props.POPrompt} ><span style={rpt1Style}>PO Vendor Email</span><br/>Email(s) Sent</td>
-                <td className={styles.btnWarning} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Opened Today</span><br/>Email(s) Sent</td>
-                <td className={styles.btnInfo} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Closed Today</span><br/>PDF format</td>
+                <td className={styles.btnPrimary} onClick={this.props.OpenPOVendorEmail} ><span style={rpt1Style}>Open PO</span><br/>Vendor Email</td>
+                <td className={styles.btnSuccess} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Opened Today</span><br/>Email(s) Sent</td>
+                <td className={styles.btnWarning} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Closed Today</span><br/>PDF format</td>
               </tr>
               </tbody>
             </table>

@@ -40,15 +40,15 @@ export function OpenPOPager() {
   };
 }
 
-export function POPrompt() {
+export function OpenPOVendorEmail() {
   if ('development'==process.env.NODE_ENV) {
-    console.log(`ACTIONS.POPrompt()->top.`);
+    console.log(`ACTIONS.OpenPOVendorEmail()->top.`);
   }
 
  return (dispatch,getState) => {
     var disp = dispatch;
     var getSt = getState;
-    API.POPrompt(disp,getSt);
+    API.OpenPOVendorEmail(disp,getSt);
   };
 }
 
@@ -137,9 +137,14 @@ export function toggleOpenPOSelected(fpono) {
 }
 
 export function toggleOpenPOVisible(fpono) {
-  return {
-    type: ACTION.TOGGLE_OPEN_PO_VISIBLE,
-    fpono:fpono
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.toggleOpenPOVisible()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.ToggleOpenPOVisible(disp,getSt,fpono);
   };
 }
 

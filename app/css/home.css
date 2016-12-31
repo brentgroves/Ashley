@@ -32,27 +32,49 @@ font: 14px/20px "Helvetica Neue",Helvetica,Arial,sans-serif;
 .tg  {border-collapse: separate;border-spacing:20px;}
 .tg td{border-spacing:20px !important;font-family:Arial, sans-serif;font-size:14px;padding:20px 20px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
 .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:20px 20px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
-.tg .tgvv23{
+.tg .btnPrimary{
     display: inline-block; /* this has been added */
     border-radius: 15px;
 
-	color: #fff;
-	background-color: #428bca;
-	border-color: #357ebd;
-	vertical-align:top
+  color: #fff;
+  background-color: #428bca;
+  border-color: #357ebd;
+  vertical-align:top
 }
-.tg .tgy0xi{
+.tg .btnSuccess{
     border-radius: 15px;
-	color: #fff;
-	background-color: #5cb85c;
-	border-color: #4cae4c;
+  color: #fff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
 }
-.tg .tgh1ue{
+.tg .btnInfo{
     border-radius: 15px;
-	color: #fff;
-	background-color: #5bc0de;
-	border-color: #46b8da;
-	vertical-align:top
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+  vertical-align:top
+}
+
+.tg .btnWarning{
+    border-radius: 15px;
+  color: #fff;
+  background-color: #f0ad4e;
+  border-color: #eea236;
+  vertical-align:top
+}
+.tg .btnDanger{
+    border-radius: 15px;
+  color: #fff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+  vertical-align:top
+}
+.tg .btnWhite{
+    border-radius: 15px;
+  color: #fff;
+  background-color: #fff;
+  border: 1px solid #e5e9ec;
+  vertical-align:top
 }
 
 .tg td:hover {

@@ -99,13 +99,13 @@ export default class Home extends Component {
         <tbody>
           <tr>
             <LinkContainer to="/POReqTrans">
-              <td className={styles.tgvv23}>PO Request Transfer</td>
+              <td className={styles.btnPrimary}>PO Request Transfer</td>
             </LinkContainer>      
             <LinkContainer to="/GenReceivers">
-              <td className={styles.tgy0xi}>Generate Receivers</td>
+              <td className={styles.btnSuccess}>Generate Receivers</td>
             </LinkContainer>      
             <LinkContainer to="/Reports">
-              <td className={styles.tgh1ue} >Reports</td>
+              <td className={styles.btnWarning} >Reports</td>
             </LinkContainer>      
           </tr>
           </tbody>

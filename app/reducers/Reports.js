@@ -43,7 +43,8 @@ export default function reducer( state = {}, action) {
           poStatusReport:{$set:{pdf:'',done:false,failed:false}},
           reason:{$set:''},
           state:{$set: STATE.NOT_STARTED},
-          status:{$set: ''}
+          status:{$set: ''},
+          sqlOpenPOVendorEmail:{$set:{done:false,failed:false}}
         });
       return newData;
     }
@@ -84,7 +85,8 @@ export default function reducer( state = {}, action) {
           progressBtn:{$set:PROGRESSBUTTON.READY},
           poStatusReport:{$set:{pdf:'',done:false,failed:false}},
           reason:{$set:''},
-          status:{$set: ''}
+          status:{$set: ''},
+          sqlOpenPOVendorEmail:{$set:{done:false,failed:false}}
         });
       return newData;
     }
@@ -218,6 +220,23 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
+    case ACTION.SQL_OPENPO_VENDOR_EMAIL_FAILED:
+    {
+      var sqlOpenPOVendorEmail = state.sqlOpenPOVendorEmail;
+      sqlOpenPOVendorEmail.failed=action.failed;
+      var newData = update(state, {sqlOpenPOVendorEmail: {$set: sqlOpenPOVendorEmail}});
+      return newData;
+    }
+
+    case ACTION.SQL_OPENPO_VENDOR_EMAIL_DONE:
+    {
+      var sqlOpenPOVendorEmail = state.sqlOpenPOVendorEmail;
+      sqlOpenPOVendorEmail.done=action.done;
+      var newData = update(state, {sqlOpenPOVendorEmail: {$set: sqlOpenPOVendorEmail}});
+      return newData;
+    }
+
+
     case ACTION.TOGGLE_OPEN_PO_SELECTED:
     {
       var openPO = state.openPO;
@@ -245,35 +264,6 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {openPO: {$set: openPO}});
       return newData;
     }
-
-    case ACTION.TOGGLE_OPEN_PO_VISIBLE:
-    {
-      var openPO = state.openPO;
-      var poItem = state.openPO.poItem;
-      var fpono = action.fpono;
-
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`ACTION.TOGGLE_OPEN_PO_VISIBLE.top()=>`);
-//        console.log(`this.props.setStyle=>`);
-//        console.dir(setStyle);
-      }
-
-      var poItemNew = _.map(poItem).map(function(x){
-        var newVisible;
-        if(fpono==x.fpono){
-          newVisible=!x.visible;
-        }else{
-          newVisible=x.visible;
-        }
-        var poItemAdd = _.assign(x, {'visible':newVisible});
-        return poItemAdd; 
-      });
-
-      openPO.poItem=poItemNew;
-      var newData = update(state, {openPO: {$set: openPO}});
-      return newData;
-    }
-
 
 /// 
 /// 
