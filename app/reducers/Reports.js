@@ -16,9 +16,8 @@ export default function reducer( state = {}, action) {
           openPO:{$set:{
               curPage:1,
               maxPage:3,
-              poItem:
-              [
-                {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
+              poItem:[],
+/*                {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
                 {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
                 {page:1,selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
                 {page:1,selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
@@ -37,6 +36,7 @@ export default function reducer( state = {}, action) {
                 {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
                 {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
               ]
+              */
             }},
           openPOPager:{$set:{done:false,failed:false}},
           progressBtn:{$set:PROGRESSBUTTON.READY},
@@ -59,8 +59,8 @@ export default function reducer( state = {}, action) {
           openPO:{$set:{
               curPage:1,
               maxPage:3,
-              poItem:
-              [
+              poItem:[],
+/*              [
                 {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
                 {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
                 {page:1,selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
@@ -79,7 +79,7 @@ export default function reducer( state = {}, action) {
                 {page:3,selected:false,visible:false,fpono: "111118", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
                 {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
                 {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-              ]
+              ]*/
             }},
           openPOPager:{done:false,failed:false},
           progressBtn:{$set:PROGRESSBUTTON.READY},
@@ -241,7 +241,7 @@ export default function reducer( state = {}, action) {
     {
       var openPO = state.openPO;
       var poItem = state.openPO.poItem;
-      var fpono = action.fpono;
+      var poNumber = action.poNumber;
 
       if ('development'==process.env.NODE_ENV) {
         console.log(`ACTION.TOGGLE_OPEN_PO_SELECTED.top()=>`);
@@ -251,7 +251,7 @@ export default function reducer( state = {}, action) {
 
       var poItemNew = _.map(poItem).map(function(x){
         var newSelected;
-        if(fpono==x.fpono){
+        if(poNumber==x.poNumber){
           newSelected=!x.selected;
         }else{
           newSelected=x.selected;

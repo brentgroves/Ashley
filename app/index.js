@@ -90,8 +90,29 @@ const initialState = {
 		openPO:{
 			curPage:1,
 			maxPage:3,
-			poItem:
-			[
+			poItem:[],
+/*			
+select 1 page,0 selected,0 visible,ord.poDate,ord.poNumber,
+case
+ when ven.VendorName is null then 'None'
+ else ven.VendorName
+end vendorName,
+case
+ when ven.EMailAddress is null then 'None'
+ else ven.EMailAddress
+end eMailAddress,
+ord.item,
+case
+ when ord.ItemDescription is null then 'None'
+ else ord.ItemDescription
+end itemDescription,
+ord.qtyOrd,
+case
+ when rcv.qtyReceived is null then 0
+ else rcv.qtyReceived
+end qtyReceived,
+received
+
 			  {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
 			  {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
 			  {page:1,selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
@@ -111,6 +132,7 @@ const initialState = {
 			  {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
 			  {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
 			]
+			*/
 		},
 		openPOPager:{done:false,failed:false},
 		products: [

@@ -37,23 +37,29 @@ class PORow extends React.Component {
     }
     */
   render() {
-    var fpono=this.props.poItem.fpono;
+    var poNumber=this.props.poItem.poNumber;
+    var vendorName=this.props.poItem.vendorName;
+    var selected=this.props.poItem.selected;
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORow:fpono=>${fpono}`);
+      console.log(`PORow:poNumber=>${poNumber}`);
     }
     var checkbox;
-    checkbox=<input type="checkbox" onChange={()=>this.props.toggleOpenPOSelected(fpono)}/>;     
+    if(selected){
+      checkbox=<input type="checkbox" checked onChange={()=>this.props.toggleOpenPOSelected(poNumber)}/>;     
+    }else{
+      checkbox=<input type="checkbox" onChange={()=>this.props.toggleOpenPOSelected(poNumber)}/>;     
+    }
     var showButton;
     if(this.props.poItem.visible){
       showButton=
         <Button bsSize="xsmall" 
-          onClick={()=>this.props.toggleOpenPOVisible(fpono)}>
+          onClick={()=>this.props.toggleOpenPOVisible(poNumber)}>
           <Glyphicon glyph="chevron-down" />
         </Button>     
     }else{
       showButton=
         <Button bsSize="xsmall" 
-          onClick={()=>this.props.toggleOpenPOVisible(fpono)}>
+          onClick={()=>this.props.toggleOpenPOVisible(poNumber)}>
           <Glyphicon glyph="chevron-right" />
         </Button>     
     }
@@ -62,7 +68,7 @@ class PORow extends React.Component {
         <th colSpan="4" >
           {showButton}
           <span style={{paddingLeft:25,color:'steelblue'}}>PO: </span> 
-          {fpono}
+          {poNumber}{" / "}{vendorName}
           <span style={{paddingLeft:25,color:'steelblue'}}>Select: </span> 
           {checkbox}     
         </th>
@@ -79,16 +85,16 @@ class POItemRow extends React.Component {
   }
   render() {
     var myRow=null;
-    var fpono=this.props.poItem.fpono;
-    var fpartno=this.props.poItem.fpartno;
-    var fordqty=this.props.poItem.fordqty;
-    var frcvqty=this.props.poItem.frcvqty;
+    var poNumber=this.props.poItem.poNumber;
+    var itemDescription=this.props.poItem.itemDescription;
+    var qtyOrd=this.props.poItem.qtyOrd;
+    var qtyReceived=this.props.poItem.qtyReceived;
     if(true==this.props.poItem.visible){
       myRow=<tr>
-            <td>{fpono}</td>
-            <td>{fpartno}</td>
-            <td>{fordqty}</td>
-            <td>{frcvqty}</td>
+            <td>{poNumber}</td>
+            <td>{itemDescription}</td>
+            <td>{qtyOrd}</td>
+            <td>{qtyReceived}</td>
           </tr>;
     }  
     if ('development'==process.env.NODE_ENV) {
@@ -123,39 +129,39 @@ class OpenPOTable extends React.Component {
       console.log(`OpenPOTable.render().curPage=>${curPage}`);
     }
     poItem.forEach(function(poItem) {
-      if (poItem.fpono !== lastPO) {
+      if (poItem.poNumber !== lastPO) {
         if ('development'==process.env.NODE_ENV) {
-          console.log(`poItem.fpono=>${poItem.fpono}`);
+          console.log(`poItem.poNumber=>${poItem.poNumber}`);
           console.log(`lastPO=>${lastPO}`);
-          console.log(`poItem.fpono !== lastPO`);
+          console.log(`poItem.poNumber !== lastPO`);
         }
         if(curPage==poItem.page){
           rows.push(<PORow 
                       toggleOpenPOSelected={toggleOpenPOSelected} 
                       toggleOpenPOVisible={toggleOpenPOVisible}
-                      poItem={poItem} key={poItem.fpono} />);          
+                      poItem={poItem} key={poItem.poNumber} />);          
         }
 
       }else{
         if ('development'==process.env.NODE_ENV) {
-          console.log(`poItem.fpono=>${poItem.fpono}`);
+          console.log(`poItem.poNumber=>${poItem.poNumber}`);
           console.log(`lastPO=>${lastPO}`);
-          console.log(`poItem.fpono === lastPO`);
+          console.log(`poItem.poNumber === lastPO`);
         }
 
       }
-      var key = poItem.fpono+poItem.fpartno
+      var key = poItem.poNumber+poItem.item
       if(curPage==poItem.page){
         rows.push(<POItemRow poItem={poItem} key={key} />);
       }
-      lastPO = poItem.fpono;
+      lastPO = poItem.poNumber;
     });
     return (
       <Table style={{marginTop:0,marginBottom:0}} fill striped bordered condensed >
         <thead>
           <tr className={styles.tableHeader}>
             <th>PO</th>
-            <th>Part#</th>
+            <th>Description#</th>
             <th>Ordered</th>
             <th>Received</th>
           </tr>
@@ -217,6 +223,12 @@ export default class POPrompt extends React.Component {
     var pageNoClass = classNames(
       'pagination','hidden-xs', 'pull-left'
     );
+
+    var btnSpaceClass = classNames(
+      'btnSpace'
+    );
+
+
     var pages = [];
     var poItem=this.props.Rpt.openPO.poItem;
     var curPage=this.props.Rpt.openPO.curPage;
@@ -234,6 +246,9 @@ export default class POPrompt extends React.Component {
         let page=x;
         pages.push(<li key={x}><a onClick={()=>{this.props.setOpenPOCurPage(page)}}>{x}</a></li>);
     }
+  const rpt1Style = {
+    fontWeight:'bold'
+  };
 
     return (
       <div>
@@ -247,12 +262,14 @@ export default class POPrompt extends React.Component {
                     </ul>
                   </Col>
                   <Col xs={4}>
-                    <ul className={pageClass}>
-                      <li>
-                        <Button  bsSize="large" bsStyle="info" onClick={()=>this.props.setState(STATE.NOT_STARTED)} >Back
-                        </Button>
-                      </li>
-                    </ul>
+            <table className={styles.tg}>
+            <tbody>
+              <tr>
+                <td className={styles.btnPrimary} onClick={()=>this.props.setState(STATE.NOT_STARTED)} ><span style={rpt1Style}>Back</span></td>
+                <td className={styles.btnSuccess} onClick={()=>this.props.OpenPOVendorEmailReport()} ><span style={rpt1Style}>Run</span></td>
+              </tr>
+              </tbody>
+            </table>
                   </Col>
                    <Col xs={6}>
                     <ul className={pageClass}>
@@ -270,6 +287,23 @@ export default class POPrompt extends React.Component {
 
 
 /*
+                    <ul className={pageClass}>
+                      <li>
+                        <Button  bsSize="large" bsStyle="info" onClick={()=>this.props.setState(STATE.NOT_STARTED)} >Back
+                        </Button>
+                      </li>
+                      <li>
+                      {"      "}
+                      </li>
+                      <li>
+                      {"      "}
+                      </li>
+                      <li className={btnSpaceClass}>
+                        <Button  bsSize="large" bsStyle="success" onClick={()=>this.props.OpenPOVendorEmailReport()} >Run
+                        </Button>
+                      </li>
+                    </ul>
+
 
         <Button bsSize="xsmall">
           <Glyphicon glyph="chevron-down" />

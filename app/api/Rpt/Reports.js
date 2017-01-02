@@ -311,13 +311,13 @@ export async function OpenPOVendorEmail(disp,getSt) {
   }
 
 
-
   if ('development'==process.env.NODE_ENV) {
    console.log(`POPrompt() state=>`);
     console.dir(state);
      console.log(`POPrompt() openPO=>`);
     console.dir(openPO);
   }
+
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -366,18 +366,18 @@ export async function ToggleOpenPOVisible(disp,getSt,po) {
 
 //  var openPO = getState().Reports.openPO;
 //  var poItem = getState().Reports.openPO.poItem;
-  var fpono = po;
+  var poNumber = po;
 
   if ('development'==process.env.NODE_ENV) {
     console.log(`ToggleOpenPOVisible.top()=>`);
-    console.log(`fpono=>${fpono}`);
+    console.log(`poNumber=>${poNumber}`);
     console.log(`poItem=>`);
     console.dir(getState().Reports.openPO.poItem);
   }
 
   var poItemNew = _.map(getState().Reports.openPO.poItem).map(function(x){
     var newVisible;
-    if(fpono==x.fpono){
+    if(poNumber==x.poNumber){
       newVisible=!x.visible;
     }else{
       newVisible=x.visible;
@@ -439,29 +439,29 @@ export function OpenPOPager(disp,getSt) {
 
   var poItemNew=getState().Reports.openPO.poItem.map(function(poItem){
     if(false==poItem.visible){
-      if(curPO!=poItem.fpono){
+      if(curPO!=poItem.poNumber){
         rowCount+=1;
         pageIndex+=1;
         if('start' != curPO){
           poChange=true;
         }
-        curPO=poItem.fpono;
+        curPO=poItem.poNumber;
       }
     }else{
-      if(curPO!=poItem.fpono){
+      if(curPO!=poItem.poNumber){
         rowCount+=2;
         pageIndex+=2;
         if('start' != curPO){
           poChange=true;
         }
-        curPO=poItem.fpono;
+        curPO=poItem.poNumber;
       }else{
         rowCount+=1;
         pageIndex+=1;
       }
     }
     if ('development'==process.env.NODE_ENV) {
-      console.log(`OpenPOPager() poItem.fpono / poItem.fpartno=>${poItem.fpono} / ${poItem.fpartno}`);
+      console.log(`OpenPOPager() poItem.poNumber / poItem.itemDescription=>${poItem.poNumber} / ${poItem.itemDescription}`);
       console.log(`OpenPOPager() rowCount=>${rowCount}`);
       console.log(`OpenPOPager() Before page change=>${page}`);
       console.log(`OpenPOPager() Before pageIndex change=>${pageIndex}`);
@@ -516,8 +516,16 @@ export async function OpenPOVendorEmailReport(disp,getSt) {
   var getState = getSt;
   dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
   dispatch({ type:ACTION.SET_STATE, state:STATE.STARTED });
-
-  for(var x=0;x<10;x++){
+  var curPO='start';
+  getState().Reports.openPO.poItem.map(function(x){
+    if(x.selected && curPO!=x.poNumber){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`OpenPOVendorEmailReport.poNumber=${x.poNumber}`);
+      }
+      curPO=x.poNumber;
+    }
+    
+/*
     client.render({
 
   //      template: { shortid:"HJEa3YSNl"}
@@ -534,7 +542,8 @@ export async function OpenPOVendorEmailReport(disp,getSt) {
           }
         });
     });
-  }
+    */
+  });
   await MISC.sleep(6000);
   dispatch({ type:ACTION.SET_STATE, state:STATE.SUCCESS});
 }

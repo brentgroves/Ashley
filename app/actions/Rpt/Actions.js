@@ -52,6 +52,17 @@ export function OpenPOVendorEmail() {
   };
 }
 
+export function OpenPOVendorEmailReport() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.OpenPOVendorEmailReport()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.OpenPOVendorEmailReport(disp,getSt);
+  };
+}
 
 export function POStatusReport() {
   if ('development'==process.env.NODE_ENV) {
@@ -129,14 +140,14 @@ export function setStatus(status) {
 }
 
 
-export function toggleOpenPOSelected(fpono) {
+export function toggleOpenPOSelected(poNumber) {
   return {
     type: ACTION.TOGGLE_OPEN_PO_SELECTED,
-    fpono:fpono
+    poNumber:poNumber
   };
 }
 
-export function toggleOpenPOVisible(fpono) {
+export function toggleOpenPOVisible(poNumber) {
   if ('development'==process.env.NODE_ENV) {
     console.log(`ACTIONS.toggleOpenPOVisible()->top.`);
   }
@@ -144,7 +155,7 @@ export function toggleOpenPOVisible(fpono) {
  return (dispatch,getState) => {
     var disp = dispatch;
     var getSt = getState;
-    API.ToggleOpenPOVisible(disp,getSt,fpono);
+    API.ToggleOpenPOVisible(disp,getSt,poNumber);
   };
 }
 
