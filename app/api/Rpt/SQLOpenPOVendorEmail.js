@@ -40,12 +40,14 @@ function execSQL1(disp,getSt){
     console.log(`SQLOpenPOVendorEmail.execSQL1() top=>${sql1Cnt}`);
   }
 
-
+  var dateStart=getState().Reports.openPO.dateStart;
+  var dateEnd=getState().Reports.openPO.dateEnd;
   var connection = new sql.Connection(CONNECT.cribDefTO, function(err) {
     // ... error checks
     if(null==err){
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLOpenPOVendorEmail.execSQL1() Connection Sucess`);
+        console.log(`dateStart=>${dateStart}`);
       }
 
       let sproc;
@@ -58,8 +60,8 @@ function execSQL1(disp,getSt){
       }
 
       var request = new sql.Request(connection); 
-
-//      request.output('id', sql.Int);
+      request.input('dateStart', sql.DateTime, dateStart);
+      request.input('dateEnd', sql.DateTime, dateEnd);
       request.execute(sproc, function(err, recordsets, returnValue, affected) {
         // ... error checks
         if(null==err){

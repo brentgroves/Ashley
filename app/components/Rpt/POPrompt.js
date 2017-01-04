@@ -249,6 +249,31 @@ export default class POPrompt extends React.Component {
   const rpt1Style = {
     fontWeight:'bold'
   };
+    var saveAndBackBtn;
+    if(
+        (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) 
+      ){
+
+      saveAndBackBtn = 
+      <div>
+        <Col xs={1}>
+          <Button disabled style={{marginTop:15}} bsSize="large" bsStyle="success" onClick={()=>this.props.OpenPOVendorEmailReport()}>Run</Button>
+        </Col>
+        <Col xs={2}>
+          <Button  style={{marginTop:15,marginLeft:15}} bsSize="large" bsStyle="info" onClick={()=>this.props.setState(STATE.NOT_STARTED)}>Back</Button>
+        </Col>
+      </div>
+    }else{
+      saveAndBackBtn = 
+      <div>
+        <Col xs={1}>
+          <Button style={{marginTop:15}} bsSize="large" bsStyle="success" onClick={()=>this.props.OpenPOVendorEmailReport()}>Run</Button>
+        </Col>
+        <Col xs={2}>
+          <Button  style={{marginTop:15,marginLeft:15}} bsSize="large" bsStyle="info" onClick={()=>this.props.setState(STATE.NOT_STARTED)}>Back</Button>
+        </Col>
+      </div>
+    }
 
     return (
       <div>
@@ -256,12 +281,28 @@ export default class POPrompt extends React.Component {
             toggleOpenPOSelected={this.props.toggleOpenPOSelected} 
             toggleOpenPOVisible={this.props.toggleOpenPOVisible}/>
                 <Row>
-                  <Col xs={2}>
+                  <Col xs={3}>
                     <ul className={pageNoClass}>
                       <li><span style={{color:'black'}} >Page {curPage} of {maxPage}</span></li>
                     </ul>
                   </Col>
-                  <Col xs={4}>
+                  {saveAndBackBtn}
+                   <Col xs={6}>
+                    <ul className={pageClass}>
+                      <li><a onClick={()=>{this.props.setOpenPOPrevPage()}}>«</a></li>
+                      <li><a onClick={()=>{this.props.setOpenPONextPage()}}>»</a></li>
+                      {pages}  
+                    </ul>
+                  </Col>
+                </Row>
+
+      </div>
+    );
+  }
+}
+
+
+/*
             <table className={styles.tg}>
             <tbody>
               <tr>
@@ -280,13 +321,7 @@ export default class POPrompt extends React.Component {
                   </Col>
                 </Row>
 
-      </div>
-    );
-  }
-}
 
-
-/*
                     <ul className={pageClass}>
                       <li>
                         <Button  bsSize="large" bsStyle="info" onClick={()=>this.props.setState(STATE.NOT_STARTED)} >Back

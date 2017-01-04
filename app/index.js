@@ -89,6 +89,8 @@ const initialState = {
 		status:'',
 		openPO:{
 			curPage:1,
+			dateStart:null,
+			dateEnd:null,
 			maxPage:3,
 			poItem:[],
 /*			

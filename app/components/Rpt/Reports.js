@@ -5,9 +5,11 @@ import { Link,IndexLink } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 import ProgressBtn from '../../containers/Rpt/ProgressBtn';
 import POPrompt from "../../containers/Rpt/POPrompt";
+import DateTimeRange from "../../containers/Rpt/DateTimeRange";
 import * as STATE from "../../actions/Rpt/State.js"
 import { Grid, Row, Col, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse, Text as NavbarText } from 'react-bootstrap/lib/Navbar'
+var Moment = require('moment');
 
 
 export default class Reports extends Component {
@@ -25,7 +27,7 @@ export default class Reports extends Component {
   }
 
   render() {
-    var jumboTronTxt,rptMenu,poPrompt,progressBtn,backBtn,cancelBtn,navbar;
+    var jumboTronTxt,rptMenu,poPrompt,progressBtn,backBtn,cancelBtn,navbar,openPODateRange;
 
     if(STATE.NOT_STARTED==this.props.Rpt.state){
     jumboTronTxt=
@@ -73,6 +75,41 @@ export default class Reports extends Component {
               <p >You may now press the 'run' button to begin. After 'run' is
               pressed this program will create an email notification for each applicable vendor
               and send them to the designated MRO personel for review and forwarding. 
+              </p>
+            </div>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(
+            (STATE.OPENPO_DATE_RANGE_NOT_READY==this.props.Rpt.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
+            <div style={{textAlign: 'left'}}>
+              <p >Please select the Date Range for the PO(s). </p>
+              <p>After selecting the beginning and ending dates the 'Continue' 
+              button will be enabled. </p>
+            </div>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(
+            (STATE.OPENPO_DATE_RANGE_READY==this.props.Rpt.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
+            <div style={{textAlign: 'left'}}>
+              <p >You may now press the 'Continue' button which will take you to a screen that will ask you to select individual PO(s). 
               </p>
             </div>
             <br/>
@@ -178,7 +215,13 @@ export default class Reports extends Component {
             <table className={styles.tg}>
             <tbody>
               <tr>
-                <td className={styles.btnPrimary} onClick={this.props.OpenPOVendorEmail} ><span style={rpt1Style}>Open PO</span><br/>Vendor Email</td>
+                <td className={styles.btnPrimary} 
+                onClick={()=>{
+                  this.props.setOpenPODateStart(Moment().startOf('day').toDate()); // set to 12:00 am today
+                  this.props.setOpenPODateEnd(Moment().endOf('day').toDate()); // set to 23:59 pm today    
+                  this.props.setState(STATE.OPENPO_DATE_RANGE_READY);
+                }}>
+                <span style={rpt1Style}>Open PO</span><br/>Vendor Email</td>
                 <td className={styles.btnSuccess} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Opened Today</span><br/>Email(s) Sent</td>
                 <td className={styles.btnWarning} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Closed Today</span><br/>PDF format</td>
               </tr>
@@ -203,6 +246,25 @@ export default class Reports extends Component {
       <Row>
         <Col xs={1} >&nbsp;</Col>
         <Col xs={10}><POPrompt/></Col>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+
+    </div>
+  }
+
+  if(
+      (STATE.OPENPO_DATE_RANGE_NOT_READY==this.props.Rpt.state) ||
+      (STATE.OPENPO_DATE_RANGE_READY==this.props.Rpt.state)
+    )
+  {
+    openPODateRange = 
+    <div>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1} >&nbsp;</Col>
+        <Col xs={10}><DateTimeRange/></Col>
         <Col xs={1}>&nbsp;</Col>
       </Row>
 
@@ -250,8 +312,11 @@ export default class Reports extends Component {
   if(
       (STATE.SUCCESS==this.props.Rpt.state)  || 
       (STATE.NOT_STARTED==this.props.Rpt.state) ||
+      (STATE.OPENPO_DATE_RANGE_NOT_READY==this.props.Rpt.state) ||
+      (STATE.OPENPO_DATE_RANGE_READY==this.props.Rpt.state) ||
       (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) ||
       (STATE.PO_PROMPT_READY==this.props.Rpt.state) 
+
     )
   {
     navbar =
@@ -293,6 +358,7 @@ export default class Reports extends Component {
           {jumboTronTxt}
           {progressBtn}
           {rptMenu}
+          {openPODateRange}
           {poPrompt}
           {backBtn}
           {cancelBtn}

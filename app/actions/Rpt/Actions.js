@@ -52,6 +52,18 @@ export function OpenPOVendorEmail() {
   };
 }
 
+export function OpenPOVendorDateRange() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.OpenPOVendorDateRange()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.OpenPOVendorDateRange(disp,getSt);
+  };
+}
+
 export function OpenPOVendorEmailReport() {
   if ('development'==process.env.NODE_ENV) {
     console.log(`ACTIONS.OpenPOVendorEmailReport()->top.`);
@@ -89,14 +101,31 @@ export function POVendorEmail() {
 }
 
 
-export function setProductCategoryStyle(category,style) {
+
+
+export function setOpenPODateStart(dateStart) {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.setOpenPODateStart()->top. ${dateStart}`);
+
+  }
+
   return {
-    type: ACTION.SET_PRODUCTS_CATEGORY_STYLE,
-    category: category,
-    style:style
+    type: ACTION.SET_OPENPO_DATE_START,
+    dateStart: dateStart
   };
 }
 
+export function setOpenPODateEnd(dateEnd) {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.setOpenPODateEnd()->top. ${dateEnd}`);
+
+  }
+
+  return {
+    type: ACTION.SET_OPENPO_DATE_END,
+    dateEnd: dateEnd
+  };
+}
 
 export function setOpenPOCurPage(curPage) {
   return {
@@ -115,6 +144,13 @@ export function setOpenPONextPage() {
   };
 }
 
+export function setProductCategoryStyle(category,style) {
+  return {
+    type: ACTION.SET_PRODUCTS_CATEGORY_STYLE,
+    category: category,
+    style:style
+  };
+}
 
 export function setProgressBtn(goButton) {
   return {
@@ -140,10 +176,16 @@ export function setStatus(status) {
 }
 
 
+
 export function toggleOpenPOSelected(poNumber) {
-  return {
-    type: ACTION.TOGGLE_OPEN_PO_SELECTED,
-    poNumber:poNumber
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.toggleOpenPOSelected()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.ToggleOpenPOSelected(disp,getSt,poNumber);
   };
 }
 

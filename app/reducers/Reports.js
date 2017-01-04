@@ -15,6 +15,8 @@ export default function reducer( state = {}, action) {
         { 
           openPO:{$set:{
               curPage:1,
+              dateStart:null,
+              dateEnd:null,
               maxPage:3,
               poItem:[],
 /*                {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
@@ -58,6 +60,8 @@ export default function reducer( state = {}, action) {
         { 
           openPO:{$set:{
               curPage:1,
+              dateStart:null,
+              dateEnd:null,
               maxPage:3,
               poItem:[],
 /*              [
@@ -117,6 +121,21 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
+    case ACTION.SET_OPENPO_DATE_END:
+    {
+      var openPO = state.openPO;
+      openPO.dateEnd=action.dateEnd;
+      var newData = update(state, {openPO: {$set: openPO}});
+      return newData;
+    }
+
+    case ACTION.SET_OPENPO_DATE_START:
+    {
+      var openPO = state.openPO;
+      openPO.dateStart=action.dateStart;
+      var newData = update(state, {openPO: {$set: openPO}});
+      return newData;
+    }
 
     case ACTION.SET_OPENPO_MAXPAGE:
     {
@@ -236,34 +255,6 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
-
-    case ACTION.TOGGLE_OPEN_PO_SELECTED:
-    {
-      var openPO = state.openPO;
-      var poItem = state.openPO.poItem;
-      var poNumber = action.poNumber;
-
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`ACTION.TOGGLE_OPEN_PO_SELECTED.top()=>`);
-//        console.log(`this.props.setStyle=>`);
-//        console.dir(setStyle);
-      }
-
-      var poItemNew = _.map(poItem).map(function(x){
-        var newSelected;
-        if(poNumber==x.poNumber){
-          newSelected=!x.selected;
-        }else{
-          newSelected=x.selected;
-        }
-        var poItemAdd = _.assign(x, {'selected':newSelected});
-        return poItemAdd; 
-      });
-
-      openPO.poItem=poItemNew;
-      var newData = update(state, {openPO: {$set: openPO}});
-      return newData;
-    }
 
 /// 
 /// 

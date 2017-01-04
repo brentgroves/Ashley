@@ -5,6 +5,10 @@ export const PO_PROMPT_NOT_READY = 'PO_PROMPT_NOT_READY';
 
 export const PO_PROMPT_READY = 'PO_PROMPT_READY';
 
+export const OPENPO_DATE_RANGE_NOT_READY = 'OPENPO_DATE_RANGE_NOT_READY';
+
+export const OPENPO_DATE_RANGE_READY = 'OPENPO_DATE_RANGE_READY';
+
 /// state 3 - started
 export const STARTED = 'STARTED';
 

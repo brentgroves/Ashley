@@ -38,6 +38,44 @@ const config = validate(merge(baseConfig, {
           'style-loader',
           'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
         )
+      },
+       {
+        test: /\.less$/,
+        loaders: [
+          'style-loader!css-loader!less-loader'
+        ]
+      },
+      {
+        test: /\.woff(2)?(\?v=[0-9].[0-9].[0-9])?/,
+        loaders: [
+          'url-loader?mimetype=application/font-woff'
+        ]
+      },
+      {
+        test: /\.(ttf|eot|svg)(\?v=[0-9].[0-9].[0-9])?/,
+        loaders: [
+          'file-loader?name=[name].[ext]'
+        ]
+      },
+      {
+        test: /\.less$/,
+        loaders: [
+          'style-loader',
+          'css-loader',
+          'less-loader'
+        ]
+      },
+      {
+        test: /\.woff(2)?(\?v=[0-9].[0-9].[0-9])?/,
+        loaders: [
+          'url-loader?mimetype=application/font-woff'
+        ]
+      },
+      {
+        test: /\.(ttf|eot|svg)(\?v=[0-9].[0-9].[0-9])?/,
+        loaders: [
+          'file-loader?name=[name].[ext]'
+        ]
       }
     ]
   },

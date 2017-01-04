@@ -236,6 +236,31 @@ export async function POVendorEmail(disp,getSt) {
 
 }
 
+export async function OpenPOVendorDateRange(disp,getSt) {
+  var dispatch = disp;
+  var getState = getSt;
+  var continueProcess=true;
+  var openPO=getState().Reports.openPO;
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`OpenPOVendorDateRange().dateStart=>${openPO.dateStart}`);
+    console.log(`OpenPOVendorDateRange().dateEnd=>${openPO.dateEnd}`);
+  }
+  if(
+    (null==openPO.dateStart) ||
+    (null==openPO.dateEnd) ||
+    (openPO.dateStart>openPO.dateEnd)
+    ){
+    dispatch({ type:ACTION.SET_STATE, state:STATE.OPENPO_DATE_RANGE_NOT_READY });
+  }else{
+    dispatch({ type:ACTION.SET_STATE, state:STATE.OPENPO_DATE_RANGE_READY });
+  }
+/*
+  if(continueProcess){
+    dispatch({ type:ACTION.SET_STATE, state:STATE.OPENPO_DATE_RANGE_NOT_READY });
+  }
+  */
+}
+
 export async function OpenPOVendorEmail(disp,getSt) {
   var dispatch = disp;
   var getState = getSt;
@@ -276,8 +301,11 @@ export async function OpenPOVendorEmail(disp,getSt) {
       console.log(`prime Success.`);
     }
   }
-
-
+/*
+  if(continueProcess){
+    dispatch({ type:ACTION.SET_STATE, state:STATE.OPENPO_DATE_RANGE_NOT_READY });
+  }
+  */
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -418,6 +446,52 @@ export async function ToggleOpenPOVisible(disp,getSt,po) {
     }
   }
 }
+
+
+export async function ToggleOpenPOSelected(disp,getSt,po) {
+  var dispatch = disp;
+  var getState = getSt;
+  var continueProcess=true;
+  var cnt=0;
+  var maxCnt=10;
+
+
+//  var openPO = getState().Reports.openPO;
+//  var poItem = getState().Reports.openPO.poItem;
+  var poNumber = po;
+
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ToggleOpenPOSelected.top()=>`);
+    console.log(`poNumber=>${poNumber}`);
+    console.log(`poItem=>`);
+    console.dir(getState().Reports.openPO.poItem);
+  }
+
+  var anySelected=false;
+  var poItemNew = _.map(getState().Reports.openPO.poItem).map(function(x){
+    var newSelected;
+    if(poNumber==x.poNumber){
+      newSelected=!x.selected;
+    }else{
+      newSelected=x.selected;
+    }
+    if(newSelected){
+      anySelected=true;
+    }
+    var poItemAdd = _.assign(x, {'selected':newSelected});
+    return poItemAdd; 
+  });
+
+  dispatch({ type:ACTION.SET_OPENPO_POITEM, poItem:poItemNew });
+
+
+  if(anySelected){
+    dispatch({ type:ACTION.SET_STATE, state:STATE.PO_PROMPT_READY});
+  }else{
+    dispatch({ type:ACTION.SET_STATE, state:STATE.PO_PROMPT_NOT_READY});
+  }
+}
+
 
 export function OpenPOPager(disp,getSt) {
   var dispatch = disp;

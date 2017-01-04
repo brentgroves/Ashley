@@ -7,9 +7,12 @@
 import webpack from 'webpack';
 import validate from 'webpack-validator';
 import merge from 'webpack-merge';
+
 import baseConfig from './webpack.config.base';
 
 const port = process.env.PORT || 3000;
+
+
 
 export default validate(merge(baseConfig, {
   debug: true,
@@ -43,6 +46,27 @@ export default validate(merge(baseConfig, {
           'css-loader?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
         ]
       },
+      {
+        test: /\.less$/,
+        loaders: [
+          'style-loader',
+          'css-loader',
+          'less-loader'
+        ]
+      },
+      {
+        test: /\.woff(2)?(\?v=[0-9].[0-9].[0-9])?/,
+        loaders: [
+          'url-loader?mimetype=application/font-woff'
+        ]
+      },
+      {
+        test: /\.(ttf|eot|svg)(\?v=[0-9].[0-9].[0-9])?/,
+        loaders: [
+          'file-loader?name=[name].[ext]'
+        ]
+      }
+
     ]
   },
 
@@ -59,7 +83,6 @@ export default validate(merge(baseConfig, {
       'process.env.NODE_ENV': JSON.stringify('development')
     })
   ],
-
   // https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
   target: 'electron-renderer'
 }));
