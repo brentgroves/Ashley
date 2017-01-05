@@ -27,6 +27,17 @@ export function init() {
   };
 }
 
+export function OpenPOEmailMROToggle() {
+  return {
+    type: ACTION.OPENPO_EMAIL_MRO_TOGGLE
+  };
+}
+
+export function OpenPOEmailVendorToggle() {
+  return {
+    type: ACTION.OPENPO_EMAIL_VENDOR_TOGGLE
+  };
+}
 
 export function OpenPOPager() {
   if ('development'==process.env.NODE_ENV) {

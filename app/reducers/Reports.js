@@ -17,6 +17,8 @@ export default function reducer( state = {}, action) {
               curPage:1,
               dateStart:null,
               dateEnd:null,
+              emailMRO:false,
+              emailVendor:false,
               maxPage:3,
               poItem:[],
 /*                {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
@@ -62,6 +64,8 @@ export default function reducer( state = {}, action) {
               curPage:1,
               dateStart:null,
               dateEnd:null,
+              emailMRO:false,
+              emailVendor:false,
               maxPage:3,
               poItem:[],
 /*              [
@@ -95,6 +99,28 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
+
+    case ACTION.OPENPO_EMAIL_MRO_TOGGLE:
+    {
+      var openPO = state.openPO;
+      openPO.emailMRO=!openPO.emailMRO;
+      var newData = update(state, {openPO: {$set: openPO}});
+      return newData;
+    }
+    case ACTION.OPENPO_EMAIL_VENDOR_TOGGLE:
+    {
+      var openPO = state.openPO;
+      openPO.emailVendor=!openPO.emailVendor;
+      var newData = update(state, {openPO: {$set: openPO}});
+      return newData;
+    }
+    case ACTION.OPENPO_PAGER_FAILED:
+    {
+      var openPOPager = state.openPOPager;
+      openPOPager.failed=action.failed;
+      var newData = update(state, {openPOPager: {$set: openPOPager}});
+      return newData;
+    }
 
     case ACTION.OPENPO_PAGER_FAILED:
     {

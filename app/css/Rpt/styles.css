@@ -4,6 +4,24 @@
   background-color: #f97777;
 }
 */
+.panel-body {
+background-color: red !important;
+}
+.body-full {
+background-color: red !important;
+
+}
+.panel > .panel-heading {
+  background-color :red !important;
+}
+
+.panel-default > .panel-heading {
+  background-color :red !important;
+}
+
+.panel-default > .panel-body {
+background-color: red !important;
+}
 .tableHeader{
    font-weight: bold;
   color:#666B85;
@@ -27,7 +45,7 @@
   margin-left: 40%;
   text-align: center;
 }
-	
+
 /*	border-spacing: 5px;  margin-left: 30%; border: 1px solid #000;*/
 .btn {
 display: inline-block;

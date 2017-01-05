@@ -1,0 +1,16 @@
+/*
+.table-striped>tbody>tr:nth-child(odd)>td,
+.table-striped>tbody>tr:nth-child(odd)>th {
+  background-color: #f97777;
+}
+.glyphicon {         
+  opacity: 0;       
+}
+.glyphicon {        
+  opacity: 1;       
+}
+
+*/
+.panel-body {
+background-color: #666B85 !important;
+}
