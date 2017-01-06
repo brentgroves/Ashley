@@ -27,6 +27,12 @@ export function init() {
   };
 }
 
+export function initNoState() {
+  return {
+    type: ACTION.INIT_NO_STATE
+  };
+}
+
 export function OpenPOEmailMROToggle() {
   return {
     type: ACTION.OPENPO_EMAIL_MRO_TOGGLE

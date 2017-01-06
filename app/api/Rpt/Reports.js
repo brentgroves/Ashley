@@ -246,19 +246,34 @@ export async function OpenPOVendorDateRange(disp,getSt) {
     console.log(`OpenPOVendorDateRange().dateEnd=>${openPO.dateEnd}`);
   }
   if(
+      (null==openPO.dateStart) ||
+      (null==openPO.dateEnd) ||
+      (openPO.dateStart>openPO.dateEnd )
+    )
+  {
+    dispatch({ type:ACTION.SET_OPENPO_DATE_HEADER, dateHeader:{text:'Date Range Error!',valid:false} });
+  }else{
+    dispatch({ type:ACTION.SET_OPENPO_DATE_HEADER, dateHeader:{text:'Date Range',valid:true} });
+
+  }
+  if(
+      (!openPO.emailMRO && !openPO.emailVendor) 
+    )
+  {
+    dispatch({ type:ACTION.SET_OPENPO_EMAIL_HEADER, emailHeader:{text:'One Email recipient!',valid:false}});
+  }else{
+    dispatch({ type:ACTION.SET_OPENPO_EMAIL_HEADER, emailHeader:{text:'Email',valid:true}});
+  }
+  if(
     (null==openPO.dateStart) ||
     (null==openPO.dateEnd) ||
-    (openPO.dateStart>openPO.dateEnd)
+    (openPO.dateStart>openPO.dateEnd ||
+     (!openPO.emailMRO && !openPO.emailVendor))
     ){
     dispatch({ type:ACTION.SET_STATE, state:STATE.OPENPO_DATE_RANGE_NOT_READY });
   }else{
     dispatch({ type:ACTION.SET_STATE, state:STATE.OPENPO_DATE_RANGE_READY });
   }
-/*
-  if(continueProcess){
-    dispatch({ type:ACTION.SET_STATE, state:STATE.OPENPO_DATE_RANGE_NOT_READY });
-  }
-  */
 }
 
 export async function OpenPOVendorEmail(disp,getSt) {
@@ -331,19 +346,18 @@ export async function OpenPOVendorEmail(disp,getSt) {
       dispatch({ type:ACTION.SET_STATE, state:STATE.FAILURE });
       dispatch({ type:ACTION.SET_STATUS, status:'Can not run bpOpenPOVendorEmail sproc on Cribmaster...' });
       continueProcess=false;
-    }else{
+    }else if(0<getState().Reports.openPO.poItem.length){
       if ('development'==process.env.NODE_ENV) {
         console.log(`SQLOPENPOVENDOREMAIL.sql1() Success.`);
       }
+    }else{
+      dispatch({ type:ACTION.SET_STATE, state:STATE.OPENPO_DATE_RANGE_NO_RECORDS });
+      continueProcess=false;
     }
   }
 
 
   if ('development'==process.env.NODE_ENV) {
-   console.log(`POPrompt() state=>`);
-    console.dir(state);
-     console.log(`POPrompt() openPO=>`);
-    console.dir(openPO);
   }
 
 
@@ -591,32 +605,44 @@ export async function OpenPOVendorEmailReport(disp,getSt) {
   dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
   dispatch({ type:ACTION.SET_STATE, state:STATE.STARTED });
   var curPO='start';
+  var emailMRO=getState().Reports.openPO.emailMRO;
+  var emailVendor=getState().Reports.openPO.emailVendor;
   getState().Reports.openPO.poItem.map(function(x){
     if(x.selected && curPO!=x.poNumber){
+      var emailTo=null;
+      if(emailMRO){
+         emailTo='bgroves@yahoo.com'; 
+      }
+      if(emailVendor){
+        if(null==emailTo){
+          emailTo='Administrator@busche-cnc.com'
+        }else{
+          emailTo+=',Administrator@busche-cnc.com'
+        }
+      }
+
       if ('development'==process.env.NODE_ENV) {
         console.log(`OpenPOVendorEmailReport.poNumber=${x.poNumber}`);
+        console.log(`OpenPOVendorEmailReport.poNumber=${x.eMailAddress}`);
+        console.log(`emailTo=${emailTo}`);
+      }
+      if(null!=emailTo){
+        client.render({
+            template: { shortid:"SJ6CuGdBx"}, // sample report
+            data: { po:x.poNumber, emailTo: emailTo }
+
+        }, function(err, response) {
+            if ('development'==process.env.NODE_ENV) {
+            }
+            response.body(function(body) {
+              if ('development'==process.env.NODE_ENV) {
+              }
+            });
+        });
       }
       curPO=x.poNumber;
     }
-    
-/*
-    client.render({
-
-  //      template: { shortid:"HJEa3YSNl"}
-        template: { shortid:"SkVLXedVe"} // sample report
-    }, function(err, response) {
-        if ('development'==process.env.NODE_ENV) {
-        }
-      //dispatch({ type:GRACTION.SET_REASON, reason:err.message });
-      //dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
-      //dispatch({ type:GRACTION.LOG_ENTRY_LAST_FAILED, failed:true });
-
-        response.body(function(body) {
-          if ('development'==process.env.NODE_ENV) {
-          }
-        });
-    });
-    */
+   
   });
   await MISC.sleep(6000);
   dispatch({ type:ACTION.SET_STATE, state:STATE.SUCCESS});

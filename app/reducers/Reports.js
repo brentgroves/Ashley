@@ -17,6 +17,8 @@ export default function reducer( state = {}, action) {
               curPage:1,
               dateStart:null,
               dateEnd:null,
+              dateHeader:{text:'Date Range',valid:true},
+              emailHeader:{text:'Email',valid:true},
               emailMRO:false,
               emailVendor:false,
               maxPage:3,
@@ -64,32 +66,14 @@ export default function reducer( state = {}, action) {
               curPage:1,
               dateStart:null,
               dateEnd:null,
+              dateHeader:{text:'Date Range',valid:true},
+              emailHeader:{text:'Email',valid:true},
               emailMRO:false,
               emailVendor:false,
               maxPage:3,
               poItem:[],
-/*              [
-                {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-                {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-                {page:1,selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
-                {page:1,selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
-                {page:1,selected:false,visible:false,fpono: "111113", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-                {page:1,selected:false,visible:false,fpono: "111113", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-                {page:1,selected:false,visible:false,fpono: "111114", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-                {page:2,selected:false,visible:false,fpono: "111114", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-                {page:2,selected:false,visible:false,fpono: "111115", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
-                {page:2,selected:false,visible:false,fpono: "111115", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
-                {page:2,selected:false,visible:false,fpono: "111116", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-                {page:2,selected:false,visible:false,fpono: "111116", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-                {page:2,selected:false,visible:false,fpono: "111117", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-                {page:3,selected:false,visible:false,fpono: "111117", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-                {page:3,selected:false,visible:false,fpono: "111118", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
-                {page:3,selected:false,visible:false,fpono: "111118", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
-                {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-                {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-              ]*/
             }},
-          openPOPager:{done:false,failed:false},
+          openPOPager:{$set:{done:false,failed:false}},
           progressBtn:{$set:PROGRESSBUTTON.READY},
           poStatusReport:{$set:{pdf:'',done:false,failed:false}},
           reason:{$set:''},
@@ -103,6 +87,10 @@ export default function reducer( state = {}, action) {
     case ACTION.OPENPO_EMAIL_MRO_TOGGLE:
     {
       var openPO = state.openPO;
+      if ('development'==process.env.NODE_ENV) {
+        console.log('OPENPO_EMAIL_MRO_TOGGLE ${openPO.emailMRO');
+      }
+
       openPO.emailMRO=!openPO.emailMRO;
       var newData = update(state, {openPO: {$set: openPO}});
       return newData;
@@ -110,6 +98,9 @@ export default function reducer( state = {}, action) {
     case ACTION.OPENPO_EMAIL_VENDOR_TOGGLE:
     {
       var openPO = state.openPO;
+      if ('development'==process.env.NODE_ENV) {
+        console.log('OPENPO_EMAIL_VENDOR_TOGGLE ${openPO.emailVendor');
+      }
       openPO.emailVendor=!openPO.emailVendor;
       var newData = update(state, {openPO: {$set: openPO}});
       return newData;
@@ -146,7 +137,17 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {openPO: {$set: openPO}});
       return newData;
     }
+    case ACTION.SET_OPENPO_DATE_HEADER:
+    {
+      var openPO = state.openPO;
+      if ('development'==process.env.NODE_ENV) {
+        console.log('SET_OPENPO_DATE_HEADER ${action.dateHeader.text},${action.dateHeader.valid}');
+      }
 
+      openPO.dateHeader=action.dateHeader;
+      var newData = update(state, {openPO: {$set: openPO}});
+      return newData;
+    }
     case ACTION.SET_OPENPO_DATE_END:
     {
       var openPO = state.openPO;
@@ -159,6 +160,17 @@ export default function reducer( state = {}, action) {
     {
       var openPO = state.openPO;
       openPO.dateStart=action.dateStart;
+      var newData = update(state, {openPO: {$set: openPO}});
+      return newData;
+    }
+    case ACTION.SET_OPENPO_EMAIL_HEADER:
+    {
+      var openPO = state.openPO;
+      if ('development'==process.env.NODE_ENV) {
+        console.log('SET_OPENPO_EMAIL_HEADER ${action.emailHeader.text},${action.emailHeader.valid}');
+      }
+
+      openPO.emailHeader=action.emailHeader;
       var newData = update(state, {openPO: {$set: openPO}});
       return newData;
     }

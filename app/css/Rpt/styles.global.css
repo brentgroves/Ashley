@@ -14,3 +14,16 @@
 .panel-body {
 background-color: #666B85 !important;
 }
+/*
+.panel > .panel-heading {
+    color: red !important;
+}
+*/
+/*
+.panel > .panel-heading {
+    background-image: none;
+    background-color: red;
+    color: red !important;
+
+}
+*/

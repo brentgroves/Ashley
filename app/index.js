@@ -91,6 +91,8 @@ const initialState = {
 			curPage:1,
 			dateStart:null,
 			dateEnd:null,
+			dateHeader:{text:'Date Range',valid:true},
+			emailHeader:{text:'Email',valid:true},
 			maxPage:3,
 			poItem:[],
 /*			

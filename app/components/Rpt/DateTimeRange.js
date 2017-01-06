@@ -115,7 +115,6 @@ export default class DateTimeRange extends React.Component {
  }
 
  handleSubmit(event){
-        event.preventDefault();
       console.log (`handleSubmit`);
       this.form.showError('MRO','api');
         // Emulate async API call
@@ -144,7 +143,7 @@ export default class DateTimeRange extends React.Component {
      continueAndBackBtn = 
       <Row>
         <Col xs={4} >&nbsp;</Col>
-        <Col xs={1}><Button  onClick={this.props.OpenPOVendorEmail} bsSize="large" bsStyle="info" disabled>Continue</Button></Col>
+        <Col xs={1}><Button  onClick={()=>this.props.OpenPOVendorEmail()} bsSize="large" bsStyle="info" disabled>Continue</Button></Col>
         <Col xs={1} >&nbsp;</Col>
         <Col xs={2}><Button onClick={()=>this.props.setState(STATE.NOT_STARTED)} bsSize="large" bsStyle="warning">Back</Button></Col>
         <Col xs={3}>&nbsp;</Col>
@@ -154,8 +153,8 @@ export default class DateTimeRange extends React.Component {
       <Row>
         <Col xs={4} >&nbsp;</Col>
 
-        <Col xs={2}><Button  onClick={this.handleSubmit.bind(this)} bsSize="large" bsStyle="info" >Continue</Button></Col>
-        <Col xs={1}><Button style={{marginLeft:-25}} onClick={()=>this.props.setState(STATE.NOT_STARTED)} bsSize="large" bsStyle="warning">Back</Button></Col>
+        <Col xs={2}><Button  onClick={()=>this.props.OpenPOVendorEmail()}  bsSize="large" bsStyle="info" >Continue</Button></Col>
+        <Col xs={1}><Button  onClick={()=>this.props.setState(STATE.NOT_STARTED)} bsSize="large" bsStyle="warning">Back</Button></Col>
         <Col xs={3}>&nbsp;</Col>
       </Row>
     }
@@ -195,48 +194,59 @@ export default class DateTimeRange extends React.Component {
             </Row>
         </Validation.components.Form>
 
-    var email;
+    var emailMRO;
     if(this.props.Rpt.openPO.emailMRO){
 
-      email=
-<div>
-<h1 >
-      <span style={{borderStyle:'solid'}} >
-
-      <Label   bsStyle='default' bsSize="large" for="test">
-          MRO 
-      </Label>
-      <Button onClick={this.props.OpenPOEmailMROToggle} name="test" bsStyle='primary' bsSize="medium"><Glyphicon style={{  opacity: 1}} glyph="ok" /></Button>
-      </span>
-      <span style={{marginLeft:15,borderStyle:'solid'}} >
-
-      <Label   bsStyle='default' bsSize="large" for="test">
-          Vendor
-      </Label>
-      <Button onClick={this.props.OpenPOEmailVendorToggle} name="test" bsStyle='primary' bsSize="medium"><Glyphicon style={{  opacity: 1}} glyph="ok" /></Button>
-      </span>
-
-</h1>
-</div>
+      emailMRO=
+        <span style={{borderStyle:'solid'}} >
+          <Label   bsStyle='default' bsSize="large" for="mro">
+              MRO 
+          </Label>
+          <Button onClick={()=>{
+            this.props.OpenPOEmailMROToggle();
+            this.props.OpenPOVendorDateRange();}} 
+            name="mro" bsStyle='primary' ><Glyphicon style={{  opacity: 1}} glyph="ok" />
+          </Button>
+        </span>
     }else{
-      email=
-      <div>
-      <h1>
-      <span style={{borderStyle:'solid'}} >
-      <Label  bsStyle='default' bsSize="large" for="test">
-          MRO 
-      </Label>
-      <Button onClick={this.props.OpenPOEmailMROToggle} bsStyle='primary' bsSize="medium"><Glyphicon style={{  opacity: 0}} glyph="ok" /></Button>
-      </span>
-      <span style={{marginLeft:15,borderStyle:'solid'}} >
-      <Label  bsStyle='default' bsSize="large" for="test">
-          Vendor 
-      </Label>
-      <Button onClick={this.props.OpenPOEmailVendorToggle} bsStyle='primary' bsSize="medium"><Glyphicon style={{  opacity: 0}} glyph="ok" /></Button>
-      </span>
+      emailMRO=
+            <span style={{borderStyle:'solid'}} >
+              <Label  bsStyle='default' bsSize="large" for="mro">
+                  MRO 
+              </Label>
+              <Button onClick={()=>{
+                this.props.OpenPOEmailMROToggle();
+                this.props.OpenPOVendorDateRange();}} 
+                name="mro" bsStyle='primary' ><Glyphicon style={{  opacity: 0}} glyph="ok" />
+              </Button>
+            </span>
+    }
 
-</h1>
-      </div>
+    var emailVendor;
+    if(this.props.Rpt.openPO.emailVendor){
+      emailVendor=
+        <span style={{borderStyle:'solid'}} >
+        <Label   bsStyle='default' bsSize="large" for="vendor">
+            Vendor
+        </Label>
+            <Button onClick={()=>{
+              this.props.OpenPOEmailVendorToggle();
+              this.props.OpenPOVendorDateRange();}} 
+              name="vendor" bsStyle='primary' ><Glyphicon style={{  opacity: 1}} glyph="ok" />
+            </Button>
+        </span>
+    }else{
+      emailVendor=
+        <span style={{borderStyle:'solid'}} >
+          <Label  bsStyle='default' bsSize="large" for="test">
+              Vendor 
+          </Label>
+            <Button onClick={()=>{
+              this.props.OpenPOEmailVendorToggle();
+              this.props.OpenPOVendorDateRange();}} 
+              name="vendor" bsStyle='primary' ><Glyphicon style={{  opacity: 0}} glyph="ok" />
+            </Button>
+         </span>
 
     }
 
@@ -244,18 +254,30 @@ export default class DateTimeRange extends React.Component {
       'pagination','hidden-xs', 'pull-left'
     );
 
-    const dateHeader = (
-      <h3 style={{textAlign:'center'}}>PO Date Range</h3>
-    );
+    var dateHeader; 
+    var dateStyle;
+    if(this.props.Rpt.openPO.dateHeader.valid){
+      dateHeader=<h3 style={{textAlign:'center'}}>{this.props.Rpt.openPO.dateHeader.text}</h3>
+      dateStyle='default';
+    }else{
+      dateHeader=<h3 style={{textAlign:'center',color:'red !important'}}>{this.props.Rpt.openPO.dateHeader.text}</h3>
+      dateStyle='danger';
+    }
 
-    const emailHeader = (
-      <h3 style={{textAlign:'center'}}>EMail</h3>
-    );
+    var emailHeader;
+    var emailStyle;
+    if(this.props.Rpt.openPO.emailHeader.valid){
+      emailHeader=<h3 style={{textAlign:'center'}}>{this.props.Rpt.openPO.emailHeader.text}</h3>
+      emailStyle='default';
+    }else{
+      emailHeader=<h3 style={{textAlign:'center',color:'red !important'}}>{this.props.Rpt.openPO.emailHeader.text}</h3>
+      emailStyle='danger';
+    }
 
     return (
       <div>
           <Panel style={{marginLeft:200,marginRight:200}}>        
-              <Panel  header={dateHeader}>
+              <Panel bsStyle={dateStyle} header={dateHeader}>
               <Row>
                 <Col xs={1} >
                   <h1 style={{marginTop:0}}><Label  bsStyle="primary">Start</Label></h1>
@@ -283,10 +305,20 @@ export default class DateTimeRange extends React.Component {
                    </Col>
                 </Row>
               </Panel>
-              <Panel  header={dateHeader}>
-                {email}
+              <Panel bsStyle={emailStyle} header={emailHeader}>
+              <Row>
+              <Col sm={6} >
+              <h1>
+                {emailMRO}
+              </h1>
+              </Col>
+              <Col sm={6}>
+                <h1>
+                {emailVendor}
+                </h1>
+              </Col>
+              </Row>
               </Panel>
-              {formInstance}
           </Panel>
 
         {continueAndBackBtn}

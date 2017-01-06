@@ -35,10 +35,11 @@ export default class Reports extends Component {
         <Col >
           <Jumbotron style={{marginLeft:15,marginRight:15}} >
              <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select Report</h1>
-            <p style={{padding: '0px'}}>This app generates reports some of which are in normal pdf format
-            others are emailed as HTML.
+            <p style={{padding: '0px'}}>This app generates reports some of which are displayed by this App
+            others are emailed as a PDF attachment to a user specified recipient.</p>
+            <p><strong>Note:</strong> Some vendor(s) email address may not be available from Cribmaster if this is the case 
+            please update Cribmaster with the appropriate email address and re-run the report.
             </p>
-            <p style={{textAlign: 'center'}}><strong>Once a report is clicked this process will start.</strong>  </p>            
             <br/>
           </Jumbotron>
           </Col >
@@ -53,15 +54,34 @@ export default class Reports extends Component {
           <Jumbotron style={{marginLeft:15,marginRight:15}} >
             <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
             <div style={{textAlign: 'left'}}>
-              <p >Please select which PO(s) you wish to have email notifications prepared for. </p>
-              <p>After selecting at least one PO the 'run' button will be enabled so you may 
+              <p >Please select which PO(s) you wish to have email notifications prepared for.
+              After selecting at least one PO the 'run' button will be enabled so you may 
               continue. </p>
-              <p>Click the checkboxes to make your selections.</p>
+              <p><strong>Warning: </strong><span style={{color:'red'}}>'None'</span> indicates 
+              there is no Email Address in Cribmaster for this vendor. </p>
             </div>
             <br/>
           </Jumbotron>
         </Col>
       </Row>
+  } else if(
+            (STATE.OPENPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
+            <div style={{textAlign: 'left'}}>
+              <p >There are no PO(s) within the specified date range. </p>
+              <p>To continue press the back button to select a different date range...</p>
+            </div>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
+
   } else if(
             (STATE.PO_PROMPT_READY==this.props.Rpt.state) 
             ){
@@ -91,8 +111,8 @@ export default class Reports extends Component {
           <Jumbotron style={{marginLeft:15,marginRight:15}} >
             <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
             <div style={{textAlign: 'left'}}>
-              <p >Please select the Date Range for the PO(s). </p>
-              <p>After selecting the beginning and ending dates the 'Continue' 
+              <p >Please select the Date Range for the PO(s) and who will receive an Email. </p>
+              <p>After specifying these items the 'Continue' 
               button will be enabled. </p>
             </div>
             <br/>
@@ -173,7 +193,12 @@ export default class Reports extends Component {
       </Row>
   }
 
-
+/*
+ Once clicked a PO notification will be prepared and and sent 
+              as a PDF attachment to MRO personnel and/or the Vendor.  Some vendor(s) email address may not 
+              be available from Cribmaster if this is the case please update Cribmaster with the appropriate
+              email address and re-run this report.
+              */
   if(
       (STATE.STARTED==this.props.Rpt.state)
     )
@@ -217,9 +242,11 @@ export default class Reports extends Component {
               <tr>
                 <td className={styles.btnPrimary} 
                 onClick={()=>{
+                  this.props.initNoState();
                   this.props.setOpenPODateStart(Moment().startOf('day').toDate()); // set to 12:00 am today
-                  this.props.setOpenPODateEnd(Moment().endOf('day').toDate()); // set to 23:59 pm today    
-                  this.props.setState(STATE.OPENPO_DATE_RANGE_READY);
+                  this.props.setOpenPODateEnd(Moment().endOf('day').toDate()); // set to 23:59 pm today
+
+                  this.props.setState(STATE.OPENPO_DATE_RANGE_NOT_READY);
                 }}>
                 <span style={rpt1Style}>Open PO</span><br/>Vendor Email</td>
                 <td className={styles.btnSuccess} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Opened Today</span><br/>Email(s) Sent</td>
@@ -292,16 +319,20 @@ export default class Reports extends Component {
     </div>
   }
 
-  if( false
- //     (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) ||
- //     (STATE.PO_PROMPT_READY==this.props.Rpt.state)
+  if( 
+    (STATE.OPENPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
     )
   {
     backBtn = 
     <div>
       <Row>
         <Col xs={5} >&nbsp;</Col>
-        <Col xs={2}><Button  onClick={()=>this.props.setState(STATE.NOT_STARTED)} bsSize="large" bsStyle="warning">Back</Button></Col>
+        <Col xs={2}><Button  onClick={()=> {
+                              this.props.initNoState();
+                              this.props.setOpenPODateStart(Moment().startOf('day').toDate()); // set to 12:00 am today
+                              this.props.setOpenPODateEnd(Moment().endOf('day').toDate()); // set to 23:59 pm today
+                              this.props.setState(STATE.OPENPO_DATE_RANGE_NOT_READY);
+                            }} bsSize="large" bsStyle="warning">Back</Button></Col>
         <Col xs={5}>&nbsp;</Col>
       </Row>
     </div>
@@ -315,8 +346,8 @@ export default class Reports extends Component {
       (STATE.OPENPO_DATE_RANGE_NOT_READY==this.props.Rpt.state) ||
       (STATE.OPENPO_DATE_RANGE_READY==this.props.Rpt.state) ||
       (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) ||
-      (STATE.PO_PROMPT_READY==this.props.Rpt.state) 
-
+      (STATE.PO_PROMPT_READY==this.props.Rpt.state) ||
+      (STATE.OPENPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
     )
   {
     navbar =

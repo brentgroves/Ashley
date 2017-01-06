@@ -27,6 +27,11 @@ class PORow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      poNumber:this.props.poItem.poNumber,
+      vendorName:this.props.poItem.vendorName,
+      eMailAddress:this.props.poItem.eMailAddress,
+      selected:this.props.poItem.selected,
+      visible:this.props.poItem.visible
     };
   }
 /*
@@ -37,38 +42,57 @@ class PORow extends React.Component {
     }
     */
   render() {
-    var poNumber=this.props.poItem.poNumber;
-    var vendorName=this.props.poItem.vendorName;
-    var selected=this.props.poItem.selected;
+//    var poNumber=this.props.poItem.poNumber;
+//    var vendorName=this.props.poItem.vendorName;
+//    var eMailAddress=this.props.poItem.eMailAddress;
+ //   var selected=this.props.poItem.selected;
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORow:poNumber=>${poNumber}`);
+      console.log(`PORow:poNumber=>${this.state.poNumber}`);
     }
     var checkbox;
-    if(selected){
-      checkbox=<input type="checkbox" checked onChange={()=>this.props.toggleOpenPOSelected(poNumber)}/>;     
+    if(this.state.selected){
+      checkbox=<input type="checkbox" checked onChange={()=>this.props.toggleOpenPOSelected(this.state.poNumber)}/>;     
     }else{
-      checkbox=<input type="checkbox" onChange={()=>this.props.toggleOpenPOSelected(poNumber)}/>;     
+      checkbox=<input type="checkbox" onChange={()=>this.props.toggleOpenPOSelected(this.state.poNumber)}/>;     
     }
     var showButton;
-    if(this.props.poItem.visible){
+    if(this.state.visible){
       showButton=
         <Button bsSize="xsmall" 
-          onClick={()=>this.props.toggleOpenPOVisible(poNumber)}>
+          onClick={()=>this.props.toggleOpenPOVisible(this.state.poNumber)}>
           <Glyphicon glyph="chevron-down" />
         </Button>     
     }else{
       showButton=
         <Button bsSize="xsmall" 
-          onClick={()=>this.props.toggleOpenPOVisible(poNumber)}>
+          onClick={()=>this.props.toggleOpenPOVisible(this.state.poNumber)}>
           <Glyphicon glyph="chevron-right" />
         </Button>     
     }
+    var noEmailAddress=false;
+    if('None'==this.state.eMailAddress){
+      noEmailAddress=true;
+    }
+
+    var poStyle;
+    if(noEmailAddress){
+      poStyle={
+        color:'red'
+      }
+    }else{
+      poStyle={
+      }
+    }
+ 
     return (
       <tr >
         <th colSpan="4" >
           {showButton}
           <span style={{paddingLeft:25,color:'steelblue'}}>PO: </span> 
-          {poNumber}{" / "}{vendorName}
+          {this.state.poNumber}{" / "}{this.state.vendorName}{' / '}
+          <span style={poStyle}>
+            {this.state.eMailAddress}
+          </span>
           <span style={{paddingLeft:25,color:'steelblue'}}>Select: </span> 
           {checkbox}     
         </th>
