@@ -1,9 +1,9 @@
 //require('../../react-pivot/example/demo.css')
 import React, { Component, PropTypes } from 'react';
 import 'react-widgets/lib/less/react-widgets.less';
-import DropdownList from 'react-widgets/lib/DropdownList';
+//import DropdownList from 'react-widgets/lib/DropdownList';
 import DateTimePicker from 'react-widgets/lib/DateTimePicker';
-
+import Multiselect from 'react-widgets/lib/Multiselect';
 import '../../css/Rpt/styles.global.css';
  
 import { FormGroup,FormControl,HelpBlock,Checkbox,ControlLabel,Label,Row,Col,ListGroup,ListGroupItem,Panel,Table,Button,Glyphicon,ButtonGroup,ButtonToolbar} from 'react-bootstrap';
@@ -28,6 +28,7 @@ import styles from '../../css/Rpt/styles.css';
 
 momentLocalizer(Moment);
 
+var colors = ['orange','red','blue','purple'];
 
 // Use Object.assign or any similar API to merge a rules
 // NOTE: IE10 doesn't have Object.assign API natively. Use polyfill/babel plugin.
@@ -101,7 +102,8 @@ export default class DateTimeRange extends React.Component {
 
     this.state = {
       test:this.test.bind(this),
-      emailMRO:false
+      emailMRO:false,
+      value:colors.slice(0,1)
 
     };
     if ('development'==process.env.NODE_ENV) {
@@ -273,56 +275,67 @@ export default class DateTimeRange extends React.Component {
       emailHeader=<h3 style={{textAlign:'center',color:'red !important'}}>{this.props.Rpt.openPO.emailHeader.text}</h3>
       emailStyle='danger';
     }
+/*         <Panel style={{marginLeft:200,marginRight:200}}>        */
 
     return (
       <div>
-          <Panel style={{marginLeft:200,marginRight:200}}>        
+        <Panel>
+          <Col xs={6}>
               <Panel bsStyle={dateStyle} header={dateHeader}>
-              <Row>
-                <Col xs={1} >
-                  <h1 style={{marginTop:0}}><Label  bsStyle="primary">Start</Label></h1>
-                </Col>
-                <Col xs={8} xsOffset={1} style={{}}>
-                  <DateTimePicker 
-                    onChange={(name,value)=>{
-                      this.props.setOpenPODateStart(name);
-                      this.props.OpenPOVendorDateRange();
-                    }}
-                  defaultValue={this.props.Rpt.openPO.dateStart} />
-                </Col>
-               </Row>
-               <Row>
-                 <Col xs={1}>
-                    <h1 style={{marginTop:0}}><Label  bsStyle="primary">End</Label></h1>
-                  </Col>
-                  <Col xs={8} xsOffset={1}>
-                    <DateTimePicker 
-                      onChange={(name,value)=>{
-                        this.props.setOpenPODateEnd(name);
-                        this.props.OpenPOVendorDateRange();
-                      }}
-                    defaultValue={this.props.Rpt.openPO.dateEnd} />
-                   </Col>
-                </Row>
+
+                <Multiselect
+                  data={colors}
+                  value={this.state.value}
+                  onChange={value => this.setState({value})} />
               </Panel>
               <Panel bsStyle={emailStyle} header={emailHeader}>
-              <Row>
-              <Col sm={6} >
-              <h1>
-                {emailMRO}
-              </h1>
-              </Col>
-              <Col sm={6}>
-                <h1>
-                {emailVendor}
-                </h1>
-              </Col>
-              </Row>
+                <Row>
+                  <Col sm={6} >
+                    <h1>
+                      {emailMRO}
+                    </h1>
+                  </Col>
+                  <Col sm={6}>
+                    <h1>
+                      {emailVendor}
+                    </h1>
+                  </Col>
+                </Row>
               </Panel>
+          </Col>
+        <Col xs={6}>
+          <Panel bsStyle={dateStyle} header={dateHeader}>
+            <Row>
+              <Col xs={1} >
+                <h1 style={{marginTop:0}}><Label  bsStyle="primary">Start</Label></h1>
+              </Col>
+              <Col xs={8} xsOffset={1} style={{}}>
+                <DateTimePicker 
+                  onChange={(name,value)=>{
+                    this.props.setOpenPODateStart(name);
+                    this.props.OpenPOVendorDateRange();
+                  }}
+                defaultValue={this.props.Rpt.openPO.dateStart} />
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={1}>
+                <h1 style={{marginTop:0}}><Label  bsStyle="primary">End</Label></h1>
+              </Col>
+              <Col xs={8} xsOffset={1}>
+                <DateTimePicker 
+                  onChange={(name,value)=>{
+                    this.props.setOpenPODateEnd(name);
+                    this.props.OpenPOVendorDateRange();
+                  }}
+                defaultValue={this.props.Rpt.openPO.dateEnd} />
+              </Col>
+            </Row>
           </Panel>
-
-        {continueAndBackBtn}
-</div>
+        </Col>
+      </Panel>
+      {continueAndBackBtn}
+      </div>
 
     );
   }
@@ -330,6 +343,24 @@ export default class DateTimeRange extends React.Component {
 
 
 /*
+          </Panel>
+          <Row>
+            <Panel bsStyle={emailStyle} header={emailHeader}>
+              <Row>
+                <Col sm={6} >
+                  <h1>
+                    {emailMRO}
+                  </h1>
+                </Col>
+                <Col sm={6}>
+                  <h1>
+                    {emailVendor}
+                  </h1>
+                </Col>
+              </Row>
+            </Panel>
+          </Row>
+
               {formInstance}
 
             <Col>
