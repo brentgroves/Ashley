@@ -160,7 +160,7 @@ export default class DateTimeRange extends React.Component {
         <Col xs={3}>&nbsp;</Col>
       </Row>
     }
-
+/*
   var formInstance;
   formInstance = 
 <Validation.components.Form ref={c => { this.form = c }} onSubmit={this.handleSubmit.bind(this)}>
@@ -195,13 +195,13 @@ export default class DateTimeRange extends React.Component {
                 </Col>
             </Row>
         </Validation.components.Form>
-
+*/
     var emailMRO;
     if(this.props.Rpt.openPO.emailMRO){
 
       emailMRO=
         <span style={{borderStyle:'solid'}} >
-          <Label   bsStyle='default' bsSize="large" for="mro">
+          <Label   bsStyle='default' bsSize="large" htmlFor="mro">
               MRO 
           </Label>
           <Button onClick={()=>{
@@ -213,7 +213,7 @@ export default class DateTimeRange extends React.Component {
     }else{
       emailMRO=
             <span style={{borderStyle:'solid'}} >
-              <Label  bsStyle='default' bsSize="large" for="mro">
+              <Label  bsStyle='default' bsSize="large" htmlFor="mro">
                   MRO 
               </Label>
               <Button onClick={()=>{
@@ -228,7 +228,7 @@ export default class DateTimeRange extends React.Component {
     if(this.props.Rpt.openPO.emailVendor){
       emailVendor=
         <span style={{borderStyle:'solid'}} >
-        <Label   bsStyle='default' bsSize="large" for="vendor">
+        <Label   bsStyle='default' bsSize="large" htmlFor="vendor">
             Vendor
         </Label>
             <Button onClick={()=>{
@@ -240,7 +240,7 @@ export default class DateTimeRange extends React.Component {
     }else{
       emailVendor=
         <span style={{borderStyle:'solid'}} >
-          <Label  bsStyle='default' bsSize="large" for="test">
+          <Label  bsStyle='default' bsSize="large" htmlFor="test">
               Vendor 
           </Label>
             <Button onClick={()=>{
@@ -275,18 +275,33 @@ export default class DateTimeRange extends React.Component {
       emailHeader=<h3 style={{textAlign:'center',color:'red !important'}}>{this.props.Rpt.openPO.emailHeader.text}</h3>
       emailStyle='danger';
     }
-/*         <Panel style={{marginLeft:200,marginRight:200}}>        */
+
+    var poHeader;
+    var poStyle;
+    poHeader=<h3 style={{textAlign:'center'}}>PO Multi-select</h3>
+    poStyle='default';
+
+
+/*
+                <Multiselect
+                  data={this.props.Rpt.openPO.po}
+                  value={this.state.value}
+                  onChange={value => this.setState({value})} />
+//                    this.props.OpenPOVendorDateRange();
+
+        <Panel style={{marginLeft:200,marginRight:200}}>        */
 
     return (
       <div>
         <Panel>
           <Col xs={6}>
-              <Panel bsStyle={dateStyle} header={dateHeader}>
-
+              <Panel bsStyle={poStyle} header={poHeader}>
                 <Multiselect
-                  data={colors}
-                  value={this.state.value}
-                  onChange={value => this.setState({value})} />
+                  data={this.props.Rpt.openPO.po}
+                  value={this.props.Rpt.openPO.select}
+                  onChange={select => {
+                    this.props.setOpenPOSelect(select);
+                  }} />
               </Panel>
               <Panel bsStyle={emailStyle} header={emailHeader}>
                 <Row>

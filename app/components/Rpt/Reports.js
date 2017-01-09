@@ -65,6 +65,23 @@ export default class Reports extends Component {
         </Col>
       </Row>
   } else if(
+            (STATE.OPENPO_NO_RECORDS==this.props.Rpt.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
+            <div style={{textAlign: 'left'}}>
+              <p >There are no Open PO(s) within the specified date range. </p>
+              <p>To continue press the back button to select a different report.</p>
+            </div>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(
             (STATE.OPENPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
             ){
     jumboTronTxt=
@@ -241,13 +258,7 @@ export default class Reports extends Component {
             <tbody>
               <tr>
                 <td className={styles.btnPrimary} 
-                onClick={()=>{
-                  this.props.initNoState();
-                  this.props.setOpenPODateStart(Moment().startOf('day').toDate()); // set to 12:00 am today
-                  this.props.setOpenPODateEnd(Moment().endOf('day').toDate()); // set to 23:59 pm today
-
-                  this.props.setState(STATE.OPENPO_DATE_RANGE_NOT_READY);
-                }}>
+                onClick={()=>{this.props.OpenPO();}}>
                 <span style={rpt1Style}>Open PO</span><br/>Vendor Email</td>
                 <td className={styles.btnSuccess} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Opened Today</span><br/>Email(s) Sent</td>
                 <td className={styles.btnWarning} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Closed Today</span><br/>PDF format</td>
@@ -319,6 +330,24 @@ export default class Reports extends Component {
     </div>
   }
 
+
+  if( 
+    (STATE.OPENPO_NO_RECORDS==this.props.Rpt.state) 
+    )
+  {
+    backBtn = 
+    <div>
+      <Row>
+        <Col xs={5} >&nbsp;</Col>
+        <Col xs={2}><Button  onClick={()=> {
+                              this.props.reports();
+                            }} bsSize="large" bsStyle="warning">Back</Button>
+        </Col>
+        <Col xs={5}>&nbsp;</Col>
+      </Row>
+    </div>
+  }
+
   if( 
     (STATE.OPENPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
     )
@@ -347,6 +376,7 @@ export default class Reports extends Component {
       (STATE.OPENPO_DATE_RANGE_READY==this.props.Rpt.state) ||
       (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) ||
       (STATE.PO_PROMPT_READY==this.props.Rpt.state) ||
+      (STATE.OPENPO_NO_RECORDS==this.props.Rpt.state) ||
       (STATE.OPENPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
     )
   {

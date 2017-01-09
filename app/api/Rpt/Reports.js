@@ -8,9 +8,11 @@ import * as STATE from "../../actions/Rpt/State.js"
 import * as MISC from "../Misc.js"
 import * as PROGRESSBUTTON from "../../actions/ProgressButtonConst.js"
 import * as SQLPRIMEDB from "../SQLPrimeDB.js"
+import * as SQLOPENPO from "./SQLOpenPO.js"
 import * as SQLOPENPOVENDOREMAIL from "./SQLOpenPOVendorEmail.js"
 
 //import * as hashLeftOuterJoin from "lodash-joins/lib/hash/hashLeftOuterJoin.js"
+var Moment = require('moment');
 var _ = require('lodash');
 var joins = require('lodash-joins');
 var sorty    = require('sorty')
@@ -236,6 +238,7 @@ export async function POVendorEmail(disp,getSt) {
 
 }
 
+
 export async function OpenPOVendorDateRange(disp,getSt) {
   var dispatch = disp;
   var getState = getSt;
@@ -275,6 +278,93 @@ export async function OpenPOVendorDateRange(disp,getSt) {
     dispatch({ type:ACTION.SET_STATE, state:STATE.OPENPO_DATE_RANGE_READY });
   }
 }
+
+
+export async function OpenPO(disp,getSt) {
+  var dispatch = disp;
+  var getState = getSt;
+  var continueProcess=true;
+  var cnt=0;
+  var maxCnt=10;
+  var state=getState();
+  var openPO=getState().Reports.openPO;
+
+  dispatch({type:ACTION.INIT_NO_STATE});
+  dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
+  dispatch({ type:ACTION.SET_STATE, state:STATE.STARTED });
+
+  dispatch((dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    SQLPRIMEDB.sql1(disp,getSt);
+  });
+  
+  maxCnt=10;
+  cnt=0;
+  while(!getState().Common.primed){
+    if(++cnt>maxCnt ){
+      break;
+    }else{
+      await MISC.sleep(2000);
+    }
+  }
+  if(!getState().Common.primed){
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`primeDB FAILED.`);
+    }
+    continueProcess=false;
+    dispatch({ type:ACTION.SET_REASON, reason:`primeDB FAILED. ` });
+    dispatch({ type:ACTION.SET_STATE, state:STATE.FAILURE });
+    dispatch({ type:ACTION.SET_STATUS, status:'Can not connect to Cribmaster...' });
+  }else{
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`prime Success.`);
+    }
+  }
+
+  if(continueProcess){
+    dispatch((dispatch,getState) => {
+      var disp = dispatch;
+      var getSt = getState;
+      SQLOPENPO.sql1(disp,getSt);
+    });
+    cnt=0;
+    maxCnt=10;
+    while(!getState().Reports.sqlOpenPO.done){
+      if(++cnt>maxCnt ){
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+
+    if(getState().Reports.sqlOpenPO.failed || 
+      !getState().Reports.sqlOpenPO.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLOPENPO.sql1() FAILED.`);
+      }
+      dispatch({ type:ACTION.SET_REASON, reason:`bpOpenPO FAILED. ` });
+      dispatch({ type:ACTION.SET_STATE, state:STATE.FAILURE });
+      dispatch({ type:ACTION.SET_STATUS, status:'Can not run bpOpenPO sproc on Cribmaster...' });
+      continueProcess=false;
+    }else if(0<getState().Reports.openPO.po.length){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`SQLOPENPO.sql1() Success.`);
+      }
+    }else{
+      dispatch({ type:ACTION.SET_STATE, state:STATE.OPENPO_NO_RECORDS });
+      continueProcess=false;
+    }
+  }
+
+  if(continueProcess){
+    dispatch({type:ACTION.SET_OPENPO_DATE_START,dateStart:Moment().startOf('day').toDate()});
+    dispatch({type:ACTION.SET_OPENPO_DATE_END,dateEnd:Moment().startOf('day').toDate()});
+    dispatch({type:ACTION.SET_STATE, state:STATE.OPENPO_DATE_RANGE_NOT_READY});
+  }
+}
+
+
 
 export async function OpenPOVendorEmail(disp,getSt) {
   var dispatch = disp;

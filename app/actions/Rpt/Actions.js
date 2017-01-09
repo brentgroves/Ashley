@@ -19,6 +19,16 @@ export function cancelApp() {
   };
 }
 
+export function reports() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.reports()->top.`);
+  }
+
+ return (dispatch,getState) => {
+      dispatch({ type:ACTION.INIT });
+      dispatch(push('/Reports'));
+  };
+}
 
 
 export function init() {
@@ -30,6 +40,18 @@ export function init() {
 export function initNoState() {
   return {
     type: ACTION.INIT_NO_STATE
+  };
+}
+
+export function OpenPO() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.OpenPO()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.OpenPO(disp,getSt);
   };
 }
 
@@ -117,6 +139,26 @@ export function POVendorEmail() {
   };
 }
 
+
+export function setOpenPO(po) {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.setOpenPO()->top. ${po}`);
+  }
+  return {
+    type: ACTION.SET_OPENPO,
+    po: po
+  };
+}
+
+export function setOpenPOSelect(select) {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.setOpenPOSelect()->top. ${select}`);
+  }
+  return {
+    type: ACTION.SET_OPENPO_SELECT,
+    select: select
+  };
+}
 
 
 

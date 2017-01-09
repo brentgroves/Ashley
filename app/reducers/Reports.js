@@ -23,26 +23,9 @@ export default function reducer( state = {}, action) {
               emailVendor:false,
               maxPage:3,
               poItem:[],
-/*                {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-                {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-                {page:1,selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
-                {page:1,selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
-                {page:1,selected:false,visible:false,fpono: "111113", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-                {page:1,selected:false,visible:false,fpono: "111113", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-                {page:1,selected:false,visible:false,fpono: "111114", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-                {page:2,selected:false,visible:false,fpono: "111114", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-                {page:2,selected:false,visible:false,fpono: "111115", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
-                {page:2,selected:false,visible:false,fpono: "111115", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
-                {page:2,selected:false,visible:false,fpono: "111116", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-                {page:2,selected:false,visible:false,fpono: "111116", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-                {page:2,selected:false,visible:false,fpono: "111117", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-                {page:3,selected:false,visible:false,fpono: "111117", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-                {page:3,selected:false,visible:false,fpono: "111118", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
-                {page:3,selected:false,visible:false,fpono: "111118", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
-                {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-                {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-              ]
-              */
+              po:[],
+              select:[],
+              selectDelim:[]
             }},
           openPOPager:{$set:{done:false,failed:false}},
           progressBtn:{$set:PROGRESSBUTTON.READY},
@@ -50,6 +33,7 @@ export default function reducer( state = {}, action) {
           reason:{$set:''},
           state:{$set: STATE.NOT_STARTED},
           status:{$set: ''},
+          sqlOpenPO:{$set:{done:false,failed:false}},
           sqlOpenPOVendorEmail:{$set:{done:false,failed:false}}
         });
       return newData;
@@ -72,12 +56,16 @@ export default function reducer( state = {}, action) {
               emailVendor:false,
               maxPage:3,
               poItem:[],
+              po:[],
+              select:[],
+              selectDelim:[]
             }},
           openPOPager:{$set:{done:false,failed:false}},
           progressBtn:{$set:PROGRESSBUTTON.READY},
           poStatusReport:{$set:{pdf:'',done:false,failed:false}},
           reason:{$set:''},
           status:{$set: ''},
+          sqlOpenPO:{$set:{done:false,failed:false}},
           sqlOpenPOVendorEmail:{$set:{done:false,failed:false}}
         });
       return newData;
@@ -198,6 +186,14 @@ export default function reducer( state = {}, action) {
       return newData;
     }
 
+    case ACTION.SET_OPENPO_PO:
+    {
+      var openPO = state.openPO;
+      openPO.po = action.po;
+      var newData = update(state, {openPO: {$set: openPO}});
+      return newData;
+    }
+
     case ACTION.SET_OPENPO_POITEM:
     {
       var openPO = state.openPO;
@@ -216,6 +212,29 @@ export default function reducer( state = {}, action) {
         curPage=curPage-1;
       }
       openPO.curPage=curPage;
+      var newData = update(state, {openPO: {$set: openPO}});
+      return newData;
+    }
+
+    case ACTION.SET_OPENPO_SELECT:
+    {
+      var openPO = state.openPO;
+      openPO.select = action.select;
+      var select = action.select;
+      const selectLen = select.length;
+      var selectDelim='';
+      select.map((po, i) => {
+        var poDelim;
+        if (selectLen === i + 1) {
+          // last one
+          poDelim=po
+        } else {
+          // not last one
+          poDelim=po+','
+        }
+        selectDelim+= poDelim;
+      });
+      openPO.selectDelim = selectDelim;
       var newData = update(state, {openPO: {$set: openPO}});
       return newData;
     }
@@ -274,6 +293,22 @@ export default function reducer( state = {}, action) {
     case ACTION.SET_STATUS:
     {
       var newData = update(state, {status: {$set: action.status}});
+      return newData;
+    }
+
+    case ACTION.SQL_OPENPO_FAILED:
+    {
+      var sqlOpenPO = state.sqlOpenPO;
+      sqlOpenPO.failed=action.failed;
+      var newData = update(state, {sqlOpenPO: {$set: sqlOpenPO}});
+      return newData;
+    }
+
+    case ACTION.SQL_OPENPO_DONE:
+    {
+      var sqlOpenPO = state.sqlOpenPO;
+      sqlOpenPO.done=action.done;
+      var newData = update(state, {sqlOpenPO: {$set: sqlOpenPO}});
       return newData;
     }
 

@@ -95,48 +95,8 @@ const initialState = {
 			emailHeader:{text:'Email',valid:true},
 			maxPage:3,
 			poItem:[],
-/*			
-select 1 page,0 selected,0 visible,ord.poDate,ord.poNumber,
-case
- when ven.VendorName is null then 'None'
- else ven.VendorName
-end vendorName,
-case
- when ven.EMailAddress is null then 'None'
- else ven.EMailAddress
-end eMailAddress,
-ord.item,
-case
- when ord.ItemDescription is null then 'None'
- else ord.ItemDescription
-end itemDescription,
-ord.qtyOrd,
-case
- when rcv.qtyReceived is null then 0
- else rcv.qtyReceived
-end qtyReceived,
-received
-
-			  {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-			  {page:1,selected:false,visible:false,fpono: "111111", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-			  {page:1,selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
-			  {page:1,selected:false,visible:false,fpono: "111112", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
-			  {page:1,selected:false,visible:false,fpono: "111113", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-			  {page:1,selected:false,visible:false,fpono: "111113", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-			  {page:1,selected:false,visible:false,fpono: "111114", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-			  {page:2,selected:false,visible:false,fpono: "111114", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-			  {page:2,selected:false,visible:false,fpono: "111115", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
-			  {page:2,selected:false,visible:false,fpono: "111115", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
-			  {page:2,selected:false,visible:false,fpono: "111116", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-			  {page:2,selected:false,visible:false,fpono: "111116", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-			  {page:2,selected:false,visible:false,fpono: "111117", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-			  {page:3,selected:false,visible:false,fpono: "111117", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-			  {page:3,selected:false,visible:false,fpono: "111118", fstatus:'OPEN',fpartno:'3',fordqty: 1, frcvqty:1},
-			  {page:3,selected:false,visible:false,fpono: "111118", fstatus:'OPEN',fpartno:'4',fordqty: 1, frcvqty:1},
-			  {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'1',fordqty: 1, frcvqty:1},
-			  {page:3,selected:false,visible:false,fpono: "111119", fstatus:'OPEN',fpartno:'2',fordqty: 1, frcvqty:1},
-			]
-			*/
+			po:[],
+			select:[]
 		},
 		openPOPager:{done:false,failed:false},
 		products: [
@@ -147,7 +107,8 @@ received
 		  {rowStyle:{},category: 'Electronics', price: '$399.99', stocked: false, name: 'iPhone 5'},
 		  {rowStyle:{},category: 'Electronics', price: '$199.99', stocked: true, name: 'Nexus 7'}
 		],
-		sqlOpenPOVendorEmail:{done:false,failed:false},
+		sqlOpenPO:{done:false,failed:false},
+		sqlOpenPOVendorEmail:{done:false,failed:false}
 
 	},
 	Common:{ 

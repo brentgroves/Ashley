@@ -1,3 +1,15 @@
+create procedure [dbo].[bpGROpenPO] 
+AS
+BEGIN
+SET NOCOUNT ON
+select poNumber
+from po
+where ((po.POSTATUSNO = 0) or (po.POSTATUSNO = 2)) and po.SITEID <> '90' 
+and po.PODate >= '2016-10-01'
+order by PONumber desc
+end
+
+
 create procedure [dbo].[bpGROpenPOVendorEmailReport] 
 @po int
 AS

@@ -1,6 +1,8 @@
 // state 1 - not Started
 export const NOT_STARTED = 'NOT_STARTED';
 
+export const OPENPO_NO_RECORDS = 'OPENPO_NO_RECORDS';
+
 export const PO_PROMPT_NOT_READY = 'PO_PROMPT_NOT_READY';
 
 export const PO_PROMPT_READY = 'PO_PROMPT_READY';
