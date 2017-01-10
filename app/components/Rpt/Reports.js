@@ -113,6 +113,8 @@ export default class Reports extends Component {
               pressed this program will create an email notification for each applicable vendor
               and send them to the designated MRO personel for review and forwarding. 
               </p>
+              <p><strong>Warning: </strong><span style={{color:'red'}}>'None'</span> indicates 
+              there is no Email Address in Cribmaster for this vendor. </p>
             </div>
             <br/>
           </Jumbotron>
@@ -357,10 +359,7 @@ export default class Reports extends Component {
       <Row>
         <Col xs={5} >&nbsp;</Col>
         <Col xs={2}><Button  onClick={()=> {
-                              this.props.initNoState();
-                              this.props.setOpenPODateStart(Moment().startOf('day').toDate()); // set to 12:00 am today
-                              this.props.setOpenPODateEnd(Moment().endOf('day').toDate()); // set to 23:59 pm today
-                              this.props.setState(STATE.OPENPO_DATE_RANGE_NOT_READY);
+                              this.props.setState(STATE.OPENPO_DATE_RANGE_READY);
                             }} bsSize="large" bsStyle="warning">Back</Button></Col>
         <Col xs={5}>&nbsp;</Col>
       </Row>

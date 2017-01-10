@@ -268,10 +268,8 @@ export async function OpenPOVendorDateRange(disp,getSt) {
     dispatch({ type:ACTION.SET_OPENPO_EMAIL_HEADER, emailHeader:{text:'Email',valid:true}});
   }
   if(
-    (null==openPO.dateStart) ||
-    (null==openPO.dateEnd) ||
-    (openPO.dateStart>openPO.dateEnd ||
-     (!openPO.emailMRO && !openPO.emailVendor))
+    ((0==openPO.select.length) && (null==openPO.dateStart) || (null==openPO.dateEnd)) ||
+    (openPO.dateStart>openPO.dateEnd || (!openPO.emailMRO && !openPO.emailVendor))
     ){
     dispatch({ type:ACTION.SET_STATE, state:STATE.OPENPO_DATE_RANGE_NOT_READY });
   }else{
@@ -481,7 +479,11 @@ export async function OpenPOVendorEmail(disp,getSt) {
   }
 
   if(continueProcess){
-    dispatch({ type:ACTION.SET_STATE, state:STATE.PO_PROMPT_NOT_READY });
+    if(0<getState().Reports.openPO.select.length){
+      dispatch({ type:ACTION.SET_STATE, state:STATE.PO_PROMPT_READY });
+    }else{
+      dispatch({ type:ACTION.SET_STATE, state:STATE.PO_PROMPT_NOT_READY });
+    }
   }
 
 
@@ -575,11 +577,15 @@ export async function ToggleOpenPOSelected(disp,getSt,po) {
   var poItemNew = _.map(getState().Reports.openPO.poItem).map(function(x){
     var newSelected;
     if(poNumber==x.poNumber){
-      newSelected=!x.selected;
+      if(0==x.selected){
+        newSelected=1;
+      }else{
+        newSelected=0;
+      }
     }else{
       newSelected=x.selected;
     }
-    if(newSelected){
+    if(1==newSelected){
       anySelected=true;
     }
     var poItemAdd = _.assign(x, {'selected':newSelected});
@@ -701,7 +707,7 @@ export async function OpenPOVendorEmailReport(disp,getSt) {
     if(x.selected && curPO!=x.poNumber){
       var emailTo=null;
       if(emailMRO){
-         emailTo='bgroves@yahoo.com'; 
+         emailTo='bgroves3196@yahoo.com'; 
       }
       if(emailVendor){
         if(null==emailTo){

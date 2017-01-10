@@ -30,7 +30,6 @@ class PORow extends React.Component {
       poNumber:this.props.poItem.poNumber,
       vendorName:this.props.poItem.vendorName,
       eMailAddress:this.props.poItem.eMailAddress,
-      selected:this.props.poItem.selected,
       visible:this.props.poItem.visible
     };
   }
@@ -45,12 +44,12 @@ class PORow extends React.Component {
 //    var poNumber=this.props.poItem.poNumber;
 //    var vendorName=this.props.poItem.vendorName;
 //    var eMailAddress=this.props.poItem.eMailAddress;
- //   var selected=this.props.poItem.selected;
+    var selected=this.props.poItem.selected;
     if ('development'==process.env.NODE_ENV) {
       console.log(`PORow:poNumber=>${this.state.poNumber}`);
     }
     var checkbox;
-    if(this.state.selected){
+    if(selected){
       checkbox=<input type="checkbox" checked onChange={()=>this.props.toggleOpenPOSelected(this.state.poNumber)}/>;     
     }else{
       checkbox=<input type="checkbox" onChange={()=>this.props.toggleOpenPOSelected(this.state.poNumber)}/>;     
@@ -174,7 +173,7 @@ class OpenPOTable extends React.Component {
         }
 
       }
-      var key = poItem.poNumber+poItem.item
+      var key = poItem.poNumber+poItem.itemDescription;
       if(curPage==poItem.page){
         rows.push(<POItemRow poItem={poItem} key={key} />);
       }
@@ -284,7 +283,7 @@ export default class POPrompt extends React.Component {
           <Button disabled style={{marginTop:15}} bsSize="large" bsStyle="success" onClick={()=>this.props.OpenPOVendorEmailReport()}>Run</Button>
         </Col>
         <Col xs={2}>
-          <Button  style={{marginTop:15,marginLeft:15}} bsSize="large" bsStyle="info" onClick={()=>this.props.setState(STATE.NOT_STARTED)}>Back</Button>
+          <Button  style={{marginTop:15,marginLeft:15}} bsSize="large" bsStyle="info" onClick={()=>this.props.setState(STATE.OPENPO_DATE_RANGE_READY)}>Back</Button>
         </Col>
       </div>
     }else{
@@ -294,7 +293,7 @@ export default class POPrompt extends React.Component {
           <Button style={{marginTop:15}} bsSize="large" bsStyle="success" onClick={()=>this.props.OpenPOVendorEmailReport()}>Run</Button>
         </Col>
         <Col xs={2}>
-          <Button  style={{marginTop:15,marginLeft:15}} bsSize="large" bsStyle="info" onClick={()=>this.props.setState(STATE.NOT_STARTED)}>Back</Button>
+          <Button  style={{marginTop:15,marginLeft:15}} bsSize="large" bsStyle="info" onClick={()=>this.props.setState(STATE.OPENPO_DATE_RANGE_READY)}>Back</Button>
         </Col>
       </div>
     }

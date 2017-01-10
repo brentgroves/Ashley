@@ -301,6 +301,7 @@ export default class DateTimeRange extends React.Component {
                   value={this.props.Rpt.openPO.select}
                   onChange={select => {
                     this.props.setOpenPOSelect(select);
+                    this.props.OpenPOVendorDateRange();
                   }} />
               </Panel>
               <Panel bsStyle={emailStyle} header={emailHeader}>
