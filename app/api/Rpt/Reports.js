@@ -28,7 +28,7 @@ export async function OpenPOMailer(disp,getSt) {
 
 
 
-export async function POStatusReport(disp,getSt) {
+export async function DebugPOStatusReport(disp,getSt) {
   var dispatch = disp;
   var getState = getSt;
   dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
@@ -38,6 +38,8 @@ export async function POStatusReport(disp,getSt) {
     client.render({
 
   //      template: { shortid:"HJEa3YSNl"}
+//        template:{shortid:"rk6jlpXLl"},
+
         template: { shortid:"SkVLXedVe"} // sample report
     }, function(err, response) {
         if ('development'==process.env.NODE_ENV) {
@@ -56,7 +58,8 @@ export async function POStatusReport(disp,getSt) {
   dispatch({ type:ACTION.SET_STATE, state:STATE.SUCCESS});
 }
 
-async function IteratePOStatusReport(disp,getSt) {
+export async function POStatusReport(disp,getSt) {
+//async function IteratePOStatusReport(disp,getSt) {
   var dispatch = disp;
   var getState = getSt;
   var continueProcess=true;
@@ -77,8 +80,13 @@ async function IteratePOStatusReport(disp,getSt) {
   if(continueProcess){
     client.render({
 
-  //      template: { shortid:"HJEa3YSNl"}
-        template: { shortid:"SkVLXedVe"} // sample report
+        template: { shortid:"rk6jlpXLl"},
+  //      template: { shortid:"SkVLXedVe"}, // sample report
+  //      template: { content: "hello {{:someText}}", recipe: "html",
+  //                  engine: "jsrender" },
+  //      data: { someText: "world!!",po:"" }
+
+        data: { subject: "Busche Order",po: "122572",emailTo:"bgroves3196@yahoo.com"}
     }, function(err, response) {
         var dirName1 = dirName;
 
@@ -113,7 +121,7 @@ async function IteratePOStatusReport(disp,getSt) {
     });
 
     var cnt=0;
-    var maxCnt=40;
+    var maxCnt=10;
     while(!getState().Reports.poStatusReport.done){
       if(++cnt>maxCnt){
         continueProcess=false;
@@ -724,8 +732,9 @@ export async function OpenPOVendorEmailReport(disp,getSt) {
       }
       if(null!=emailTo){
         client.render({
-            template: { shortid:"SJ6CuGdBx"}, // sample report
-            data: { po:x.poNumber, emailTo: emailTo }
+            template:{shortid:"rk6jlpXLl"},
+//            template: { shortid:"SJ6CuGdBx"}, // sample report
+            data: { po:x.poNumber}
 
         }, function(err, response) {
             if ('development'==process.env.NODE_ENV) {

@@ -235,6 +235,7 @@ export default class Reports extends Component {
 
     </div>
   }
+  /*cncbuschechips2017*/
   if(
       (STATE.NOT_STARTED==this.props.Rpt.state) ||
       (STATE.SUCCESS==this.props.Rpt.state)
