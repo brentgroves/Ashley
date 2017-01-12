@@ -19,6 +19,42 @@ export function cancelApp() {
   };
 }
 
+export function ClosedPO() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.ClosedPO()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.ClosedPO(disp,getSt);
+  };
+}
+
+export function ClosedPOPrompt() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.ClosedPOPrompt()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.ClosedPOPrompt(disp,getSt);
+  };
+}
+
+export function ClosedPODateRange() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.ClosedPODateRange()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.ClosedPODateRange(disp,getSt);
+  };
+}
+
 export function reports() {
   if ('development'==process.env.NODE_ENV) {
     console.log(`ACTIONS.reports()->top.`);
@@ -138,6 +174,34 @@ export function POVendorEmail() {
     API.POVendorEmail(disp,getSt);
   };
 }
+
+
+
+export function setClosedPODateStart(dateStart) {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.setClosedPODateStart()->top. ${dateStart}`);
+
+  }
+
+  return {
+    type: ACTION.SET_CLOSEDPO_DATE_START,
+    dateStart: dateStart
+  };
+}
+
+export function setClosedPODateEnd(dateEnd) {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.setClosedPODateEnd()->top. ${dateEnd}`);
+
+  }
+
+  return {
+    type: ACTION.SET_CLOSED_PO_DATE_END,
+    dateEnd: dateEnd
+  };
+}
+
+
 
 
 export function setOpenPO(po) {

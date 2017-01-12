@@ -13,6 +13,13 @@ export default function reducer( state = {}, action) {
       }
       var newData = update(state, 
         { 
+          closedPO:{$set:{
+            dateHeader:{text:'Date Range',valid:true},
+            dateStart:null,
+            dateEnd:null,
+            done:false,
+            failed:false
+          }},
           openPO:{$set:{
               curPage:1,
               dateStart:null,
@@ -46,6 +53,13 @@ export default function reducer( state = {}, action) {
       }
       var newData = update(state, 
         { 
+          closedPO:{$set:{
+            dateHeader:{text:'Date Range',valid:true},
+            dateStart:null,
+            dateEnd:null,
+            done:false,
+            failed:false
+          }},
           openPO:{$set:{
               curPage:1,
               dateStart:null,
@@ -116,7 +130,49 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {openPOPager: {$set: openPOPager}});
       return newData;
     }
+    case ACTION.SET_CLOSEDPO_REPORT_FAILED:
+    {
+      var closedPO = state.closedPO;
+      closedPO.failed=action.failed;
+      var newData = update(state, {closedPO: {$set: closedPO}});
+      return newData;
+    }
 
+    case ACTION.SET_CLOSEDPO_REPORT_DONE:
+    {
+      var closedPO = state.closedPO;
+      closedPO.done=action.done;
+      var newData = update(state, {closedPO: {$set: closedPO}});
+      return newData;
+    }
+
+    case ACTION.SET_CLOSEDPO_DATE_HEADER:
+    {
+      var closedPO = state.closedPO;
+      if ('development'==process.env.NODE_ENV) {
+        console.log('SET_CLOSEDPO_DATE_HEADER ${action.dateHeader.text},${action.dateHeader.valid}');
+      }
+
+      closedPO.dateHeader=action.dateHeader;
+      var newData = update(state, {closedPO: {$set: closedPO}});
+      return newData;
+    }
+
+    case ACTION.SET_CLOSEDPO_DATE_END:
+    {
+      var closedPO = state.closedPO;
+      closedPO.dateEnd=action.dateEnd;
+      var newData = update(state, {closedPO: {$set: closedPO}});
+      return newData;
+    }
+
+    case ACTION.SET_CLOSEDPO_DATE_START:
+    {
+      var closedPO = state.closedPO;
+      closedPO.dateStart=action.dateStart;
+      var newData = update(state, {closedPO: {$set: closedPO}});
+      return newData;
+    }
     
     case ACTION.SET_OPENPO_CURPAGE:
     {

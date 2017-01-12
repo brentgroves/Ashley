@@ -5,6 +5,7 @@ import { Link,IndexLink } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 import ProgressBtn from '../../containers/Rpt/ProgressBtn';
 import POPrompt from "../../containers/Rpt/POPrompt";
+import ClosedPODateRange from "../../containers/Rpt/ClosedPO/ClosedPODateRange";
 import DateTimeRange from "../../containers/Rpt/DateTimeRange";
 import * as STATE from "../../actions/Rpt/State.js"
 import { Grid, Row, Col, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
@@ -27,7 +28,7 @@ export default class Reports extends Component {
   }
 
   render() {
-    var jumboTronTxt,rptMenu,poPrompt,progressBtn,backBtn,cancelBtn,navbar,openPODateRange;
+    var jumboTronTxt,rptMenu,poPrompt,progressBtn,backBtn,cancelBtn,navbar,openPODateRange,closedPODateRange;
 
     if(STATE.NOT_STARTED==this.props.Rpt.state){
     jumboTronTxt=
@@ -81,6 +82,45 @@ export default class Reports extends Component {
           </Jumbotron>
         </Col>
       </Row>
+  } else if(
+            (STATE.CLOSEDPO_DATE_RANGE_NOT_READY==this.props.Rpt.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO Date Range</h1>
+            <div style={{textAlign: 'left'}}>
+              <p >This report lists PO(s) have been closed within the specified date range.</p>
+              <p>After specifying the dates the 'Run' 
+              button will be enabled. </p>
+            </div>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(
+            (STATE.CLOSEDPO_DATE_RANGE_READY==this.props.Rpt.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>PO Date Range Selected</h1>
+            <div style={{textAlign: 'left'}}>
+              <p >You may now press the 'run' button to begin. After 'run' is
+              pressed this program will create a report of all PO's that have been Closed
+              within the specified date range.
+              </p>
+              <p><strong>Note: </strong>The report should appear in a separate window within a few minutes.</p>
+            </div>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
+
   } else if(
             (STATE.OPENPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
             ){
@@ -262,9 +302,8 @@ export default class Reports extends Component {
               <tr>
                 <td className={styles.btnPrimary} 
                 onClick={()=>{this.props.OpenPO();}}>
-                <span style={rpt1Style}>Open PO</span><br/>Vendor Email</td>
-                <td className={styles.btnSuccess} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Opened Today</span><br/>Email(s) Sent</td>
-                <td className={styles.btnWarning} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Closed Today</span><br/>PDF format</td>
+                <span style={rpt1Style}>Open PO</span><br/>MRO/Vendor Email</td>
+                <td className={styles.btnWarning} onClick={()=>{this.props.ClosedPOPrompt();}} ><span style={rpt1Style}>PO(s) Closed</span><br/>PDF format</td>
               </tr>
               </tbody>
             </table>
@@ -273,7 +312,10 @@ export default class Reports extends Component {
         </Row>
       </div>
     }
+/*
+                <td className={styles.btnSuccess} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Opened Today</span><br/>Email(s) Sent</td>
 
+*/
   if(
       (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) ||
       (STATE.PO_PROMPT_READY==this.props.Rpt.state)
@@ -292,6 +334,26 @@ export default class Reports extends Component {
 
     </div>
   }
+
+  if(
+      (STATE.CLOSEDO_DATE_RANGE_NOT_READY==this.props.Rpt.state) ||
+      (STATE.CLOSEDPO_DATE_RANGE_READY==this.props.Rpt.state)
+    )
+  {
+    closedPODateRange = 
+    <div>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1} >&nbsp;</Col>
+        <Col xs={10}><ClosedPODateRange/></Col>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+
+    </div>
+  }
+
 
   if(
       (STATE.OPENPO_DATE_RANGE_NOT_READY==this.props.Rpt.state) ||
@@ -350,6 +412,21 @@ export default class Reports extends Component {
       </Row>
     </div>
   }
+  if( 
+    (STATE.CLOSEDPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
+    )
+  {
+    backBtn = 
+    <div>
+      <Row>
+        <Col xs={5} >&nbsp;</Col>
+        <Col xs={2}><Button  onClick={()=> {
+                              this.props.setState(STATE.CLOSEDPO_DATE_RANGE_READY);
+                            }} bsSize="large" bsStyle="warning">Back</Button></Col>
+        <Col xs={5}>&nbsp;</Col>
+      </Row>
+    </div>
+  }
 
   if( 
     (STATE.OPENPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
@@ -372,6 +449,9 @@ export default class Reports extends Component {
   if(
       (STATE.SUCCESS==this.props.Rpt.state)  || 
       (STATE.NOT_STARTED==this.props.Rpt.state) ||
+      (STATE.CLOSEDPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) ||
+      (STATE.CLOSEDPO_DATE_RANGE_NOT_READY==this.props.Rpt.state) ||
+      (STATE.CLOSEDPO_DATE_RANGE_READY==this.props.Rpt.state) ||
       (STATE.OPENPO_DATE_RANGE_NOT_READY==this.props.Rpt.state) ||
       (STATE.OPENPO_DATE_RANGE_READY==this.props.Rpt.state) ||
       (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) ||
@@ -420,6 +500,7 @@ export default class Reports extends Component {
           {progressBtn}
           {rptMenu}
           {openPODateRange}
+          {closedPODateRange}
           {poPrompt}
           {backBtn}
           {cancelBtn}

@@ -82,6 +82,13 @@ const initialState = {
 		sqlExec:{done:false,failed:false}
 	},
 	Reports:{ 
+		closedPO:{
+			dateHeader:{text:'Date Range',valid:true},
+			dateStart:null,
+			dateEnd:null,
+			done:false,
+			failed:false
+		},
 		progressBtn:PROGRESSBUTTON.READY, 
 		poStatusReport:{pdf:'',done:false,failed:false},
 		reason:'',

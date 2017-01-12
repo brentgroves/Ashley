@@ -20,6 +20,152 @@ var fs = require('fs');
 var client = require("jsreport-client")('http://10.1.1.217:5488', 'admin', 'password')
 
 
+export async function ClosedPOPrompt(disp,getSt) {
+  var dispatch = disp;
+  var getState = getSt;
+  var continueProcess=true;
+  var cnt=0;
+  var maxCnt=10;
+
+  dispatch({type:ACTION.INIT_NO_STATE});
+  if(continueProcess){
+    dispatch({type:ACTION.SET_CLOSEDPO_DATE_START,dateStart:Moment().startOf('day').toDate()});
+    dispatch({type:ACTION.SET_CLOSEDPO_DATE_END,dateEnd:Moment().endOf('day').toDate()});
+    dispatch({type:ACTION.SET_STATE, state:STATE.CLOSEDPO_DATE_RANGE_READY});
+  }
+}
+export async function ClosedPODateRange(disp,getSt) {
+  var dispatch = disp;
+  var getState = getSt;
+  var continueProcess=true;
+  var closedPO=getState().Reports.closedPO;
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ClosedPODateRange().dateStart=>${closedPO.dateStart}`);
+    console.log(`ClosedPODateRange().dateEnd=>${closedPO.dateEnd}`);
+  }
+  var valid;
+  if(
+      (null==closedPO.dateStart) ||
+      (null==closedPO.dateEnd) ||
+      (closedPO.dateStart>=closedPO.dateEnd )
+    )
+  {
+    valid=false;
+    dispatch({ type:ACTION.SET_CLOSEDPO_DATE_HEADER, dateHeader:{text:'Date Range Error!',valid:false} });
+  }else{
+    valid=true;
+    dispatch({ type:ACTION.SET_CLOSEDPO_DATE_HEADER, dateHeader:{text:'Date Range',valid:true} });
+
+  }
+  if(valid   ){
+    dispatch({ type:ACTION.SET_STATE, state:STATE.CLOSEDPO_DATE_RANGE_READY});
+  }else{
+    dispatch({ type:ACTION.SET_STATE, state:STATE.CLOSEDPO_DATE_RANGE_NOT_READY });
+  }
+
+}
+
+
+export async function ClosedPO(disp,getSt) {
+  var dispatch = disp;
+  var getState = getSt;
+  var continueProcess=true;
+
+  dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
+  dispatch({ type:ACTION.SET_STATE, state:STATE.STARTED });
+
+
+  var dirName=remote.app.getPath('temp');
+
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`remote = } `);
+    console.dir(remote);
+    console.log(` dirName: ${ dirName}`);
+  }
+
+  dispatch({type:ACTION.SET_STATE, state:STATE.STARTED});
+
+  if(continueProcess){
+    var dateStart=getState().Reports.closedPO,dateStart;
+    var dateEnd=getState().Reports.closedPO,dateEnd;
+    var dtStart =Moment(new Date(dateStart)).format("MM-DD-YYYY hh:mm:ss");
+    var dtEnd =Moment(new Date(dateEnd)).format("MM-DD-YYYY hh:mm:ss");
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`dtStart=>${dtStart}`);
+      console.log(`dtEnd=>${dtEnd}`);
+    }
+
+    client.render({
+
+        template: { shortid:"r1omgHrLe"},
+        data: { dtStart: dtStart,dtEnd:dtEnd}
+
+//        data: { subject: "Busche Order",po: "122572",emailTo:"bgroves3196@yahoo.com"}
+    }, function(err, response) {
+        var dirName1 = dirName;
+
+        if ('development'==process.env.NODE_ENV) {
+          console.log(`dirName: ${dirName}`);
+          console.log(`dirName1: ${dirName1}`);
+          console.log(`err =  `);
+          console.dir(err);
+        }
+      //dispatch({ type:GRACTION.SET_REASON, reason:err.message });
+      //dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.FAILURE });
+      //dispatch({ type:GRACTION.LOG_ENTRY_LAST_FAILED, failed:true });
+
+        response.body(function(body) {
+          var dirName2 = dirName1;
+          let fileName =  dirName2 + '/myfile.pdf';
+          if ('development'==process.env.NODE_ENV) {
+            console.log(`dirName: ${dirName}`);
+            console.log(`dirName1: ${dirName1}`);
+            console.log(`dirName2: ${dirName2}`);
+            console.log(`fileName: ${fileName}`);
+          }
+
+          fs.writeFileSync(fileName,body);
+          dispatch({ type:ACTION.SET_CLOSEDPO_REPORT_DONE, done:true });
+          if ('development'==process.env.NODE_ENV) {
+            console.log(`Done creating file myfile.pdf `);
+            console.log(`fileName: ${fileName}`);
+          }
+          ipcRenderer.send('asynchronous-message', fileName)
+        });
+    });
+
+    var cnt=0;
+    var maxCnt=10;
+    while(!getState().Reports.closedPO.done){
+      if(++cnt>maxCnt){
+        continueProcess=false;
+        break;
+      }else{
+        await MISC.sleep(2000);
+      }
+    }
+
+    if(getState().Reports.closedPO.failed || 
+      !getState().Reports.closedPO.done){
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`ClosedPOReport not successful.`);
+      }
+      dispatch({ type:ACTION.SET_REASON, reason:`Network or server problem preventing access to the Report Server. `});
+      dispatch({ type:ACTION.SET_STATE, state:STATE.FAILURE });
+      dispatch({ type:ACTION.SET_STATUS, status:'Can not connect to Report Server...' });
+      continueProcess=false;
+    }else{
+      if ('development'==process.env.NODE_ENV) {
+        console.log(`ClosedPOReport Success.`);
+      }
+      dispatch({type:ACTION.INIT_NO_STATE});
+      dispatch({ type:ACTION.SET_STATE, state:STATE.SUCCESS});
+    }
+  }
+
+}
+
+
 
 export async function OpenPOMailer(disp,getSt) {
   var dispatch = disp;
@@ -66,8 +212,8 @@ export async function POStatusReport(disp,getSt) {
 
 
   //remote.dialog.showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']})
-//  dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
-//  dispatch({ type:ACTION.SET_STATE, state:STATE.STARTED });
+  dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
+  dispatch({ type:ACTION.SET_STATE, state:STATE.STARTED });
 
   var dirName=remote.app.getPath('temp');
 
@@ -85,8 +231,9 @@ export async function POStatusReport(disp,getSt) {
   //      template: { content: "hello {{:someText}}", recipe: "html",
   //                  engine: "jsrender" },
   //      data: { someText: "world!!",po:"" }
+        data: { po: "122572",emailTo:"bgroves3196@yahoo.com",subject:"Busche Order"}
 
-        data: { subject: "Busche Order",po: "122572",emailTo:"bgroves3196@yahoo.com"}
+//        data: { subject: "Busche Order",po: "122572",emailTo:"bgroves3196@yahoo.com"}
     }, function(err, response) {
         var dirName1 = dirName;
 
@@ -732,9 +879,8 @@ export async function OpenPOVendorEmailReport(disp,getSt) {
       }
       if(null!=emailTo){
         client.render({
-            template:{shortid:"rk6jlpXLl"},
-//            template: { shortid:"SJ6CuGdBx"}, // sample report
-            data: { po:x.poNumber}
+          template: { shortid:"rk6jlpXLl"},
+          data: {po: x.poNumber,emailTo:emailTo,subject:"Busche Order"}
 
         }, function(err, response) {
             if ('development'==process.env.NODE_ENV) {

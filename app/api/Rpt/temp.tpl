@@ -146,3 +146,35 @@ USA<br/>
             </table>
         </td>
 
+
+            <table class="text-right">
+                <tr>
+                    <td>
+                        Total Items Price: 
+                    </td>
+                    <td>
+                        ${{totCost ../poNumbers}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Sales Tax  
+                    </td>
+                    <td>
+                        $0.00
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Fixed Cost 
+                    </td>
+                    <td>
+                        $0.00
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+
+
+
