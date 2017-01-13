@@ -1,6 +1,6 @@
 
 var sql = require('mssql');
-
+var dateFormat = require('dateformat');
 import { remote,ipcRenderer } from 'electron';
 import * as CONNECT from "../SQLConst.js"
 import * as ACTION from "../../actions/Rpt/Const.js"
@@ -71,8 +71,6 @@ export async function ClosedPO(disp,getSt) {
   var getState = getSt;
   var continueProcess=true;
 
-  dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
-  dispatch({ type:ACTION.SET_STATE, state:STATE.STARTED });
 
 
   var dirName=remote.app.getPath('temp');
@@ -83,18 +81,40 @@ export async function ClosedPO(disp,getSt) {
     console.log(` dirName: ${ dirName}`);
   }
 
-  dispatch({type:ACTION.SET_STATE, state:STATE.STARTED});
-
   if(continueProcess){
-    var dateStart=getState().Reports.closedPO,dateStart;
-    var dateEnd=getState().Reports.closedPO,dateEnd;
-    var dtStart =Moment(new Date(dateStart)).format("MM-DD-YYYY hh:mm:ss");
-    var dtEnd =Moment(new Date(dateEnd)).format("MM-DD-YYYY hh:mm:ss");
+    var closedPO=getState().Reports.closedPO;
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`ClosedPODateRange().dateStart=>${closedPO.dateStart}`);
+      console.log(`ClosedPODateRange().dateEnd=>${closedPO.dateEnd}`);
+    }
+
+
+    var dateStart = closedPO.dateStart;
+    var dtStart =Moment(new Date(closedPO.dateStart)).format("MM-DD-YYYY hh:mm:ss");
     if ('development'==process.env.NODE_ENV) {
       console.log(`dtStart=>${dtStart}`);
+    }
+
+
+
+    var dateEnd = closedPO,dateEnd;
+    var dtEnd =Moment(new Date(closedPO.dateEnd)).format("MM-DD-YYYY hh:mm:ss");
+    if ('development'==process.env.NODE_ENV) {
       console.log(`dtEnd=>${dtEnd}`);
     }
 
+    var dtStartFmt = dateFormat(new Date(closedPO.dateStart), "mm-dd-yyyy hh:MM:ss");
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`dtStartFmt=>${dtStartFmt}`);
+    }
+    var dtEndFmt = dateFormat(new Date(closedPO.dateEnd), "mm-dd-yyyy hh:MM:ss");
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`dtEndFmt=>${dtEndFmt}`);
+    }
+
+
+    dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
+    dispatch({ type:ACTION.SET_STATE, state:STATE.STARTED });
     client.render({
 
         template: { shortid:"r1omgHrLe"},
@@ -133,7 +153,6 @@ export async function ClosedPO(disp,getSt) {
           ipcRenderer.send('asynchronous-message', fileName)
         });
     });
-
     var cnt=0;
     var maxCnt=10;
     while(!getState().Reports.closedPO.done){
@@ -158,11 +177,9 @@ export async function ClosedPO(disp,getSt) {
       if ('development'==process.env.NODE_ENV) {
         console.log(`ClosedPOReport Success.`);
       }
-      dispatch({type:ACTION.INIT_NO_STATE});
       dispatch({ type:ACTION.SET_STATE, state:STATE.SUCCESS});
     }
   }
-
 }
 
 
@@ -862,21 +879,22 @@ export async function OpenPOVendorEmailReport(disp,getSt) {
     if(x.selected && curPO!=x.poNumber){
       var emailTo=null;
       if(emailMRO){
-         emailTo='bgroves3196@yahoo.com'; 
+         emailTo='nswank@buschegroup.com'; 
       }
-      if(emailVendor){
+      if(emailVendor && ('None'!=x.eMailAddress.trim())){
         if(null==emailTo){
-          emailTo='Administrator@busche-cnc.com'
+          emailTo=x.eMailAddress.trim();
         }else{
-          emailTo+=',Administrator@busche-cnc.com'
+          emailTo+=',' + x.eMailAddress.trim();
         }
       }
-
+//Administrator@busche-cnc.com
       if ('development'==process.env.NODE_ENV) {
         console.log(`OpenPOVendorEmailReport.poNumber=${x.poNumber}`);
         console.log(`OpenPOVendorEmailReport.poNumber=${x.eMailAddress}`);
         console.log(`emailTo=${emailTo}`);
       }
+
       if(null!=emailTo){
         client.render({
           template: { shortid:"rk6jlpXLl"},

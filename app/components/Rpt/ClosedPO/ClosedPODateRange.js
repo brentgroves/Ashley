@@ -10,7 +10,7 @@ import { FormGroup,FormControl,HelpBlock,Checkbox,ControlLabel,Label,Row,Col,Lis
 
 import { ButtonInput } from 'react-bootstrap';
  
-
+var dateFormat = require('dateformat');
 var Moment = require('moment');
 var momentLocalizer = require('react-widgets/lib/localizers/moment');
 
@@ -40,14 +40,25 @@ export default class ClosedPODateRange extends React.Component {
     }
   }
  
- test(dt){
+ test(dt,dateStart,dateEnd){
   console.log(`dt: ${dt}`);
   //'08-12-2012 10:15:10'
-  var dtStr =Moment(new Date(dt)).format("MM-DD-YYYY hh:mm:ss");
+//  var dtStr =Moment(new Date(dt)).format("MM-DD-YYYY hh:mm:ss");
   //var dtStr = Date(dt);
   //dtStr.toLocalString();
-  console.log(`date: ${dtStr}`);
 
+    var dtStart = dateFormat(new Date(dt), "mm-dd-yyyy hh:MM:ss");
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`dtStart=>${dtStart}`);
+    }
+     var dtStartFmt = dateFormat(new Date(dateStart), "mm-dd-yyyy hh:MM:ss");
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`dtStartFmt=>${dtStartFmt}`);
+    }
+    var dtEndFmt = dateFormat(new Date(dateEnd), "mm-dd-yyyy hh:MM:ss");
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`dtEndFmt=>${dtEndFmt}`);
+    }
 
 //  console.log(`ClosedPODateRange().dateEnd=>${closedPO.dateEnd}`);
  }
@@ -101,8 +112,8 @@ export default class ClosedPODateRange extends React.Component {
             <Col xs={8} xsOffset={1} style={{}}>
               <DateTimePicker 
                 onChange={(name,value)=>{
-                  this.state.test(name);
-                  this.props.setOpenPODateStart(name);
+                  this.state.test(name,this.props.Rpt.closedPO.dateStart,this.props.Rpt.closedPO.dateEnd);
+                  this.props.setClosedPODateStart(name);
                   this.props.ClosedPODateRange();
                 }}
               defaultValue={this.props.Rpt.closedPO.dateStart} />
@@ -115,7 +126,7 @@ export default class ClosedPODateRange extends React.Component {
             <Col xs={8} xsOffset={1}>
               <DateTimePicker 
                 onChange={(name,value)=>{
-                  this.props.setOpenPODateEnd(name);
+                  this.props.setClosedPODateEnd(name);
                   this.props.ClosedPODateRange();
                 }}
               defaultValue={this.props.Rpt.closedPO.dateEnd} />

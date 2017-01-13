@@ -295,7 +295,7 @@ export default class Reports extends Component {
           <Col xs={1}>&nbsp;</Col>
         </Row>
         <Row>
-          <Col xs={3}></Col>
+          <Col xs={4}></Col>
           <Col xs={6}>
             <table className={styles.tg}>
             <tbody>
@@ -308,7 +308,7 @@ export default class Reports extends Component {
               </tbody>
             </table>
           </Col>
-          <Col xs={3}></Col>
+          <Col xs={2}></Col>
         </Row>
       </div>
     }
