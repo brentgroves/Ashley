@@ -334,7 +334,6 @@ export async function POReqTrans(disp,getSt,prime) {
         await MISC.sleep(2000);
       }
     }
-
     if(continueProcess && PORTSQLINSLOG.continuePORT()){
       PORTSQLSETPOMASTRANGE.sql1(dispatch,getState);
     }else{
@@ -461,7 +460,6 @@ export async function POReqTrans(disp,getSt,prime) {
       continueProcess=false;
     }
   }
-
   // DEBUG
  // dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
  // return;
@@ -507,7 +505,9 @@ export async function POReqTrans(disp,getSt,prime) {
     }
   }
 
-
+  continueProcess=false;
+  dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
+//STARTHERE
   if(continueProcess && CM.continuePORT()){
     if ('development'==process.env.NODE_ENV) {
       console.log(`CM.sql1() complete continue process.`);

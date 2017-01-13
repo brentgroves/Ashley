@@ -345,7 +345,7 @@ export async function m2mGenReceivers(disp,getSt) {
     }
    
   }
-
+/*
   if(continueProcess){
     dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.SUCCESS });
     dispatch((dispatch,getState) => {
@@ -371,7 +371,7 @@ export async function m2mGenReceivers(disp,getSt) {
       }
     }
   }
-
+*/
 
 //  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
 //  continueProcess=false;
