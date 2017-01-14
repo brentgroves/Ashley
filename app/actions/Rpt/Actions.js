@@ -2,6 +2,7 @@ import * as ACTION from "./Const.js"
 import * as State from "./State.js"
 import { push } from 'react-router-redux';
 import * as API from '../../api/Rpt/Reports';
+import * as NORECV from '../../api/Rpt/NoReceivers/NoReceivers';
 import * as MISC from "../../api/Misc.js"
 var _ = require('lodash');
 var joins = require('lodash-joins');
@@ -19,41 +20,6 @@ export function cancelApp() {
   };
 }
 
-export function ClosedPO() {
-  if ('development'==process.env.NODE_ENV) {
-    console.log(`ACTIONS.ClosedPO()->top.`);
-  }
-
- return (dispatch,getState) => {
-    var disp = dispatch;
-    var getSt = getState;
-    API.ClosedPO(disp,getSt);
-  };
-}
-
-export function ClosedPOPrompt() {
-  if ('development'==process.env.NODE_ENV) {
-    console.log(`ACTIONS.ClosedPOPrompt()->top.`);
-  }
-
- return (dispatch,getState) => {
-    var disp = dispatch;
-    var getSt = getState;
-    API.ClosedPOPrompt(disp,getSt);
-  };
-}
-
-export function ClosedPODateRange() {
-  if ('development'==process.env.NODE_ENV) {
-    console.log(`ACTIONS.ClosedPODateRange()->top.`);
-  }
-
- return (dispatch,getState) => {
-    var disp = dispatch;
-    var getSt = getState;
-    API.ClosedPODateRange(disp,getSt);
-  };
-}
 
 export function reports() {
   if ('development'==process.env.NODE_ENV) {
@@ -79,6 +45,8 @@ export function initNoState() {
   };
 }
 
+
+
 export function OpenPO() {
   if ('development'==process.env.NODE_ENV) {
     console.log(`ACTIONS.OpenPO()->top.`);
@@ -90,7 +58,7 @@ export function OpenPO() {
     API.OpenPO(disp,getSt);
   };
 }
-
+////////////////////////////////////////////////
 export function OpenPOEmailMROToggle() {
   return {
     type: ACTION.OPENPO_EMAIL_MRO_TOGGLE
@@ -150,59 +118,6 @@ export function OpenPOVendorEmailReport() {
     API.OpenPOVendorEmailReport(disp,getSt);
   };
 }
-
-export function POStatusReport() {
-  if ('development'==process.env.NODE_ENV) {
-    console.log(`ACTIONS.POStatusReport()->top.`);
-  }
-
- return (dispatch,getState) => {
-    var disp = dispatch;
-    var getSt = getState;
-    API.POStatusReport(disp,getSt);
-  };
-}
-
-export function POVendorEmail() {
-  if ('development'==process.env.NODE_ENV) {
-    console.log(`ACTIONS.POVendorEmail()->top.`);
-  }
-
- return (dispatch,getState) => {
-    var disp = dispatch;
-    var getSt = getState;
-    API.POVendorEmail(disp,getSt);
-  };
-}
-
-
-
-export function setClosedPODateStart(dateStart) {
-  if ('development'==process.env.NODE_ENV) {
-    console.log(`ACTIONS.setClosedPODateStart()->top. ${dateStart}`);
-
-  }
-
-  return {
-    type: ACTION.SET_CLOSEDPO_DATE_START,
-    dateStart: dateStart
-  };
-}
-
-export function setClosedPODateEnd(dateEnd) {
-  if ('development'==process.env.NODE_ENV) {
-    console.log(`ACTIONS.setClosedPODateEnd()->top. ${dateEnd}`);
-
-  }
-
-  return {
-    type: ACTION.SET_CLOSED_PO_DATE_END,
-    dateEnd: dateEnd
-  };
-}
-
-
-
 
 export function setOpenPO(po) {
   if ('development'==process.env.NODE_ENV) {
@@ -267,6 +182,182 @@ export function setOpenPONextPage() {
   };
 }
 
+
+export function toggleOpenPOSelected(poNumber) {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.toggleOpenPOSelected()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.ToggleOpenPOSelected(disp,getSt,poNumber);
+  };
+}
+
+export function toggleOpenPOVisible(poNumber) {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.toggleOpenPOVisible()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.ToggleOpenPOVisible(disp,getSt,poNumber);
+  };
+}
+
+
+
+
+/////////////////////////////////////////////
+export function POStatusReport() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.POStatusReport()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.POStatusReport(disp,getSt);
+  };
+}
+
+export function POVendorEmail() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.POVendorEmail()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.POVendorEmail(disp,getSt);
+  };
+}
+////////////////CLOSEDPO
+export function ClosedPO() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.ClosedPO()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.ClosedPO(disp,getSt);
+  };
+}
+
+export function ClosedPOPrompt() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.ClosedPOPrompt()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.ClosedPOPrompt(disp,getSt);
+  };
+}
+
+export function ClosedPODateRange() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.ClosedPODateRange()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    API.ClosedPODateRange(disp,getSt);
+  };
+}
+
+
+export function setClosedPODateStart(dateStart) {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.setClosedPODateStart()->top. ${dateStart}`);
+
+  }
+
+  return {
+    type: ACTION.SET_CLOSEDPO_DATE_START,
+    dateStart: dateStart
+  };
+}
+
+export function setClosedPODateEnd(dateEnd) {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.setClosedPODateEnd()->top. ${dateEnd}`);
+
+  }
+
+  return {
+    type: ACTION.SET_CLOSEDPO_DATE_END,
+    dateEnd: dateEnd
+  };
+}
+//////////////////NO RECEIVERS
+
+export function NoReceivers() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.NoReceivers()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    NORECV.NoReceivers(disp,getSt);
+  };
+}
+
+export function NoReceiversPrompt() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.NoReceiversPrompt()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    NORECV.NoReceiversPrompt(disp,getSt);
+  };
+}
+
+export function NoReceiversDateRange() {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.NoReceiversDateRange()->top.`);
+  }
+
+ return (dispatch,getState) => {
+    var disp = dispatch;
+    var getSt = getState;
+    NORECV.NoReceiversDateRange(disp,getSt);
+  };
+}
+
+
+export function setNoReceiversDateStart(dateStart) {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.setNoReceiversDateStart()->top. ${dateStart}`);
+
+  }
+
+  return {
+    type: ACTION.SET_NORECEIVERS_DATE_START,
+    dateStart: dateStart
+  };
+}
+
+export function setNoReceiversDateEnd(dateEnd) {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`ACTIONS.setNoReceiversDateEnd()->top. ${dateEnd}`);
+
+  }
+
+  return {
+    type: ACTION.SET_NORECEIVERS_DATE_END,
+    dateEnd: dateEnd
+  };
+}
+/////////////////////////////////////////////////////////////////
 export function setProductCategoryStyle(category,style) {
   return {
     type: ACTION.SET_PRODUCTS_CATEGORY_STYLE,
@@ -297,32 +388,5 @@ export function setStatus(status) {
     status: status
   };
 }
-
-
-
-export function toggleOpenPOSelected(poNumber) {
-  if ('development'==process.env.NODE_ENV) {
-    console.log(`ACTIONS.toggleOpenPOSelected()->top.`);
-  }
-
- return (dispatch,getState) => {
-    var disp = dispatch;
-    var getSt = getState;
-    API.ToggleOpenPOSelected(disp,getSt,poNumber);
-  };
-}
-
-export function toggleOpenPOVisible(poNumber) {
-  if ('development'==process.env.NODE_ENV) {
-    console.log(`ACTIONS.toggleOpenPOVisible()->top.`);
-  }
-
- return (dispatch,getState) => {
-    var disp = dispatch;
-    var getSt = getState;
-    API.ToggleOpenPOVisible(disp,getSt,poNumber);
-  };
-}
-
 
 

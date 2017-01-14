@@ -20,6 +20,13 @@ export default function reducer( state = {}, action) {
             done:false,
             failed:false
           }},
+          noReceivers:{$set:{
+            dateHeader:{text:'Date Range',valid:true},
+            dateStart:null,
+            dateEnd:null,
+            done:false,
+            failed:false
+          }},
           openPO:{$set:{
               curPage:1,
               dateStart:null,
@@ -54,6 +61,13 @@ export default function reducer( state = {}, action) {
       var newData = update(state, 
         { 
           closedPO:{$set:{
+            dateHeader:{text:'Date Range',valid:true},
+            dateStart:null,
+            dateEnd:null,
+            done:false,
+            failed:false
+          }},
+          noReceivers:{$set:{
             dateHeader:{text:'Date Range',valid:true},
             dateStart:null,
             dateEnd:null,
@@ -173,7 +187,52 @@ export default function reducer( state = {}, action) {
       var newData = update(state, {closedPO: {$set: closedPO}});
       return newData;
     }
-    
+//////////////////////////
+    case ACTION.SET_NORECEIVERS_REPORT_FAILED:
+    {
+      var noReceivers = state.noReceivers;
+      noReceivers.failed=action.failed;
+      var newData = update(state, {noReceivers: {$set: noReceivers}});
+      return newData;
+    }
+
+    case ACTION.SET_NORECEIVERS_REPORT_DONE:
+    {
+      var noReceivers = state.noReceivers;
+      noReceivers.done=action.done;
+      var newData = update(state, {noReceivers: {$set: noReceivers}});
+      return newData;
+    }
+
+    case ACTION.SET_NORECEIVERS_DATE_HEADER:
+    {
+      var noReceivers = state.noReceivers;
+      if ('development'==process.env.NODE_ENV) {
+        console.log('SET_NORECEIVERS_DATE_HEADER ${action.dateHeader.text},${action.dateHeader.valid}');
+      }
+
+      noReceivers.dateHeader=action.dateHeader;
+      var newData = update(state, {noReceivers: {$set: noReceivers}});
+      return newData;
+    }
+
+    case ACTION.SET_NORECEIVERS_DATE_END:
+    {
+      var noReceivers = state.noReceivers;
+      noReceivers.dateEnd=action.dateEnd;
+      var newData = update(state, {noReceivers: {$set: noReceivers}});
+      return newData;
+    }
+
+    case ACTION.SET_NORECEIVERS_DATE_START:
+    {
+      var noReceivers = state.noReceivers;
+      noReceivers.dateStart=action.dateStart;
+      var newData = update(state, {noReceivers: {$set: noReceivers}});
+      return newData;
+    }
+
+//////////////////////////////////////    
     case ACTION.SET_OPENPO_CURPAGE:
     {
       var openPO = state.openPO;

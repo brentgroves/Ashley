@@ -4,12 +4,16 @@ import ReactDOM from 'react-dom';
 import { Link,IndexLink } from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 import ProgressBtn from '../../containers/Rpt/ProgressBtn';
-import POPrompt from "../../containers/Rpt/POPrompt";
-import ClosedPODateRange from "../../containers/Rpt/ClosedPO/ClosedPODateRange";
-import DateTimeRange from "../../containers/Rpt/DateTimeRange";
 import * as STATE from "../../actions/Rpt/State.js"
 import { Grid, Row, Col, Navbar, Nav, NavItem, NavDropdown, MenuItem, Jumbotron,Button} from 'react-bootstrap';
 import {Header as NavbarHeader, Brand as NavbarBrand, Toggle as NavbarToggle, Collapse as NavbarCollapse, Text as NavbarText } from 'react-bootstrap/lib/Navbar'
+///////////////// NO RECEIVERS
+import NoReceiversDateRange from "../../containers/Rpt/NoReceivers/NoReceiversDateRange";
+///////////////////////////// CLOSEDPD
+import ClosedPODateRange from "../../containers/Rpt/ClosedPO/ClosedPODateRange";
+////////// OPENPO
+import POPrompt from "../../containers/Rpt/POPrompt";
+import DateTimeRange from "../../containers/Rpt/DateTimeRange";
 var Moment = require('moment');
 
 
@@ -28,8 +32,11 @@ export default class Reports extends Component {
   }
 
   render() {
-    var jumboTronTxt,rptMenu,poPrompt,progressBtn,backBtn,cancelBtn,navbar,openPODateRange,closedPODateRange;
-
+    var jumboTronTxt,rptMenu,progressBtn,backBtn,cancelBtn,navbar,
+    poPrompt,openPODateRange,
+    closedPODateRange,
+    noReceiversDateRange;
+/* GENERAL */
     if(STATE.NOT_STARTED==this.props.Rpt.state){
     jumboTronTxt=
       <Row>
@@ -44,7 +51,8 @@ export default class Reports extends Component {
             <br/>
           </Jumbotron>
           </Col >
-        </Row>
+        </Row>;
+/* OPENPO  */
   } else if(
             (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) 
             ){
@@ -58,6 +66,27 @@ export default class Reports extends Component {
               <p >Please select which PO(s) you wish to have email notifications prepared for.
               After selecting at least one PO the 'run' button will be enabled so you may 
               continue. </p>
+              <p><strong>Warning: </strong><span style={{color:'red'}}>'None'</span> indicates 
+              there is no Email Address in Cribmaster for this vendor. </p>
+            </div>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(
+            (STATE.PO_PROMPT_READY==this.props.Rpt.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
+            <div style={{textAlign: 'left'}}>
+              <p >You may now press the 'run' button to begin. After 'run' is
+              pressed this program will create an email notification for each applicable vendor
+              and send them to the designated MRO personel for review and forwarding. 
+              </p>
               <p><strong>Warning: </strong><span style={{color:'red'}}>'None'</span> indicates 
               there is no Email Address in Cribmaster for this vendor. </p>
             </div>
@@ -82,6 +111,60 @@ export default class Reports extends Component {
           </Jumbotron>
         </Col>
       </Row>
+  } else if(
+            (STATE.OPENPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
+            <div style={{textAlign: 'left'}}>
+              <p >There are no PO(s) within the specified date range. </p>
+              <p>To continue press the back button to select a different date range...</p>
+            </div>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
+
+  } else if(
+            (STATE.OPENPO_DATE_RANGE_NOT_READY==this.props.Rpt.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
+            <div style={{textAlign: 'left'}}>
+              <p >Please select the Date Range for the PO(s) and who will receive an Email. </p>
+              <p>After specifying these items the 'Continue' 
+              button will be enabled. </p>
+            </div>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>
+  } else if(
+            (STATE.OPENPO_DATE_RANGE_READY==this.props.Rpt.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
+            <div style={{textAlign: 'left'}}>
+              <p >You may now press the 'Continue' button which will take you to a screen that will ask you to select individual PO(s). 
+              </p>
+            </div>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>;
+      /* CLOSEPO */
   } else if(
             (STATE.CLOSEDPO_DATE_RANGE_NOT_READY==this.props.Rpt.state) 
             ){
@@ -119,10 +202,9 @@ export default class Reports extends Component {
             <br/>
           </Jumbotron>
         </Col>
-      </Row>
-
+      </Row>;
   } else if(
-            (STATE.OPENPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
+            (STATE.CLOSEDPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
             ){
     jumboTronTxt=
       <Row >
@@ -139,39 +221,19 @@ export default class Reports extends Component {
         </Col>
       </Row>
 
+      /* NORECEIVERS */
   } else if(
-            (STATE.PO_PROMPT_READY==this.props.Rpt.state) 
+            (STATE.NORECEIVERS_DATE_RANGE_NOT_READY==this.props.Rpt.state) 
             ){
     jumboTronTxt=
       <Row >
         <Col xs={1}>&nbsp;</Col>
         <Col >
           <Jumbotron style={{marginLeft:15,marginRight:15}} >
-            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO Date Range</h1>
             <div style={{textAlign: 'left'}}>
-              <p >You may now press the 'run' button to begin. After 'run' is
-              pressed this program will create an email notification for each applicable vendor
-              and send them to the designated MRO personel for review and forwarding. 
-              </p>
-              <p><strong>Warning: </strong><span style={{color:'red'}}>'None'</span> indicates 
-              there is no Email Address in Cribmaster for this vendor. </p>
-            </div>
-            <br/>
-          </Jumbotron>
-        </Col>
-      </Row>
-  } else if(
-            (STATE.OPENPO_DATE_RANGE_NOT_READY==this.props.Rpt.state) 
-            ){
-    jumboTronTxt=
-      <Row >
-        <Col xs={1}>&nbsp;</Col>
-        <Col >
-          <Jumbotron style={{marginLeft:15,marginRight:15}} >
-            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
-            <div style={{textAlign: 'left'}}>
-              <p >Please select the Date Range for the PO(s) and who will receive an Email. </p>
-              <p>After specifying these items the 'Continue' 
+              <p >This report lists PO(s) without receivers within the specified date range.</p>
+              <p>After specifying the dates the 'Run' 
               button will be enabled. </p>
             </div>
             <br/>
@@ -179,7 +241,27 @@ export default class Reports extends Component {
         </Col>
       </Row>
   } else if(
-            (STATE.OPENPO_DATE_RANGE_READY==this.props.Rpt.state) 
+            (STATE.NORECEIVERS_DATE_RANGE_READY==this.props.Rpt.state) 
+            ){
+    jumboTronTxt=
+      <Row >
+        <Col xs={1}>&nbsp;</Col>
+        <Col >
+          <Jumbotron style={{marginLeft:15,marginRight:15}} >
+            <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>PO Date Range Selected</h1>
+            <div style={{textAlign: 'left'}}>
+              <p >You may now press the 'run' button to begin. After 'run' is
+              pressed this program will create a report of all PO's that have NO receivers
+              within the specified date range.
+              </p>
+              <p><strong>Note: </strong>The report should appear in a separate window within a few minutes.</p>
+            </div>
+            <br/>
+          </Jumbotron>
+        </Col>
+      </Row>;
+  } else if(
+            (STATE.NORECEIVERS_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
             ){
     jumboTronTxt=
       <Row >
@@ -188,13 +270,15 @@ export default class Reports extends Component {
           <Jumbotron style={{marginLeft:15,marginRight:15}} >
             <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Select PO(s)</h1>
             <div style={{textAlign: 'left'}}>
-              <p >You may now press the 'Continue' button which will take you to a screen that will ask you to select individual PO(s). 
-              </p>
+              <p >There are no PO(s) within the specified date range. </p>
+              <p>To continue press the back button to select a different date range...</p>
             </div>
             <br/>
           </Jumbotron>
         </Col>
-      </Row>
+      </Row>;
+
+/* GENERAL */
   } else if(
             (STATE.STARTED==this.props.Rpt.state) 
             ){
@@ -295,15 +379,16 @@ export default class Reports extends Component {
           <Col xs={1}>&nbsp;</Col>
         </Row>
         <Row>
-          <Col xs={4}></Col>
-          <Col xs={6}>
+          <Col xs={2}></Col>
+          <Col xs={8}>
             <table className={styles.tg}>
             <tbody>
               <tr>
-                <td className={styles.btnPrimary} 
+                <td className={styles.btnPrimary} onClick={()=>{this.props.NoReceiversPrompt();}} ><span style={rpt1Style}>PO(s) with No Receivers</span><br/>PDF format</td>
+                <td className={styles.btnSuccess} 
                 onClick={()=>{this.props.OpenPO();}}>
                 <span style={rpt1Style}>Open PO</span><br/>MRO/Vendor Email</td>
-                <td className={styles.btnWarning} onClick={()=>{this.props.ClosedPOPrompt();}} ><span style={rpt1Style}>PO(s) Closed</span><br/>PDF format</td>
+                <td className={styles.btnWarning} onClick={()=>{this.props.ClosedPOPrompt();}} ><span style={rpt1Style}>PO(s) with Receivers</span><br/>PDF format</td>
               </tr>
               </tbody>
             </table>
@@ -316,25 +401,7 @@ export default class Reports extends Component {
                 <td className={styles.btnSuccess} onClick={this.props.POStatusReport} ><span style={rpt1Style}>PO(s) Opened Today</span><br/>Email(s) Sent</td>
 
 */
-  if(
-      (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) ||
-      (STATE.PO_PROMPT_READY==this.props.Rpt.state)
-    )
-  {
-    poPrompt = 
-    <div>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-      <Row>
-        <Col xs={1} >&nbsp;</Col>
-        <Col xs={10}><POPrompt/></Col>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-
-    </div>
-  }
-
+/* CLOSED PO */
   if(
       (STATE.CLOSEDO_DATE_RANGE_NOT_READY==this.props.Rpt.state) ||
       (STATE.CLOSEDPO_DATE_RANGE_READY==this.props.Rpt.state)
@@ -348,6 +415,77 @@ export default class Reports extends Component {
       <Row>
         <Col xs={1} >&nbsp;</Col>
         <Col xs={10}><ClosedPODateRange/></Col>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+
+    </div>
+  }
+  if( 
+    (STATE.CLOSEDPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
+    )
+  {
+    backBtn = 
+    <div>
+      <Row>
+        <Col xs={5} >&nbsp;</Col>
+        <Col xs={2}><Button  onClick={()=> {
+                              this.props.setState(STATE.CLOSEDPO_DATE_RANGE_READY);
+                            }} bsSize="large" bsStyle="warning">Back</Button></Col>
+        <Col xs={5}>&nbsp;</Col>
+      </Row>
+    </div>
+  }
+
+/* NO RECEIVERS */
+  if(
+      (STATE.NORECEIVERS_DATE_RANGE_NOT_READY==this.props.Rpt.state) ||
+      (STATE.NORECEIVERS_DATE_RANGE_READY==this.props.Rpt.state)
+    )
+  {
+    noReceiversDateRange = 
+    <div>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1} >&nbsp;</Col>
+        <Col xs={10}><NoReceiversDateRange/></Col>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+
+    </div>
+  }
+
+  if( 
+    (STATE.NORECEIVERS_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
+    )
+  {
+    backBtn = 
+    <div>
+      <Row>
+        <Col xs={5} >&nbsp;</Col>
+        <Col xs={2}><Button  onClick={()=> {
+                              this.props.setState(STATE.NORECEIVERS_DATE_RANGE_READY);
+                            }} bsSize="large" bsStyle="warning">Back</Button></Col>
+        <Col xs={5}>&nbsp;</Col>
+      </Row>
+    </div>
+  }
+
+/* OPENPO */
+  if(
+      (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) ||
+      (STATE.PO_PROMPT_READY==this.props.Rpt.state)
+    )
+  {
+    poPrompt = 
+    <div>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1} >&nbsp;</Col>
+        <Col xs={10}><POPrompt/></Col>
         <Col xs={1}>&nbsp;</Col>
       </Row>
 
@@ -373,29 +511,6 @@ export default class Reports extends Component {
 
     </div>
   }
-
-  if(
-      (STATE.FAILURE==this.props.Rpt.state)  
-    )
-  {
-    cancelBtn = 
-    <div>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-      <Row>
-        <Col xs={1}>&nbsp;</Col>
-      </Row>
-
-      <Row>
-        <Col xs={5} >&nbsp;</Col>
-        <Col xs={2}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
-        <Col xs={5}>&nbsp;</Col>
-      </Row>
-    </div>
-  }
-
-
   if( 
     (STATE.OPENPO_NO_RECORDS==this.props.Rpt.state) 
     )
@@ -408,21 +523,6 @@ export default class Reports extends Component {
                               this.props.reports();
                             }} bsSize="large" bsStyle="warning">Back</Button>
         </Col>
-        <Col xs={5}>&nbsp;</Col>
-      </Row>
-    </div>
-  }
-  if( 
-    (STATE.CLOSEDPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) 
-    )
-  {
-    backBtn = 
-    <div>
-      <Row>
-        <Col xs={5} >&nbsp;</Col>
-        <Col xs={2}><Button  onClick={()=> {
-                              this.props.setState(STATE.CLOSEDPO_DATE_RANGE_READY);
-                            }} bsSize="large" bsStyle="warning">Back</Button></Col>
         <Col xs={5}>&nbsp;</Col>
       </Row>
     </div>
@@ -444,14 +544,40 @@ export default class Reports extends Component {
     </div>
   }
 
+/* GENERAL */
+  if(
+      (STATE.FAILURE==this.props.Rpt.state)  
+    )
+  {
+    cancelBtn = 
+    <div>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
+      <Row>
+        <Col xs={1}>&nbsp;</Col>
+      </Row>
 
+      <Row>
+        <Col xs={5} >&nbsp;</Col>
+        <Col xs={2}><Button  onClick={this.props.cancelApp} bsSize="large" bsStyle="warning">Cancel</Button></Col>
+        <Col xs={5}>&nbsp;</Col>
+      </Row>
+    </div>
+  }
 
   if(
       (STATE.SUCCESS==this.props.Rpt.state)  || 
       (STATE.NOT_STARTED==this.props.Rpt.state) ||
+
       (STATE.CLOSEDPO_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) ||
       (STATE.CLOSEDPO_DATE_RANGE_NOT_READY==this.props.Rpt.state) ||
       (STATE.CLOSEDPO_DATE_RANGE_READY==this.props.Rpt.state) ||
+
+      (STATE.NORECEIVERS_DATE_RANGE_NO_RECORDS==this.props.Rpt.state) ||
+      (STATE.NORECEIVERS_DATE_RANGE_NOT_READY==this.props.Rpt.state) ||
+      (STATE.NORECEIVERS_DATE_RANGE_READY==this.props.Rpt.state) ||
+
       (STATE.OPENPO_DATE_RANGE_NOT_READY==this.props.Rpt.state) ||
       (STATE.OPENPO_DATE_RANGE_READY==this.props.Rpt.state) ||
       (STATE.PO_PROMPT_NOT_READY==this.props.Rpt.state) ||
@@ -499,9 +625,14 @@ export default class Reports extends Component {
           {jumboTronTxt}
           {progressBtn}
           {rptMenu}
+
           {openPODateRange}
-          {closedPODateRange}
           {poPrompt}
+
+          {closedPODateRange}
+
+          {noReceiversDateRange}
+
           {backBtn}
           {cancelBtn}
           {navbar}
