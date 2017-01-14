@@ -1,3 +1,34 @@
+
+
+create procedure bpGRNoReceivers
+@dtStart varchar(20),
+@dtEnd varchar(20)
+as
+begin
+SET NOCOUNT ON
+--Declare @dtStart varchar(20)
+--Declare @dtEnd varchar(20)
+--set @dtStart = '06-01-2016 10:15:10'
+--set @dtEnd =  '12-05-2016 10:15:10'
+Declare @dateStart datetime
+Declare @dateEnd datetime
+set @dateStart = CONVERT(datetime, @dtStart)
+set @dateEnd = CONVERT(datetime, @dtEnd)
+select po.VendorPO,pos.POStatusDescription,ven.VendorName,po.podate,pod.itemdescription,pod.Description2, pod.cribbin,quantity,pod.Received
+from po 
+inner join PODETAIL pod
+on po.PONumber = pod.PONumber
+inner join VENDOR ven
+on po.Vendor=ven.VendorNumber
+inner join postatus pos
+on po.POStatusNo=pos.POStatusNo
+where podate >= @dateStart
+and podate <= @dateEnd
+and received is null
+and pos.POStatusNo=3 or pos.POStatusNo=0
+order by pos.POStatusDescription desc, pod.PONumber, pod.ItemDescription
+end
+
 create procedure [dbo].[bpGROpenPO] 
 AS
 BEGIN
