@@ -94,6 +94,13 @@ const initialState = {
 		reason:'',
 		state:RPTSTATE.NOT_STARTED,
 		status:'',
+		noReceivers:{
+			dateHeader:{text:'Date Range',valid:true},
+			dateStart:null,
+			dateEnd:null,
+			done:false,
+			failed:false
+		},
 		openPO:{
 			curPage:1,
 			dateStart:null,
