@@ -115,8 +115,8 @@ export async function NoReceivers(disp,getSt) {
     dispatch({ type:ACTION.SET_PROGRESS_BTN,progressBtn:PROGRESSBUTTON.LOADING });
     dispatch({ type:ACTION.SET_STATE, state:STATE.STARTED });
     client.render({
-
-        template: { shortid:"r1omgHrLe"},
+///S1S4DAv8e
+        template: { shortid:"S1S4DAv8e"},
         data: { dtStart: dtStart,dtEnd:dtEnd}
     }, function(err, response) {
         var dirName1 = dirName;
@@ -148,7 +148,7 @@ export async function NoReceivers(disp,getSt) {
         });
     });
     var cnt=0;
-    var maxCnt=10;
+    var maxCnt=15;
     while(!getState().Reports.noReceivers.done){
       if(++cnt>maxCnt){
         continueProcess=false;

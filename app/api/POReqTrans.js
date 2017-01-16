@@ -505,8 +505,6 @@ export async function POReqTrans(disp,getSt,prime) {
     }
   }
 
-  continueProcess=false;
-  dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.SUCCESS });
 //STARTHERE
   if(continueProcess && CM.continuePORT()){
     if ('development'==process.env.NODE_ENV) {
@@ -618,7 +616,7 @@ export async function POReqTrans(disp,getSt,prime) {
     continueProcess=false;
   }
 
- cnt=0;
+  cnt=0;
 
   while(continueProcess && !SETCURRENTPO.isDone()){
     if(++cnt>15 || SETCURRENTPO.didFail()){
@@ -652,7 +650,6 @@ export async function POReqTrans(disp,getSt,prime) {
       await MISC.sleep(2000);
     }
   }
-
   if(continueProcess && PORTSQLSETPOCOUNT.continuePORT()){
     if ('development'==process.env.NODE_ENV) {
       console.log(`setPOCount complete continue PORT process.`);
@@ -669,6 +666,8 @@ export async function POReqTrans(disp,getSt,prime) {
     }
     continueProcess=false;
   }
+
+// CHECKPOINT #1 VERIFY FCNUMBER WAS UPDATED IN M2M
 
   cnt=0;
 
@@ -910,7 +909,7 @@ export async function POReqTrans(disp,getSt,prime) {
   }
   if(continueProcess && PORTSQLDELPOMASTANDPOITEMANDPOSTATUS.continuePORT()){
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQLDELPOMASTANDPOITEMANDPOSTATUS M2M complete done with PORT process.`);
+      console.log(`PORTSQLDELPOMASTANDPOITEMANDPOSTATUS Crib complete done with PORT process.`);
     }
     dispatch({ type:PORTACTION.SET_STATE, state:PORTSTATE.STEP_60_PASS });
     dispatch({ type:PORTACTION.SET_CHECK4, chk4:PORTCHK.SUCCESS });
@@ -918,7 +917,7 @@ export async function POReqTrans(disp,getSt,prime) {
 
   }else{
     if ('development'==process.env.NODE_ENV) {
-      console.log(`PORTSQLDELPOMASTANDPOITEMANDPOSTATUS M2M FAILED stop PORT process.`);
+      console.log(`PORTSQLDELPOMASTANDPOITEMANDPOSTATUS Crib FAILED stop PORT process.`);
     }
     continueProcess=false;
   }

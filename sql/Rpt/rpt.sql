@@ -26,7 +26,10 @@ where podate >= @dateStart
 and podate <= @dateEnd
 and received is null
 and pos.POStatusNo=3 or pos.POStatusNo=0
-order by pos.POStatusDescription desc, pod.PONumber, pod.ItemDescription
+and po.SITEID <> '90'
+and (po.BLANKETPO = '' or po.BLANKETPO is null)
+order by pos.POStatusDescription desc, pod.PONumber desc, pod.ItemDescription
+
 end
 
 create procedure [dbo].[bpGROpenPO] 
@@ -36,6 +39,7 @@ SET NOCOUNT ON
 select poNumber
 from po
 where ((po.POSTATUSNO = 0) or (po.POSTATUSNO = 2)) and po.SITEID <> '90' 
+and (po.BLANKETPO = '' or po.BLANKETPO is null)
 and po.PODate >= '2016-10-01'
 order by PONumber desc
 end

@@ -154,7 +154,7 @@ export async function ClosedPO(disp,getSt) {
         });
     });
     var cnt=0;
-    var maxCnt=10;
+    var maxCnt=15;
     while(!getState().Reports.closedPO.done){
       if(++cnt>maxCnt){
         continueProcess=false;

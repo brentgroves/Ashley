@@ -126,3 +126,14 @@ export default class Home extends Component {
     );
   }
 }
+/*
+    return (
+      <div>
+        <Grid>
+        {jumboTronTxt}
+        {gridMenu}
+        </Grid>
+        {navbar}
+      </div>
+    );
+*/

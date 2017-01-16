@@ -105,7 +105,7 @@ async function startPack() {
     // Start the packing process
     if (shouldBuildAll) {
       pack('win32', 'ia32', log('win32', 'ia32'));
-      pack('linux', 'ia32', log('linux','ia32'));
+      pack('linux', 'x64', log('linux','x64'));
       /*
       // build for all platforms
       const archs = ['ia32', 'x64'];
