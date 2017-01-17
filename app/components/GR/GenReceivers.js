@@ -255,11 +255,10 @@ export default class GenReceivers extends Component {
             <br/>
             <div style={{textAlign: 'left'}}>
             <p >All of the requested PO(s) items have been received
-            into Made2Manage successfully. Use the menu bar to navigate back to the main menu
+            into Made2Manage successfully.</p>
+            <p>Made2Manage has been updated and you can now give the receipts to the Accounting dept.</p> 
+            <p>Use the menu bar to navigate back to the main menu
             or click the 'x' in the upper right corner to exit this App.</p>
-            <p>If the PO Status report did not complete please ask IT to refresh the Report Server.</p> 
-            <p><strong>Note:{" "}</strong>Even if the report failed to display 
-            Made2Manage has been updated and you can give the receipts to the Accounting dept.</p> 
             </div>
             <br/>
           </Jumbotron>
@@ -401,7 +400,7 @@ export default class GenReceivers extends Component {
       <Row >
         <Col xs={5} >&nbsp;</Col>
         <Col xs={1}><Button style={{marginTop:100}} onClick={this.props.m2mGenReceivers} bsSize="large" bsStyle="info">Save</Button></Col>
-        <Col xs={2}><Button style={{marginTop:100,marginLeft:10}} onClick={() => this.props.setState(GRSTATE.READY_TO_REVIEW)} bsSize="large" bsStyle="warning">Cancel</Button></Col>
+        <Col xs={2}><Button style={{marginTop:100,marginLeft:10}} onClick={() => this.props.setState(GRSTATE.READY_TO_REVIEW)} bsSize="large" bsStyle="warning">Back</Button></Col>
         <Col xs={4}>&nbsp;</Col>
       </Row>
   }

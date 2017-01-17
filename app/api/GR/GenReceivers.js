@@ -183,6 +183,7 @@ export async function m2mGenReceivers(disp,getSt) {
   }
 
 
+
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -261,7 +262,6 @@ export async function m2mGenReceivers(disp,getSt) {
   }
 
 
-
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -287,6 +287,8 @@ export async function m2mGenReceivers(disp,getSt) {
     }
    
   }
+  continueProcess=false;
+  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -401,7 +403,7 @@ export async function rollBack(disp,getSt,rcvCnt) {
     var maxCnt=10;
     var step = getState().GenReceivers.logEntryLast.fStep;
     switch(step){
-      // never should have STEP_0_START,STEP_3_UP_TO_DATE because rcvCount would be 0
+      // if STEP_0_START,STEP_3_UP_TO_DATE rcvCount would be 0
       // if STEP_5_ROLLBACK then SQLFINISH should have already updated 
       // fStep and fEnd because they get updated by the same sql statement.
       // if STEP_40_FINISH the same logic applies as for the STEP_5_ROLLBACK state.
@@ -652,36 +654,8 @@ export async function start(disp,getSt) {
       console.log(`prime Success.`);
     }
   }
-
  // debug/testing section
  //http://colintoh.com/blog/lodash-10-javascript-utility-functions-stop-rewriting 
-  if(continueProcess){
-    dispatch({ type:GRACTION.SET_CHECK3, chk3:CHK.SUCCESS });
-    dispatch((dispatch,getState) => {
-        var disp = dispatch;
-        var getSt = getState;
-        POStatusReport(disp,getSt);
-      }
-    );    
-
-    cnt=0;
-    while(!getState().GenReceivers.poStatusReport.done){
-      if(++cnt>maxCnt ){
-        break;
-      }else{
-        await MISC.sleep(2000);
-      }
-    }
-
-    if(getState().GenReceivers.poStatusReport.failed || 
-      !getState().GenReceivers.poStatusReport.done){
-      if ('development'==process.env.NODE_ENV) {
-        console.log(`m2mGenReceivers().poStatusReport() FAILED.`);
-      }
-    }
-  }
-  continueProcess=false;
-
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -717,6 +691,7 @@ export async function start(disp,getSt) {
     console.log(`fEnd = ${fEnd}.`);
   }
 
+  // Rollback section
   if(continueProcess && (null == fEnd)){
     var rcvStart=0;
     var rcvEnd=0;
@@ -730,7 +705,6 @@ export async function start(disp,getSt) {
       console.log(`rcvStart = ${rcvStart}.`);
       console.log(`rcvEnd = ${rcvEnd}.`);
     }
-
 
     // Did the previous session fail before retrieving the receiver count?
     if((null != rcvStart) &&
@@ -747,6 +721,8 @@ export async function start(disp,getSt) {
     // either we got the receiver count before the last session failed
     // or we did not get the receiver count no matter which case
     // the rollback will set fEnd and not update the lastRun.
+
+
     if(receiverCount>=0 &&
        receiverCount<=GRLIMITS.MAX_RECEIVERS){
       dispatch((dispatch,getState) => {
@@ -819,7 +795,6 @@ export async function start(disp,getSt) {
   }
 
 
-
   if(continueProcess ){
     dispatch((dispatch,getState) => {
       var disp = dispatch;
@@ -853,8 +828,7 @@ export async function start(disp,getSt) {
 
 
 
-  // if the program fails at this point some receivers numbers will be
-  // skipped for good because the rollback function can really do nothing for this case
+
   var finish=false;
   var logStep;
   var lastRun;
@@ -864,6 +838,8 @@ export async function start(disp,getSt) {
       dispatch((dispatch,getState) => {
         var disp = dispatch;
         var getSt = getState;
+        // if the program fails at this point some receivers numbers will be
+        // skipped for good because the rollback function can really do nothing for this case
         dispatch({ type:GRACTION.SET_CHECK1, chk1:CHK.SUCCESS });
         SQLSETCURRENTRECEIVER.sql1(dispatch,getState);
       });
@@ -920,7 +896,6 @@ export async function start(disp,getSt) {
         }
       }
     }
-
 
 
     if(continueProcess){

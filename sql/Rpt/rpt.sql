@@ -125,3 +125,103 @@ inner join btapvend apv
 on ven.UDFM2MVENDORNUMBER=apv.fvendno
 order by PONumber,item
 end
+
+
+--//////////////////////////////////////////////////////////
+-- For Ashley PO Status Report 
+--////////////////////////////////////////////
+create procedure [dbo].[bpGRPOStatusRpt]
+@dtStart varchar(20),
+@dtEnd varchar(20)
+AS
+BEGIN
+--Declare @dtStart varchar(20)
+--Declare @dtEnd varchar(20)
+Declare @startDateParam datetime
+Declare @endDateParam datetime
+--set @dtStart = 'Jan 01 2017 00:00:00'
+--set @dtEnd = 'Jan 12 2017 00:00:00'
+set @startDateParam = convert(datetime, @dtStart, 101)
+set @endDateParam = convert(datetime, @dtEnd, 101)
+
+select ncmp.fpono,pom.fcompany,pom.fcngdate,ncmp.fItemno,
+RTRIM(LTRIM(pom.fstatus)) fstatus,ncmp.fpartno,ncmp.fordqty,ncmp.fqtyrecvSum,
+case
+	when fordqty <> fqtyrecvSum then 1
+	else 0
+end notComplete
+from
+(
+
+	select poi.fpono,poi.fitemno,poi.fpartno,poi.fordqty,
+	case
+		when recv.fqtyrecvSum is null then 0.0
+		else recv.fqtyrecvSum
+	end fqtyrecvSum
+	from
+	(
+
+ 		-- get all the fpono(s) that we created receivers for
+		-- and all their associated items and order quantities
+		select dst.fpono,poi.fitemno,poi.fpartno,poi.fordqty
+		from
+		(
+			select distinct pom.fpono 
+			from rcmast rcm
+			inner join pomast pom
+			on rcm.fpono=pom.fpono
+			where pom.fbuyer ='CM'
+			and fdaterecv >= @startDateParam
+			and fdaterecv <= @endDateParam
+		)dst
+		inner join poitem poi
+		on dst.fpono=poi.fpono
+		--order by rcm.fpono,poi.fitemno
+		-- 180
+	) poi
+	left outer join
+	(
+		-- all items received for poitem 
+		select fpono,fpoitemno,count(*) poitemCnt, sum(fqtyrecv) fqtyrecvSum
+		from
+		(
+			/* start production */
+			-- all the receivers for the fpono(s) we have received no matter the receiver number
+			select rcm.fpono,rci.fpoitemno, rcm.freceiver,rci.fitemno rcvItemno,rci.fpartno,rci.fqtyrecv
+			from 
+			rcmast rcm
+			inner join
+			rcitem rci
+			on rcm.freceiver=rci.freceiver
+			where rcm.fpono in 
+			(
+				-- all the fpono we have received 
+				select distinct pom.fpono 
+				from rcmast rcm
+				inner join pomast pom
+				on rcm.fpono=pom.fpono
+				where pom.fbuyer ='CM'
+				and fdaterecv >= @startDateParam
+				and fdaterecv <= @endDateParam
+				--88
+			)
+			--185
+		)api
+		group by fpono,fpoitemno
+		--order by fpono,fpoitemno
+		--169
+	) recv
+	on
+	poi.fpono=recv.fpono and
+	poi.fitemno=recv.fpoitemno
+	--order by poi.fpono,poi.fitemno
+	--180
+) ncmp
+inner join pomast pom
+on ncmp.fpono=pom.fpono
+--inner join vendor ven
+--on 
+order by ncmp.fpono,ncmp.fitemno
+end
+
+GO
