@@ -287,8 +287,6 @@ export async function m2mGenReceivers(disp,getSt) {
     }
    
   }
-  continueProcess=false;
-  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
 
   if(continueProcess){
     dispatch((dispatch,getState) => {
@@ -315,10 +313,10 @@ export async function m2mGenReceivers(disp,getSt) {
     }
    
   }
-
-
-//  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+//999999
 //  continueProcess=false;
+//  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
+
 
 
 
@@ -762,7 +760,9 @@ export async function start(disp,getSt) {
     }
 
   }
-
+//99999
+//  continueProcess=false;
+//  dispatch({ type:GRACTION.SET_STATE, state:GRSTATE.SUCCESS });
 
   if(continueProcess){
     dispatch({ type:GRACTION.SET_CHECK0, chk0:CHK.SUCCESS });

@@ -33,7 +33,8 @@ export default class GRReactDataGrid extends React.Component{
        { name: 'fpacklist',title: 'Pack List#', width: 150,
               render: function(v){
                 var ret;
-                if(''==v){
+                var val=v.trim();
+                if(''==val){
                   ret='NO Packlist!';
                 }else{
                   ret=v;

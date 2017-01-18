@@ -81,7 +81,7 @@ BEGIN
 	SET NOCOUNT ON
 	Declare @lastRun datetime
 	select @lastRun=flastrun from btgrvars
-
+	--select * from  btGRTrans
 	-- select distinct po/date(s) with only one received time for each po/date combo
 	select @receiverCount=count(*)
 	from
@@ -90,17 +90,19 @@ BEGIN
 		from 
 		(
 			-- select only the records not transfered yet
-			select VendorPONumber, VendorNumber, id,DATEADD(DD, DATEDIFF(DD, 0, received), 0) start, received
-			from PODETAIL
+			select VendorPONumber, VendorNumber, id,podetailid, DATEADD(DD, DATEDIFF(DD, 0, received), 0) start, received
+			from PODETAIL pod
+			left outer join
+			btGRTrans grt
+			on pod.id = grt.podetailId
 			where Received > @lastRun
+			and grt.podetailId is null
 		) pod2
 		group by VendorPONumber,start 
 	)lv1
 
 RETURN
 END
-
-GO
 
 USE [Cribmaster]
 GO
@@ -909,5 +911,61 @@ select fpono from [m2mdata02].dbo.rcmast
 where freceiver >= '288525'
 and freceiver <= '288538'
 )
+
+
+
+USE [Cribmaster]
+GO
+
+
+
+--///////////////////////////////////////////////////////////////////
+--Add all podetail ids to btGRTrans that were used to make up the receiver given
+--///////////////////////////////////////////////////////////////////
+create proc [dbo].[bpGRTransInsert]
+@freceiver as char(6),
+@sessionId as int 
+as
+	-- could have dup fpono,start,itemdescription records if item was received more 
+	-- than once in a single day. such as 121124 --63163,63210,4C12H-1.2340 on 10/26
+	-- only one rcitem record will be generated for ids 63163 and 63210 but both 
+	-- podetail ids must be added to the btGRTransfered table.
+--	select pod.VendorPONumber,pod.start,pod.fpartno,id,freceiver
+--	Declare @freceiver char(6) 
+--	set @freceiver = '285893'
+--	Declare @sessionId int 
+--	set @sessionId = 5
+	insert into btGRTrans (podetailId,freceiver,sessionId)
+	select id as podetailId,freceiver, @sessionId as sessionId
+	from
+	(
+		select VendorPONumber,
+		DATEADD(DD, DATEDIFF(DD, 0, received), 0) start,left(ItemDescription,25) fpartno,received,id
+		from PODETAIL
+--		where VendorPONumber='121124'
+	) pod
+	inner join -- user does not have to generate a rcitem record for each podetail
+	-- only add records to btGRTransfered that have a corresponding btrcitem record
+	(
+
+
+		select rcm.fpono,DATEADD(DD, DATEDIFF(DD, 0, rcm.fdaterecv),0) start,rci.fpartno,rci.freceiver from
+		btrcmast rcm
+		inner join
+		btrcitem rci
+		on rcm.freceiver=rci.freceiver
+		--where rcm.fpono='121124'
+	) rci
+	 on pod.vendorponumber=rci.fpono
+	 and pod.start=rci.start
+	 and pod.fpartno=rci.fpartno
+	 where freceiver = @freceiver
+--	 where pod.Received > @lastRun and rci.fpono='121124'
+--	 order by VendorPONumber,rci.start,rci.fpartno
+
+
+
+GO
+
 
 
