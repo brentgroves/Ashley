@@ -968,4 +968,28 @@ as
 GO
 
 
+--EXCEPTION PROCESSING 
+-- for when item received in Cribmaster that was not actually received and should not be paid
+-- insert item into btGRTrans log 
+USE [Cribmaster]
+GO
 
+select po.ponumber,pod.id,pod.Quantity,pod.ItemDescription from po 
+inner join PODETAIL pod
+on
+po.ponumber=pod.ponumber
+where po.VendorPO = '121304'
+
+26394	id=63262	4	T100-KM102DA-M5 D210M5  6HX
+
+select * from btGRTrans
+
+
+INSERT INTO [dbo].[btGRTrans]
+           ([podetailId]
+           ,[freceiver]
+           ,[sessionId])
+     VALUES
+           (63262
+           ,'999999'
+           ,999)

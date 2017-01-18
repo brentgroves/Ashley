@@ -89,7 +89,7 @@ export async function NoReceivers(disp,getSt) {
 
     var dateStart = noReceivers.dateStart; // DOES NOT WORK MUST NOT USE dateStart ?????? maybe 
     // because i typed noReceivers,dateStart instead of noReceivers.dateStart!!!
-    var dtStart =Moment(new Date(noReceivers.dateStart)).format("MM-DD-YYYY hh:mm:ss");
+    var dtStart =Moment(new Date(noReceivers.dateStart)).format("MM-DD-YYYY HH:mm:ss");
     if ('development'==process.env.NODE_ENV) {
       console.log(`dtStart=>${dtStart}`);
     }
@@ -97,16 +97,16 @@ export async function NoReceivers(disp,getSt) {
 
 
     var dateEnd = noReceivers.dateEnd;
-    var dtEnd =Moment(new Date(noReceivers.dateEnd)).format("MM-DD-YYYY hh:mm:ss");
+    var dtEnd =Moment(new Date(noReceivers.dateEnd)).format("MM-DD-YYYY HH:mm:ss");
     if ('development'==process.env.NODE_ENV) {
       console.log(`dtEnd=>${dtEnd}`);
     }
 
-    var dtStartFmt = dateFormat(new Date(noReceivers.dateStart), "mm-dd-yyyy hh:MM:ss");
+    var dtStartFmt = dateFormat(new Date(noReceivers.dateStart), "mm-dd-yyyy HH:MM:ss");
     if ('development'==process.env.NODE_ENV) {
       console.log(`dtStartFmt=>${dtStartFmt}`);
     }
-    var dtEndFmt = dateFormat(new Date(noReceivers.dateEnd), "mm-dd-yyyy hh:MM:ss");
+    var dtEndFmt = dateFormat(new Date(noReceivers.dateEnd), "mm-dd-yyyy HH:MM:ss");
     if ('development'==process.env.NODE_ENV) {
       console.log(`dtEndFmt=>${dtEndFmt}`);
     }

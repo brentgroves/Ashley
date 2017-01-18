@@ -90,7 +90,7 @@ export async function ClosedPO(disp,getSt) {
 
 
     var dateStart = closedPO.dateStart;
-    var dtStart =Moment(new Date(closedPO.dateStart)).format("MM-DD-YYYY hh:mm:ss");
+    var dtStart =Moment(new Date(closedPO.dateStart)).format("MM-DD-YYYY HH:mm:ss");
     if ('development'==process.env.NODE_ENV) {
       console.log(`dtStart=>${dtStart}`);
     }
@@ -98,16 +98,16 @@ export async function ClosedPO(disp,getSt) {
 
 
     var dateEnd = closedPO,dateEnd;
-    var dtEnd =Moment(new Date(closedPO.dateEnd)).format("MM-DD-YYYY hh:mm:ss");
+    var dtEnd =Moment(new Date(closedPO.dateEnd)).format("MM-DD-YYYY HH:mm:ss");
     if ('development'==process.env.NODE_ENV) {
       console.log(`dtEnd=>${dtEnd}`);
     }
 
-    var dtStartFmt = dateFormat(new Date(closedPO.dateStart), "mm-dd-yyyy hh:MM:ss");
+    var dtStartFmt = dateFormat(new Date(closedPO.dateStart), "mm-dd-yyyy HH:MM:ss");
     if ('development'==process.env.NODE_ENV) {
       console.log(`dtStartFmt=>${dtStartFmt}`);
     }
-    var dtEndFmt = dateFormat(new Date(closedPO.dateEnd), "mm-dd-yyyy hh:MM:ss");
+    var dtEndFmt = dateFormat(new Date(closedPO.dateEnd), "mm-dd-yyyy HH:MM:ss");
     if ('development'==process.env.NODE_ENV) {
       console.log(`dtEndFmt=>${dtEndFmt}`);
     }
@@ -118,8 +118,13 @@ export async function ClosedPO(disp,getSt) {
     client.render({
 
         template: { shortid:"r1omgHrLe"},
-        data: { dtStart: dtStart,dtEnd:dtEnd}
+        data: { dtStart: "01-17-2017 00:00:00",dtEnd:"01-18-2017 23:15:10"}
+//        data: { dtStart: dtStart,dtEnd:dtEnd}
 
+/*
+  "dtStart": "01-17-2017 00:00:00",
+  "dtEnd": "01-18-2017 23:15:10"
+*/
 //        data: { subject: "Busche Order",po: "122572",emailTo:"bgroves3196@yahoo.com"}
     }, function(err, response) {
         var dirName1 = dirName;
@@ -879,7 +884,8 @@ export async function OpenPOVendorEmailReport(disp,getSt) {
     if(x.selected && curPO!=x.poNumber){
       var emailTo=null;
       if(emailMRO){
-         emailTo='nswank@buschegroup.com'; 
+         emailTo='Administrator@busche-cnc.com'; 
+//         emailTo='nswank@buschegroup.com'; 
       }
       if(emailVendor && ('None'!=x.eMailAddress.trim())){
         if(null==emailTo){
