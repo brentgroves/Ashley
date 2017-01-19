@@ -619,30 +619,66 @@ create procedure [dbo].[bpGRPOStatusUpdate]
 as
 exec bpGRPOStatusClose @rcvStart,@rcvEnd
 exec bpGRPOStatusOpen @rcvStart,@rcvEnd
-
+exec bpGRPOItemQtyRecv @rcvStart, @rcvEnd
 GO
 
-USE [m2mdata01]
-GO
-
-
 --//////////////////////////////////////////////////////////
--- Close all PO(s) within a given range if all poitem(s) 
--- have been completely received
+-- Update poitem's quantity received field
+-- based upon all receiver items
 --////////////////////////////////////////////
---//////////////////////////////////////////////////////////
--- Close all PO(s) within a given range if all poitem(s) 
--- have been completely received
---////////////////////////////////////////////
+create procedure [dbo].[bpGRPOItemQtyRecv]
+@rcvStart as char(6), 
+@rcvEnd as char(6) 
+as
+UPDATE Table_A
+SET Table_A.frcpqty = Table_B.fqtyrecvSum
+--22 records were updated as expected
+--use m2mdata02
+--Declare @rcvStart as char(6) 
+--Declare @rcvEnd as char(6) 
+--set @rcvStart = '288636'
+--set @rcvEnd = '288655'
+--select Table_A.fpono,Table_A.fpartno,Table_A.fordqty ,Table_A.frcpqty,Table_B.fqtyrecvSum 
+from poitem AS Table_A
+INNER JOIN 
+(
+--use m2mdata02
+--Declare @rcvStart as char(6) 
+--Declare @rcvEnd as char(6) 
+--set @rcvStart = '288636'
+--set @rcvEnd = '288655'
+	--22
+	select fpono,fpartno,count(*) poitemCnt, sum(fqtyrecv) fqtyrecvSum
+	from
+	(
+
+		/* start production */
+		-- all the receivers for the fpono(s) we have received no matter the receiver number
+		select rcm.fpono,rci.fpoitemno, rcm.freceiver,rci.fitemno rcvItemno,rci.fpartno,rci.fqtyrecv
+		from 
+		rcmast rcm
+		inner join
+		rcitem rci
+		on rcm.freceiver=rci.freceiver
+		where rcm.fpono in 
+		(
+
+			-- all the fpono we have received 
+			select distinct fpono from rcmast 
+			where freceiver >= @rcvStart and freceiver <= @rcvEnd
+			--order by fpono
+			--14
+		)
+		--23
+	)api
+	group by fpono,fpartno
+) AS Table_B
+ON Table_A.fpono = Table_B.fpono
+and Table_A.fpartno = Table_B.fpartno
+
 USE [M2MDATA02]
 GO
 
-/****** Object:  StoredProcedure [dbo].[bpGRPOStatusClose]    Script Date: 1/17/2017 3:31:12 PM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
 
 --//////////////////////////////////////////////////////////
 -- Close all PO(s) within a given range if all poitem(s) 
