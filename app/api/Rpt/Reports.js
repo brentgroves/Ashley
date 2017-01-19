@@ -17,7 +17,8 @@ var _ = require('lodash');
 var joins = require('lodash-joins');
 var sorty    = require('sorty')
 var fs = require('fs');
-var client = require("jsreport-client")('http://10.1.1.217:5488', 'admin', 'password')
+//var client = require("jsreport-client")('http://10.1.1.217:5488', 'admin', 'password')
+var client = require("jsreport-client")('http://localhost:5488', 'admin', 'password')
 
 
 export async function ClosedPOPrompt(disp,getSt) {
@@ -118,8 +119,8 @@ export async function ClosedPO(disp,getSt) {
     client.render({
 
         template: { shortid:"r1omgHrLe"},
-        data: { dtStart: "01-17-2017 00:00:00",dtEnd:"01-18-2017 23:15:10"}
-//        data: { dtStart: dtStart,dtEnd:dtEnd}
+//        data: { dtStart: "01-17-2017 00:00:00",dtEnd:"01-18-2017 23:15:10"}
+        data: { dtStart: dtStart,dtEnd:dtEnd}
 
 /*
   "dtStart": "01-17-2017 00:00:00",
@@ -884,8 +885,8 @@ export async function OpenPOVendorEmailReport(disp,getSt) {
     if(x.selected && curPO!=x.poNumber){
       var emailTo=null;
       if(emailMRO){
-         emailTo='Administrator@busche-cnc.com'; 
-//         emailTo='nswank@buschegroup.com'; 
+//         emailTo='Administrator@busche-cnc.com'; 
+         emailTo='nswank@buschegroup.com'; 
       }
       if(emailVendor && ('None'!=x.eMailAddress.trim())){
         if(null==emailTo){
