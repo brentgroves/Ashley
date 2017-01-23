@@ -130,8 +130,6 @@ export async function m2mGenReceivers(disp,getSt) {
     }
   }
 
-
-
   if(continueProcess){
     dispatch((dispatch,getState) => {
       var disp = dispatch;

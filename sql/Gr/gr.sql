@@ -975,9 +975,23 @@ as
 	select id as podetailId,freceiver, @sessionId as sessionId
 	from
 	(
+		-- select only podetails that have not been inserted previously.  If unlikely it is possible
+		-- that a po,date,partno record could have been received and Ashley run previously in the day.
+		-- which would have resulted in a podetail record of the same po,date, and partno already having
+		-- been inserted into the transaction log.  If a po, partno was received at 7am and the receiver
+		-- process was run at 10am for po,date,
+		-- partno and podetail id x was inserted into the transaction log, 
+		-- and it was ran again and 5pm and the
+		-- same po,partno was received again at 12pm then the podetail item received at  7am will 
+		-- not be included for the receiver generated in the 5pm run.
 		select VendorPONumber,
 		DATEADD(DD, DATEDIFF(DD, 0, received), 0) start,left(ItemDescription,25) fpartno,received,id
-		from PODETAIL
+		from PODETAIL pod
+		where pod.id not in
+		(
+			select podetailId from btGRTrans
+		)
+
 --		where VendorPONumber='121124'
 	) pod
 	inner join -- user does not have to generate a rcitem record for each podetail
@@ -1000,9 +1014,74 @@ as
 --	 order by VendorPONumber,rci.start,rci.fpartno
 
 
+GO
+
+
+USE [Cribmaster]
+GO
+--/////////////////////////////////////////////////////////////////////////////////
+--Delete all podetail ids to btGRTrans that were used to make up the receiver given
+--/////////////////////////////////////////////////////////////////////////////////
+create proc [dbo].[bpGRTransDelete]
+@sessionId as int 
+as
+delete from btGRTrans where sessionId=@sessionId
 
 GO
 
+NOT TESTED
+NEXT STEPs 
+// Add remove checkbox to rcmast package list table
+// and to SQL query that generates rcmast records in cribmaster.
+
+-BEFORE INSERTING RCMAST,RCITEM RECORDS INTO M2M
+LOOP THROUGH RCMAST RECORDS AND CALL bpGRTransInsException for
+each record marked for removal.
+// put this call at the top of the m2m insert process.
+
+-WHEN INSERTING RCMAST,RCITEM RECORDS INTO M2M SKIP RECORDS
+FLAGGED AS REMOVE.
+
+USE [Cribmaster]
+GO
+--//////////////////////////////////////////////////////////////////
+-- Remove PODETAIL ID from consideration by the Ashley Gen Receiver
+-- program by inserting it into btGRTrans table
+-- For whatever reason the MRO personnel has chosen not to generate
+-- a receiver for this PODetail ID. 
+-- Since we do not pass a session ID. These items will not be deleted
+-- if a rollback of the session happens. 
+--///////////////////////////////////////////////////////////////////
+create procedure [dbo].[bpGRTransInsException]
+@VendorPONumber as varchar(16),
+@start as datetime
+as
+begin
+Declare @lastRun datetime
+select @lastRun=flastrun from btgrvars
+--Declare @VendorPONumber varchar(16)
+--set @VendorPONumber = '122272'
+--Declare @start datetime
+--'1900-01-01 00:00:00.000'
+--set @start = '2017-01-20 00:00:00:000'
+
+INSERT INTO [dbo].[btGRTrans]
+           ([podetailId]
+           ,[freceiver]
+           ,[sessionId])
+-- select only the records not transfered yet
+--select VendorPONumber, VendorNumber, id,DATEADD(DD, DATEDIFF(DD, 0, received), 0) start, received
+select id podetailid, '999999' freceiver,999 sessionId
+from PODETAIL pod
+where Received > @lastRun
+and VendorPONumber = @VendorPONumber
+and DATEADD(DD, DATEDIFF(DD, 0, received), 0) = @start
+--33
+and pod.id not in
+(
+	select podetailId from btGRTrans
+)
+end
 
 --EXCEPTION PROCESSING 
 -- for when item received in Cribmaster that was not actually received and should not be paid

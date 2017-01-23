@@ -52,12 +52,14 @@ function execSQL1(disp,getSt){
       var allInsSucceded=true;
       state.GenReceivers.rcmast.forEach(function(rcmast,i,arr){
         let fpckLen = rcmast.fpacklist.trim().length;
+        let Remove = rcmast.Remove.trim();
+
         if ('development'==process.env.NODE_ENV) {
           console.log(`SQLRCMastInsert.execSQL1().fpacklist.length=>${fpckLen}`);
+          console.log(`SQLTransInsert.execSQL1().Remove=>${Remove}`);
         }
-        if( (fpckLen>0) && allInsSucceded ){
-          let sproc;
-
+        let sproc;
+        if( (('N'==Remove) && (fpckLen>0)) && allInsSucceded ){
           if (MISC.PROD===true) {
             sproc = `bpGRRCMastInsert`;
           }else{

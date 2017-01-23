@@ -58,7 +58,7 @@ function execSQL1(disp,getSt){
       var rcitem = getState().GenReceivers.rcitem;
 
       var packlist = _.map(rcmast).map(function(x){
-        return _.pick(x, ['freceiver', 'fpacklist']); 
+        return _.pick(x, ['freceiver', 'fpacklist','Remove']); 
       });
 
 
@@ -66,10 +66,14 @@ function execSQL1(disp,getSt){
 
       rcitemWithPacklist.forEach(function(rcitem,i,arr){
         let fpckLen = rcitem.fpacklist.trim().length;
+        let Remove = rcitem.Remove.trim();
+
         if ('development'==process.env.NODE_ENV) {
-          console.log(`SQLRCItemInsert.execSQL1().fpacklist.length=>${fpckLen}`);
+          console.log(`SQLRCMastInsert.execSQL1().fpacklist.length=>${fpckLen}`);
+          console.log(`SQLTransInsert.execSQL1().Remove=>${Remove}`);
         }
-        if( (fpckLen>0) && allInsSucceded ){
+
+        if( (('N'==Remove) && (fpckLen>0)) && allInsSucceded ){
           let sproc;
 
           if (MISC.PROD===true) {

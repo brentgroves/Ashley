@@ -23,6 +23,74 @@ function trClassFormat(rowData,rowIndex){
    return rowIndex%2==0?"tr-odd-example":"tr-even-example";  //return a class name.
 }
 
+///////////////////////////////////////////
+// REMOVE EDITOR
+////////////////////////////
+
+class RemoveEditor extends React.Component {
+  constructor(props) {
+    super(props);
+ //   this.updateData = this.updateData.bind(this);
+    this.state = { remove: props.defaultValue };
+    this.onToggleRemove = this.onToggleRemove.bind(this);
+  }
+  focus() {
+  }
+  onToggleRemove(event) {
+ //   const remove = event.currentTarget.name;
+ //   this.setState({ remove: this.state.remove });
+  }
+  onToggleRemove() {
+   // this.props.onUpdate(this.state.remove);
+  }
+  render() {
+    const removeCheckBox =
+        <input
+          type='checkbox'
+          onChange={ this.onToggleRegion } />
+
+    return (
+     <span>
+     {removeCheckBox}
+      </span>
+    );
+  }
+}
+
+
+
+/*
+  The getElement function take two arguments,
+  1. onUpdate: if you want to apply the modified data, call this function
+  2. props: contain customEditorParameters, whole row data, defaultValue and attrs
+*/
+const createRemoveEditor = (onUpdate, props) => (<RemoveEditor onUpdate={ onUpdate } {...props}/>);
+
+
+function removeFormatter(cell, row) {
+  if ('development'==process.env.NODE_ENV) {
+    console.log(`cell =>`);
+    console.dir(cell);
+    console.log("Thw whole row :");
+    console.dir(row);
+  }
+  var checkbox;
+  if('N'==cell){
+    checkbox = `<span  style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Hello<input 
+          type='checkbox' /></span>`;
+  }else{
+   checkbox = `<input
+          type='checkbox' checked />`;
+
+  }
+  return checkbox;
+}
+
+function  onToggleRemove(test) {
+  console.log(`test`);
+   // this.props.onUpdate(this.state.remove);
+}
+
 export default class GRGrid extends React.Component{
   static propTypes = {
     GenR: PropTypes.object.isRequired
@@ -62,6 +130,7 @@ export default class GRGrid extends React.Component{
 
   }
 */
+  
   packlistOk(rcm) {
 
     var readyToInsert=false;
@@ -116,7 +185,6 @@ export default class GRGrid extends React.Component{
       console.log(`notReadyCnt => ${notReadyCnt}`);
     }
 
-
     /*
     rcmast.forEach(function(rcm,i,arr){
       if(rcm.fpacklist && rcm.ffrtcarr){
@@ -148,34 +216,43 @@ export default class GRGrid extends React.Component{
     return retVal;
   }
 
+  removeFormatter(cell, row) {
+    if ('development'==process.env.NODE_ENV) {
+      console.log(`cell =>`);
+      console.dir(cell);
+      console.log("Thw whole row :");
+      console.dir(row);
+    }
+    var checkbox;
+    if(0==cell){
+      checkbox = `<input
+            type='checkbox' />`;
+    }else{
+     checkbox = `<input
+            type='checkbox' checked />`;
+
+    }
+    return checkbox;
+  }
+
 //table-striped table-bordered table-condensed editable={{type:'text', validator:this.fpacklistValidator}}
+/*
+          <TableHeaderColumn
+            dataField='remove'
+            dataFormat={ removeFormatter }
+            customEditor={ { getElement: createRemoveEditor } }>
+
+          <TableHeaderColumn
+            width="155"
+            dataField='Remove'
+             dataFormat={ removeFormatter }
+             >
+          </TableHeaderColumn>
+
+*/
   render(){
 
     var whichTable;
-    if(GRSTATE.REVIEW_RECEIVERS==this.props.GenR.state){
-      whichTable = 
-       <BootstrapTable  
-          data={this.props.GenR.rcvJoin} pagination 
-          trClassName={trClassFormat}          
-          tableHeaderClass='my-header-class'
-          tableBodyClass='my-body-class'
-          containerClass='my-container-class'
-          tableContainerClass='my-table-container-class'
-          headerContainerClass='my-header-container-class'
-          bodyContainerClass='my-body-container-class'
-          hover={true} bordered={true} condensed={true} 
-          cellEdit={this.cellEditPropChk1} insertRow={false}>
-          <TableHeaderColumn dataField="identity_column" hidden={true} isKey={true}>Row</TableHeaderColumn>
-          <TableHeaderColumn dataField="fpono" width="100" columnClassName='td-first-column' editable={false} >PO</TableHeaderColumn>
-          <TableHeaderColumn dataField="freceiver" width="100" editable={false} >Receiver</TableHeaderColumn>
-          <TableHeaderColumn dataField="fcompany" width="250" editable={false} >Company</TableHeaderColumn>
-          <TableHeaderColumn dataField="fpacklist" width="100" editable={false} >Packing</TableHeaderColumn>
-          <TableHeaderColumn dataField="ffrtcarr" width="120" editable={false}>Carrier</TableHeaderColumn>
-          <TableHeaderColumn dataField="fpartno" width="250" editable={false} >PN</TableHeaderColumn>
-          <TableHeaderColumn dataField="fqtyrecv" width="50" editable={false} >Qty</TableHeaderColumn>
-        </BootstrapTable>;
-
-    }else{
       whichTable = 
        <BootstrapTable  
           data={this.props.GenR.rcmast} pagination 
@@ -189,6 +266,7 @@ export default class GRGrid extends React.Component{
           hover={true} bordered={true} condensed={true} 
           cellEdit={this.cellEditPropChk1} insertRow={false}>
           <TableHeaderColumn dataField="identity_column" hidden={true} isKey={true}>Row</TableHeaderColumn>
+          <TableHeaderColumn dataField="Remove" width="40"  editable={ { type: 'checkbox', options: { values: 'Y:N' } } } >Del</TableHeaderColumn>
           <TableHeaderColumn dataField="fpono" width="155" columnClassName='td-first-column' editable={false} >PO Number</TableHeaderColumn>
           <TableHeaderColumn dataField="freceiver" width="155" editable={false} >Receiver</TableHeaderColumn>
           <TableHeaderColumn dataField="fcompany" width="300" editable={false} >Company</TableHeaderColumn>
@@ -196,7 +274,6 @@ export default class GRGrid extends React.Component{
           <TableHeaderColumn dataField="ffrtcarr" width="200" columnClassName={columnClassNameFormat} 
           editable={{type:'select', options:{values:this.props.GenR.shipVia}}}>Select Carrier</TableHeaderColumn>
         </BootstrapTable>;
-    }
     if ('development'==process.env.NODE_ENV) {
       console.log(`whichTable => `);
       console.dir(whichTable);
@@ -206,3 +283,18 @@ export default class GRGrid extends React.Component{
   }
 };
 
+function activeFormatter(cell, row, enumObject, index) {
+  console.log(`The row index: ${index}`);
+  return (
+    <ActiveFormatter active={ cell } />
+  );
+}
+
+
+class ActiveFormatter extends React.Component {
+  render() {
+    return (
+      <input type='checkbox' checked={ this.props.active }/>
+    );
+  }
+}

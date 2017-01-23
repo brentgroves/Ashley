@@ -144,7 +144,7 @@ export default class GenReceivers extends Component {
           <Jumbotron style={{marginLeft:15,marginRight:15}} >
             <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Freight Carrier & Packing List</h1>
             <p style={{textAlign: 'center',paddingBottom:5}}>Please enter the packing list number and
-            select the appropriate freight carrier before continuing.</p>
+            select the appropriate freight carrier before continuing. Check the Del field to bypass this receiver.</p>
           </Jumbotron>
         </Col>
       </Row>
@@ -157,7 +157,7 @@ export default class GenReceivers extends Component {
           <Jumbotron style={{marginLeft:15,marginRight:15}} >
             <h1 style={{textAlign: 'center',marginTop:15,marginBottom:0}}>Ready to Review</h1>
             <p >Please enter more packing list numbers or press the 'Review' button to review receiver 
-            items to be inserted.</p>
+            items to be inserted. Check the Del field to bypass this receiver.</p>
             <p><strong>Note: {' '}</strong>Only PO(s) with a packing list number will be processed this run.</p>
           </Jumbotron>
         </Col>

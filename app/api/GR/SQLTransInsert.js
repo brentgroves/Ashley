@@ -53,10 +53,12 @@ function execSQL1(disp,getSt){
       var sessionId=state.GenReceivers.logId;
       state.GenReceivers.rcmast.forEach(function(rcmast,i,arr){
         let fpckLen = rcmast.fpacklist.trim().length;
+        var Remove = rcmast.Remove.trim();
         if ('development'==process.env.NODE_ENV) {
           console.log(`SQLTransInsert.execSQL1().fpacklist.length=>${fpckLen}`);
+          console.log(`SQLTransInsert.execSQL1().Remove=>${Remove}`);
         }
-        if( (fpckLen>0) && allInsSucceded ){
+        if( (('Y'==Remove) ||(fpckLen>0)) && allInsSucceded ){
           let sproc;
 
           if (MISC.PROD===true) {
@@ -69,6 +71,7 @@ function execSQL1(disp,getSt){
           var request = new sql.Request(connection); 
           request.input('sessionId', sql.Int, sessionId);
           request.input('freceiver', sql.Char(6), rcmast.freceiver);
+          request.input('remove', sql.Char(1), Remove);
           request.execute(sproc, function(err, recordsets, returnValue) {
             // ... error checks
             if(null==err){
