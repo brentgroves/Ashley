@@ -117,6 +117,7 @@ export default class GRReactDataGrid extends React.Component{
 //      style.background = '#2C3446';
       style.color='#666B85';
       style.background= '#323C50';
+      style.fontWeight='bold';
 
  // background-color: #323C50;
  // color:#666B85;
@@ -126,6 +127,7 @@ export default class GRReactDataGrid extends React.Component{
  //     style.background= 'green';
       style.color='#668B85';
       style.background= '#2C3446';
+      style.fontWeight='bold';
  //  background-color: #2C3446;
 //  color: white;
 

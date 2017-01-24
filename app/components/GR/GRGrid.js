@@ -194,7 +194,7 @@ export default class GRGrid extends React.Component{
       }
     });
     */
-    if(notReadyCnt<=5){
+    if(notReadyCnt<=50){
 //      this.props.RcvJoin();
       this.props.setState(GRSTATE.READY_TO_REVIEW);
     }else{

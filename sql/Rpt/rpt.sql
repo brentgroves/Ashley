@@ -46,27 +46,33 @@ end
 
 
 create procedure [dbo].[bpGROpenPOVendorEmailReport] 
-@po int
+@po varchar(12)
 AS
 BEGIN
---Declare @po int
---set @po = 26542
 SET NOCOUNT ON
+--Declare @po varchar(12)
+--set @po = '121556'
 --select * from btapvend
---select VendorName,PurchaseAddress1,PurchaseCity,PurchaseState,PurchaseZip from vendor
-select 1 page,0 selected,0 visible,ord.poDate,ord.poNumber,
+--select ROW_NUMBER() ,VendorName,PurchaseAddress1,PurchaseCity,PurchaseState,PurchaseZip from vendor
+select ROW_NUMBER() OVER(ORDER BY ord.PONumber,ord.item ) rowNumber,1 page,0 selected,0 visible,ord.poDate,ord.poNumber,
 case
  when ven.VendorName is null then 'None'
  else ven.VendorName
 end vendorName,
 apv.fvendno,
 apv.fcterms,
+case
+ when trm.description is null then 'None'
+ else trm.description
+end termsDesc,
 apv.fccompany,
 apv.fmstreet,
 apv.fccity,
 apv.fcstate,
 apv.fczip,
 apv.fccountry,
+apv.fcphone,
+apv.fcfax,
 'UPS-OURS' fshipvia,
 'OUR PLANT' ffob,
 'NS' planner,
@@ -80,22 +86,29 @@ case
  else ord.ItemDescription
 end itemDescription,
 ord.qtyOrd,
-ord.qtyOrd*ord.cost extCost,
+CAST(ord.cost AS DECIMAL(18,2)) cost,
+CAST(ord.qtyOrd*ord.cost AS DECIMAL(18,2)) extCost,
 case
  when rcv.qtyReceived is null then 0
  else rcv.qtyReceived
 end qtyReceived,
-received
+received,
+case
+ when ord.pocategory is null then 'None'
+ else ord.pocategory 
+end pocategory
 from
 (
-	select po.podate,po.ponumber,po.Vendor,pod.item,
+	select po.podate,po.VendorPO ponumber,po.Vendor,pod.item,
 	sum(pod.Quantity) qtyOrd,max(pod.ItemDescription) ItemDescription,
-	max(pod.Cost) cost
+	max(pod.Cost) cost,max(poc.UDF_POCATEGORYDescription) pocategory
 	from po
 	inner join PODETAIL pod
 	on po.ponumber=pod.PONumber
-	group by po.PODate,po.ponumber,po.Vendor,po.SiteId,po.poStatusNo,po.BlanketPO,pod.item
-	having po.PONumber = @po
+	left outer join UDT_POCATEGORY poc
+	on pod.UDF_POCATEGORY= poc.udf_pocategory
+	group by po.PODate,po.ponumber,po.VendorPO, po.Vendor,po.SiteId,po.poStatusNo,po.BlanketPO,pod.item
+	having po.VendorPO = @po
 	--order by po.PONumber,pod.item
 	--31
 )ord
@@ -105,11 +118,11 @@ left outer join
 	select ponumber,item,sum(Quantity) qtyReceived,max(Received) Received
 	from
 	(
-		select  po.PODate,po.ponumber,po.SiteId,po.poStatusNo,po.BlanketPO,pod.item,Quantity,pod.Received
+		select  po.PODate,po.VendorPO ponumber,po.SiteId,po.poStatusNo,po.BlanketPO,pod.item,Quantity,pod.Received
 		from po
 		inner join PODETAIL pod
 		on po.ponumber=pod.PONumber
-		where po.PONumber = @po
+		where po.VendorPO = @po
 		and (pod.Received is not null) 
 		--15
 	)lv1
@@ -123,8 +136,11 @@ inner join vendor ven
 on ord.Vendor=ven.VendorNumber
 inner join btapvend apv
 on ven.UDFM2MVENDORNUMBER=apv.fvendno
+inner join btterms trm
+on apv.fcterms = trm.fcterms
 order by PONumber,item
 end
+
 
 
 --//////////////////////////////////////////////////////////
