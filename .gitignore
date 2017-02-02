@@ -1,6 +1,7 @@
 # Logs
 logs
 *.log
+*.log.*
 
 # Runtime data
 pids
@@ -36,3 +37,4 @@ dist
 release
 main.js
 main.js.map
+
